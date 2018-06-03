@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.SysBranchMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.SysBranch" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+    <result column="branch_name" property="branchName" jdbcType="VARCHAR" />
+    <result column="branch_short_name" property="branchShortName" jdbcType="VARCHAR" />
+    <result column="branch_addr" property="branchAddr" jdbcType="VARCHAR" />
+    <result column="branch_no" property="branchNo" jdbcType="VARCHAR" />
+    <result column="branch_contacts" property="branchContacts" jdbcType="VARCHAR" />
+    <result column="branch_contacts_phone" property="branchContactsPhone" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="branch_pic" property="branchPic" jdbcType="VARCHAR" />
+    <result column="branch_desc" property="branchDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, branch_id, branch_name, branch_short_name, branch_addr, branch_no, branch_contacts, 
+    branch_contacts_phone, memo, branch_pic, branch_desc
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_sys_branch
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gcfd_sys_branch
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.SysBranch" >
+    insert into gcfd_sys_branch (id, branch_id, branch_name, 
+      branch_short_name, branch_addr, branch_no, 
+      branch_contacts, branch_contacts_phone, memo, 
+      branch_pic, branch_desc)
+    values (#{id,jdbcType=INTEGER}, #{branchId,jdbcType=VARCHAR}, #{branchName,jdbcType=VARCHAR}, 
+      #{branchShortName,jdbcType=VARCHAR}, #{branchAddr,jdbcType=VARCHAR}, #{branchNo,jdbcType=VARCHAR}, 
+      #{branchContacts,jdbcType=VARCHAR}, #{branchContactsPhone,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
+      #{branchPic,jdbcType=VARCHAR}, #{branchDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.SysBranch" >
+    insert into gcfd_sys_branch
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="branchName != null" >
+        branch_name,
+      </if>
+      <if test="branchShortName != null" >
+        branch_short_name,
+      </if>
+      <if test="branchAddr != null" >
+        branch_addr,
+      </if>
+      <if test="branchNo != null" >
+        branch_no,
+      </if>
+      <if test="branchContacts != null" >
+        branch_contacts,
+      </if>
+      <if test="branchContactsPhone != null" >
+        branch_contacts_phone,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="branchPic != null" >
+        branch_pic,
+      </if>
+      <if test="branchDesc != null" >
+        branch_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="branchName != null" >
+        #{branchName,jdbcType=VARCHAR},
+      </if>
+      <if test="branchShortName != null" >
+        #{branchShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="branchAddr != null" >
+        #{branchAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNo != null" >
+        #{branchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchContacts != null" >
+        #{branchContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="branchContactsPhone != null" >
+        #{branchContactsPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchPic != null" >
+        #{branchPic,jdbcType=VARCHAR},
+      </if>
+      <if test="branchDesc != null" >
+        #{branchDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.SysBranch" >
+    update gcfd_sys_branch
+    <set >
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="branchName != null" >
+        branch_name = #{branchName,jdbcType=VARCHAR},
+      </if>
+      <if test="branchShortName != null" >
+        branch_short_name = #{branchShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="branchAddr != null" >
+        branch_addr = #{branchAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNo != null" >
+        branch_no = #{branchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchContacts != null" >
+        branch_contacts = #{branchContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="branchContactsPhone != null" >
+        branch_contacts_phone = #{branchContactsPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchPic != null" >
+        branch_pic = #{branchPic,jdbcType=VARCHAR},
+      </if>
+      <if test="branchDesc != null" >
+        branch_desc = #{branchDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.SysBranch" >
+    update gcfd_sys_branch
+    set
+      branch_name = #{branchName,jdbcType=VARCHAR},
+      branch_short_name = #{branchShortName,jdbcType=VARCHAR},
+      branch_addr = #{branchAddr,jdbcType=VARCHAR},
+      branch_contacts = #{branchContacts,jdbcType=VARCHAR},
+      branch_contacts_phone = #{branchContactsPhone,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      branch_desc = #{branchDesc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByBranchId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from gcfd_sys_branch
+    where branch_id =  #{branchId,jdbcType=VARCHAR}
+  </select>
+</mapper>

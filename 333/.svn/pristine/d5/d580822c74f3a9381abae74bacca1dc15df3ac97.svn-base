@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcfd.mapper.IBranchMapper">
+    <resultMap type="com.gcfd.model.Branch" id="getBranch">
+    		<id property="id" column="id" />
+    		<result property="branch_id" column="branch_id"/>
+    		<result property="branch_name" column="branch_name"/>
+    		<result property="branch_short_name" column="branch_short_name"/>
+    		<result property="branch_addr" column="branch_addr"/>
+    		<result property="branch_no" column="branch_no"/>
+    		<result property="branch_contacts" column="branch_contacts"/>
+    		<result property="branch_contacts_phone" column="branch_contacts_phone"/>
+    		<result property="memo" column="memo"/>
+    		<result property="branch_pic" column="branch_pic"/>
+    		<result property="branch_desc" column="branch_desc"/>
+    		<result property="is_del" column="is_del"/>
+    </resultMap>
+    
+    <select id="getBranchs" resultMap="getBranch">
+    	<!-- SELECT user_id , user_name, user_pwd, user_tel,user_email , user_status,branch_id  FROM gcfd_user -->
+    	SELECT * from gcfd_branch as b 
+    	<if test="null != branch_name and '' != branch_name">
+    		WHERE b.branch_name LIKE CONCAT('%',#{branch_name,jdbcType=VARCHAR},'%')   
+    	</if>
+    	<if test="page != null">
+    		LIMIT #{page.start},#{page.limit};
+    	</if>
+    </select>
+    
+    
+</mapper>

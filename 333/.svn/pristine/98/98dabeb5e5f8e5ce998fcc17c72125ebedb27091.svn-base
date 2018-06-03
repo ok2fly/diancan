@@ -1,0 +1,25 @@
+######################################## 缓存 redis 库使用配置 ########################################################
+# redis 库从0 开始计算
+#mybatis 二级缓存redis库
+mybatis.syscachedb=4
+#分布式系统session redis库
+system.sessiondb=1
+#分布式系统 接口访问统计 redis库
+system.interfacedb=5
+system.inferfaceName=gcfd
+#分布式系统session redis库
+system.ticketdb=3
+
+#########################################  系统参数配置 ################################################################
+#文件服务器地址 开发根据自己的机器修改相应
+system.appid=Hy8ZP2Km5i7lJVVz0TYMZtcAGiEpfzkFquMfIpiK2Y2TO1m/yN0ROVyGPkZ96j6p
+#session 有效时间
+system.session=1800
+#单点登录，ticket 有效时间 单位秒
+system.ticket=10
+# 单点登录，3次密码错误锁定时间 单位秒
+system.lock=1800
+# 单点登录，允许锁定次数
+system.lockTime=3
+#为只有超级管理员有管理菜单设定超级管理员id
+roleDefaultId = 1

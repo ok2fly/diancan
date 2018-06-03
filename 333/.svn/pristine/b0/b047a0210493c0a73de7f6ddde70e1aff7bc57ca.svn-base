@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcfd.mapper.IAppMapper">
+	<resultMap type="com.gcfd.model.App" id="appList">
+		<result property="id" column="id" />
+		<result property="app_id" column="app_id" />
+		<result property="app_name" column="app_name" />
+		<result property="app_bref_desc" column="app_bref_desc" />
+		<result property="app_desc" column="app_desc" />
+		<result property="status" column="status" />
+		<result property="version" column="version" />
+		<result property="icon" column="icon" />
+		<result property="app_url" column="app_url" />
+		<!-- <collection property="categories" ofType="com.gcfd.model.Group"> <id 
+			property="cid" column="cid" /> <result property="cname" column="cname" /> 
+			</collection> -->
+	</resultMap>
+	<!-- <select id="getAppsByUserId" parameterType="java.lang.String" resultMap="appList"> 
+		select * from gcfd_app app WHERE app.app_id in ( select app_id from gcfd_user_app_data_rel 
+		where user_id=#{user_id} ); select app.id, app.app_id, app.app_name, app.app_bref_desc, 
+		app.app_desc, app.status, app.version, app.icon, app.app_url from gcfd_app 
+		app WHERE app.app_id in ( select app_id from gcfd_user_app_data_rel where 
+		user_id=#{user_id} ); </select> -->
+
+
+	<select id="getApps" resultMap="appList">
+		select app.id, app.app_id,
+		app.app_name, app.app_bref_desc, app.app_desc, app.status,
+		app.version, app.icon, app.app_url from gcfd_app app
+		<if test="app_id != null and app_id != ''">
+			WHERE app.app_id LIKE CONCAT(#{app_id,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="page !=null">
+			LIMIT #{page.start},#{page.limit};
+		</if>
+	</select>
+	<select id="getCheckApps" resultMap="appList">
+		select app.id, app.app_id,
+		app.app_name, app.app_bref_desc, app.app_desc, app.status,
+		app.version, app.icon, app.app_url from gcfd_app as app 
+		LEFT JOIN gcfd_auth as a on app.id = a.app_id 
+		<if test="group_id != null and group_id != ''">
+			WHERE a.group_id=#{group_id}
+		</if>
+		<if test="page !=null">
+			LIMIT #{page.start},#{page.limit};
+		</if>
+	</select>
+	<select id="getCounts" resultType="int">
+		select count(app_id) from gcfd_app;
+	</select>
+	<insert id="addApp" parameterType="com.gcfd.model.App" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO gcfd_app (app_id, app_name, status, version, app_url, app_desc, app_bref_desc, icon) 
+		 VALUES(#{app_id},#{app_name},#{status},#{version},#{app_url},#{app_desc},#{app_bref_desc},#{icon});
+	</insert>
+	<update id="updateApp" parameterType="com.gcfd.model.App">
+		UPDATE gcfd_app SET 
+			app_id = #{app_id}, app_name=#{app_name},
+			status=#{status}, version =#{version},app_url=#{app_url},
+			app_desc=#{app_desc}, app_bref_desc=#{app_bref_desc}, icon=#{icon}
+		WHERE id=#{id};
+	</update>
+	<delete id="deleteApp" parameterType="Long">
+		DELETE from gcfd_app WHERE id = #{id};
+		<!-- delete from gcfd_app, gcfd_user_group_rel
+		using gcfd_group, gcfd_user_group_rel
+		where gcfd_group.group_id = gcfd_user_group_rel.group_id
+		and gcfd_group.group_id=#{group_id}; -->
+	</delete>
+	
+	<select id="getAppIcons" parameterType="com.gcfd.model.User" resultMap="appList">
+		select a.app_name, a.app_url, a.icon from gcfd_app as a 
+		LEFT JOIN gcfd_auth as au ON a.id = au.app_id 
+		LEFT JOIN gcfd_group as g ON au.group_id = g.group_id 
+		LEFT JOIN gcfd_user_group_rel as ur ON g.group_id = ur.group_id 
+		LEFT JOIN gcfd_user as u ON ur.user_id = u.user_id 
+		WHERE u.user_name =#{user_name} and u.user_pwd =#{user_pwd} AND u.user_status = 0
+	</select>
+	
+	<select id="getAppAuth" parameterType="com.gcfd.model.User" resultMap="appList">
+			select gap.* from 
+			(select distinct ga.app_id appid from 
+			(select user_id from gcfd_user where user_name=#{user_name} ) as gu 
+			inner join gcfd_user_group_rel gug 
+			on gu.user_id = gug.user_id
+			inner join gcfd_auth ga on gug.group_id = ga.group_id 
+			)
+			as cmpapp
+			inner join gcfd_app gap 
+			on cmpapp.appid=gap.id 
+	</select>
+	<select id="getAppGroupAuth" parameterType="com.gcfd.model.User" resultMap="appList">
+			select gap.* from 
+			(select distinct ga.app_id appid from 
+			(select user_id from gcfd_user where user_name=#{user_name}) as gu 
+			inner join gcfd_user_group_rel gug on gu.user_id = gug.user_id
+			inner join gcfd_group_rel ggr on gug.group_id = ggr.group_id
+			inner join gcfd_auth ga on ggr.authorize_group_id = ga.group_id 
+			)
+			as cmpapp
+			inner join gcfd_app gap 
+			on cmpapp.appid=gap.id 
+	</select>
+	<select id="getAppByGroupAuth" parameterType="String" resultMap="appList">
+	
+		select distinct app_id id from gcfd_auth where group_id = #{group_id}
+		<!-- 
+		select gap.* from (select app_id appid from gcfd_auth where group_id = #{group_id}) gau
+		inner join gcfd_app gap on gau.appid = gap.id
+		 -->
+
+	</select>
+	
+</mapper>

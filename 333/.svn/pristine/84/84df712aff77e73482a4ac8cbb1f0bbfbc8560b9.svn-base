@@ -1,0 +1,157 @@
+package com.gcfd.storage.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class Fee implements Serializable {
+    private Integer id;
+
+    private String feeNo;
+
+    private String feeName;
+
+    private String feeType;
+
+    private String productUnit;
+
+    private BigDecimal feePrice;
+
+    private String isPreferentialInOrder;
+
+    private String createUserId;
+
+    private Date createTime;
+
+    private String lstModifyUserId;
+
+    private Date lstModifyTime;
+
+    private String isDel;
+
+    private String branchId;
+
+    private Integer num;
+
+    private static final long serialVersionUID = 1L;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFeeNo() {
+        return feeNo;
+    }
+
+    public void setFeeNo(String feeNo) {
+        this.feeNo = feeNo == null ? null : feeNo.trim();
+    }
+
+    public String getFeeName() {
+        return feeName;
+    }
+
+    public void setFeeName(String feeName) {
+        this.feeName = feeName == null ? null : feeName.trim();
+    }
+
+    public String getFeeType() {
+        return feeType;
+    }
+
+    public void setFeeType(String feeType) {
+        this.feeType = feeType == null ? null : feeType.trim();
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit == null ? null : productUnit.trim();
+    }
+
+    public BigDecimal getFeePrice() {
+        return feePrice;
+    }
+
+    public void setFeePrice(BigDecimal feePrice) {
+        this.feePrice = feePrice;
+    }
+
+    public String getIsPreferentialInOrder() {
+        return isPreferentialInOrder;
+    }
+
+    public void setIsPreferentialInOrder(String isPreferentialInOrder) {
+        this.isPreferentialInOrder = isPreferentialInOrder == null ? null : isPreferentialInOrder.trim();
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId == null ? null : createUserId.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getLstModifyUserId() {
+        return lstModifyUserId;
+    }
+
+    public void setLstModifyUserId(String lstModifyUserId) {
+        this.lstModifyUserId = lstModifyUserId == null ? null : lstModifyUserId.trim();
+    }
+
+    public Date getLstModifyTime() {
+        return lstModifyTime;
+    }
+
+    public void setLstModifyTime(Date lstModifyTime) {
+        this.lstModifyTime = lstModifyTime;
+    }
+
+    public String getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(String isDel) {
+        this.isDel = isDel == null ? null : isDel.trim();
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId == null ? null : branchId.trim();
+    }
+
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
+    private String feeTypeName;
+    public String getFeeTypeName(){
+        return feeTypeName;
+    }
+    public void setFeeTypeName(String feeTypeName){
+        this.feeTypeName=feeTypeName;
+    }
+}

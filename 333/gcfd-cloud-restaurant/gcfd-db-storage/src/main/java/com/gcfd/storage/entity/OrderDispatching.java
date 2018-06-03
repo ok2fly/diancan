@@ -1,0 +1,137 @@
+package com.gcfd.storage.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class OrderDispatching implements Serializable {
+    private Long id;
+
+    private String orderNo;
+
+    private String clientId;
+
+    private String clientName;
+
+    private String clientPhone;
+
+    private String clientAddr;
+
+    private String createUserId;
+
+    private Date createTime;
+
+    private String lstModifyUserId;
+
+    private Date lstModifyTime;
+
+    private String isDel;
+
+    private String tableCode;
+    private String tableName;
+
+    private static final long serialVersionUID = 1L;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo == null ? null : orderNo.trim();
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId == null ? null : clientId.trim();
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName == null ? null : clientName.trim();
+    }
+
+    public String getClientPhone() {
+        return clientPhone;
+    }
+
+    public void setClientPhone(String clientPhone) {
+        this.clientPhone = clientPhone == null ? null : clientPhone.trim();
+    }
+
+    public String getClientAddr() {
+        return clientAddr;
+    }
+
+    public void setClientAddr(String clientAddr) {
+        this.clientAddr = clientAddr == null ? null : clientAddr.trim();
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId == null ? null : createUserId.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getLstModifyUserId() {
+        return lstModifyUserId;
+    }
+
+    public void setLstModifyUserId(String lstModifyUserId) {
+        this.lstModifyUserId = lstModifyUserId == null ? null : lstModifyUserId.trim();
+    }
+
+    public Date getLstModifyTime() {
+        return lstModifyTime;
+    }
+
+    public void setLstModifyTime(Date lstModifyTime) {
+        this.lstModifyTime = lstModifyTime;
+    }
+
+    public String getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(String isDel) {
+        this.isDel = isDel == null ? null : isDel.trim();
+    }
+
+    public String getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+}

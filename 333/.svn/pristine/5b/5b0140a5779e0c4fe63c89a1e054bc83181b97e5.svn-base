@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.SrcTableMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.SrcTable" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+    <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
+    <result column="seq" property="seq" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, table_name, table_code, seq, create_user_id, create_time, lst_modify_user_id, 
+    lst_modify_time, is_del, branch_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_scr_table
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gcfd_scr_table
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.SrcTable" >
+    insert into gcfd_scr_table (id, table_name, table_code, 
+      seq, create_user_id, create_time, 
+      lst_modify_user_id, lst_modify_time, is_del, 
+      branch_id)
+    values (#{id,jdbcType=INTEGER}, #{tableName,jdbcType=VARCHAR}, #{tableCode,jdbcType=VARCHAR}, 
+      #{seq,jdbcType=INTEGER}, #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{lstModifyUserId,jdbcType=VARCHAR}, #{lstModifyTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=CHAR}, 
+      #{branchId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.SrcTable" >
+    insert into gcfd_scr_table
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+      <if test="tableCode != null" >
+        table_code,
+      </if>
+      <if test="seq != null" >
+        seq,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null" >
+        #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="seq != null" >
+        #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.SrcTable" >
+    update gcfd_scr_table
+    <set >
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null" >
+        table_code = #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="seq != null" >
+        seq = #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.SrcTable" >
+    update gcfd_scr_table
+    set table_name = #{tableName,jdbcType=VARCHAR},
+      table_code = #{tableCode,jdbcType=VARCHAR},
+      seq = #{seq,jdbcType=INTEGER},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR},
+      branch_id = #{branchId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

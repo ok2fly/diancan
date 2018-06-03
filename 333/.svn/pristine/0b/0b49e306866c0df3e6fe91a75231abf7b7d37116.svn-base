@@ -1,0 +1,33 @@
+#端口号地址
+server.port=8082
+
+server.context-path=/api
+# 注册的服务名称
+spring.application.name=gcfd-consumer
+#注册中心地址
+eureka.client.serviceUrl.defaultZone=http://localhost:8084/eureka/
+#以ip形式注册
+eureka.instance.preferIpAddress=true
+#首次请求出现超时情况，开发中关闭超时，生产中建议使用hystrix设置超时时间
+feign.hystrix.enabled=false
+
+hystrix.command.default.execution.isolation.strategy = Semaphore
+
+spring.redis.database=1
+spring.redis.host=127.0.0.1
+spring.redis.port=6379
+spring.redis.timeout=10000
+spring.redis.password=
+spring.redis.pool.max-idle=8
+spring.redis.pool.min-idle=0
+spring.redis.pool.max-active=8
+spring.redis.pool.max-wait=-1
+
+#未登录跳转页面
+app.index.html.url=index.html
+#登录权限验证逻辑名称（前后统一的名称）
+app.token.name=Token
+# 会话 sesssion 有效时间 单位秒
+app.session.time=1800
+# api 权限验证 --  免验证资源名称
+service.api.noauth.keyname=noAuthServiceKeyName

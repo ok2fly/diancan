@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.Order" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+    <result column="order_type" property="orderType" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="DECIMAL" />
+    <result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, branch_id, client_id, order_type, total, order_status, end_time, parent_id, 
+    create_user_id, create_time, lst_modify_user_id, lst_modify_time, is_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from gcfd_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.Order" >
+    insert into gcfd_order (id, order_no, branch_id, 
+      client_id, order_type, total, 
+      order_status, end_time, parent_id, 
+      create_user_id, create_time, lst_modify_user_id, 
+      lst_modify_time, is_del)
+    values (#{id,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{branchId,jdbcType=VARCHAR}, 
+      #{clientId,jdbcType=VARCHAR}, #{orderType,jdbcType=VARCHAR}, #{total,jdbcType=DECIMAL}, 
+      #{orderStatus,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, #{parentId,jdbcType=INTEGER}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{lstModifyUserId,jdbcType=VARCHAR}, 
+      #{lstModifyTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.Order" >
+    insert into gcfd_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+      <if test="orderType != null" >
+        order_type,
+      </if>
+      <if test="total != null" >
+        total,
+      </if>
+      <if test="orderStatus != null" >
+        order_status,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null" >
+        #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null" >
+        #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="orderStatus != null" >
+        #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.Order" >
+    update gcfd_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null" >
+        order_type = #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null" >
+        total = #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="orderStatus != null" >
+        order_status = #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.Order" >
+    update gcfd_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      branch_id = #{branchId,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      order_type = #{orderType,jdbcType=VARCHAR},
+      total = #{total,jdbcType=DECIMAL},
+      order_status = #{orderStatus,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!--根据商户ID和桌号查询未完成订单信息-->
+  <select id="selectByBranchIdAndTableNo" resultMap="BaseResultMap">
+    select
+    o.id, o.order_no, o.branch_id, o.client_id, o.order_type, o.total, o.order_status, o.end_time, o.parent_id,
+    o.create_user_id, o.create_time, o.lst_modify_user_id, o.lst_modify_time, o.is_del
+    from gcfd_order o ,gcfd_order_dispatching d
+    where o.order_no = d.order_no
+    and o.branch_id =  #{branchId,jdbcType=VARCHAR}
+    and d.client_addr = #{tableNo,jdbcType=VARCHAR}
+    and o.order_type = '1' and o.order_status = '1'
+    and o.is_del = 'F'
+    and d.is_del = 'F'
+  </select>
+</mapper>

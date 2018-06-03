@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="gcfd-registration-discovery:war">
+    <output-path>$PROJECT_DIR$/gcfd-registration-discovery/target</output-path>
+    <root id="archive" name="gcfd-registration-discovery-1.3.8.RELEASE.war">
+      <element id="artifact" artifact-name="gcfd-registration-discovery:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.Product" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_no" property="productNo" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_bussiness_type" property="productBussinessType" jdbcType="VARCHAR" />
+    <result column="product_attribute_type" property="productAttributeType" jdbcType="VARCHAR" />
+    <result column="product_specification" property="productSpecification" jdbcType="VARCHAR" />
+    <result column="product_unit" property="productUnit" jdbcType="VARCHAR" />
+    <result column="product_desc" property="productDesc" jdbcType="VARCHAR" />
+    <result column="prodcut_price" property="prodcutPrice" jdbcType="DECIMAL" />
+    <result column="product_cover" property="productCover" jdbcType="VARCHAR" />
+    <result column="is_preferential_in_order" property="isPreferentialInOrder" jdbcType="CHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+    <result column="productBussinessTypeName" property="productBussinessTypeName" jdbcType="VARCHAR" />
+    <result column="productAttributeTypeName" property="productAttributeTypeName" jdbcType="VARCHAR" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="max_amount" property="maxAmount" jdbcType="INTEGER" />
+    <result column="limit_amount" property="limitAmount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_no, product_name, product_bussiness_type, product_attribute_type, product_specification, 
+    product_unit, product_desc, prodcut_price, product_cover, is_preferential_in_order, 
+    create_user_id, create_time, lst_modify_user_id, lst_modify_time, is_del, branch_id,num
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gcfd_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.Product" >
+    insert into gcfd_product (product_no, product_name,
+      product_bussiness_type, product_attribute_type, 
+      product_specification, product_unit, product_desc, 
+      prodcut_price, product_cover, is_preferential_in_order, 
+      create_user_id, create_time, lst_modify_user_id, 
+      lst_modify_time, is_del, branch_id,num
+      )
+    values (#{productNo,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR},
+      #{productBussinessType,jdbcType=VARCHAR}, #{productAttributeType,jdbcType=VARCHAR}, 
+      #{productSpecification,jdbcType=VARCHAR}, #{productUnit,jdbcType=VARCHAR}, #{productDesc,jdbcType=VARCHAR}, 
+      #{prodcutPrice,jdbcType=DECIMAL}, #{productCover,jdbcType=VARCHAR}, #{isPreferentialInOrder,jdbcType=CHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, now(), #{lstModifyUserId,jdbcType=VARCHAR},
+      now(), 'F', #{branchId,jdbcType=VARCHAR},#{num,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.Product" useGeneratedKeys="true" keyProperty="id" >
+    insert into gcfd_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productNo != null" >
+        product_no,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productBussinessType != null" >
+        product_bussiness_type,
+      </if>
+      <if test="productAttributeType != null" >
+        product_attribute_type,
+      </if>
+      <if test="productSpecification != null" >
+        product_specification,
+      </if>
+      <if test="productUnit != null" >
+        product_unit,
+      </if>
+      <if test="productDesc != null" >
+        product_desc,
+      </if>
+      <if test="prodcutPrice != null" >
+        prodcut_price,
+      </if>
+      <if test="productCover != null" >
+        product_cover,
+      </if>
+      <if test="isPreferentialInOrder != null" >
+        is_preferential_in_order,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productNo != null" >
+        #{productNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productBussinessType != null" >
+        #{productBussinessType,jdbcType=VARCHAR},
+      </if>
+      <if test="productAttributeType != null" >
+        #{productAttributeType,jdbcType=VARCHAR},
+      </if>
+      <if test="productSpecification != null" >
+        #{productSpecification,jdbcType=VARCHAR},
+      </if>
+      <if test="productUnit != null" >
+        #{productUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="productDesc != null" >
+        #{productDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="prodcutPrice != null" >
+        #{prodcutPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productCover != null" >
+        #{productCover,jdbcType=VARCHAR},
+      </if>
+      <if test="isPreferentialInOrder != null" >
+        #{isPreferentialInOrder,jdbcType=CHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.Product" >
+    update gcfd_product
+    <set >
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productBussinessType != null" >
+        product_bussiness_type = #{productBussinessType,jdbcType=VARCHAR},
+      </if>
+      <if test="productAttributeType != null" >
+        product_attribute_type = #{productAttributeType,jdbcType=VARCHAR},
+      </if>
+      <if test="productSpecification != null" >
+        product_specification = #{productSpecification,jdbcType=VARCHAR},
+      </if>
+      <if test="productUnit != null" >
+        product_unit = #{productUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="productDesc != null" >
+        product_desc = #{productDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="prodcutPrice != null" >
+        prodcut_price = #{prodcutPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productCover != null" >
+        product_cover = #{productCover,jdbcType=VARCHAR},
+      </if>
+      <if test="isPreferentialInOrder != null" >
+        is_preferential_in_order = #{isPreferentialInOrder,jdbcType=CHAR},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time =now(),
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.Product" >
+    update gcfd_product
+    set product_no = #{productNo,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      product_bussiness_type = #{productBussinessType,jdbcType=VARCHAR},
+      product_attribute_type = #{productAttributeType,jdbcType=VARCHAR},
+      product_specification = #{productSpecification,jdbcType=VARCHAR},
+      product_unit = #{productUnit,jdbcType=VARCHAR},
+      product_desc = #{productDesc,jdbcType=VARCHAR},
+      prodcut_price = #{prodcutPrice,jdbcType=DECIMAL},
+      product_cover = #{productCover,jdbcType=VARCHAR},
+      is_preferential_in_order = #{isPreferentialInOrder,jdbcType=CHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR},
+      branch_id = #{branchId,jdbcType=VARCHAR},
+      num=#{num}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--根据商户ID和桌号查询未完成订单信息-->
+  <select id="getBranchProductList" resultMap="BaseResultMap">
+    select t.*,d.name product_attribute_type_name
+    from (
+
+    select p.*,tt.max_amount
+    from
+    gcfd_product p,
+    (
+    select al.product_id,(al.limit_amount - ifnull(t.useAmount,0)) max_amount
+    from gcfd_product_amount_limit al left join
+    (
+    select d.product_id,sum(d.amount) useAmount
+    from gcfd_order o,gcfd_order_product_detail d
+    where o.order_no = d.order_no
+    and o.is_del = 'F'
+    and d.is_del = 'F'
+    GROUP BY d.product_id) t
+    on(al.product_id = t.product_id)
+    ) tt
+    where p.id = tt.product_id
+    and p.is_del = 'F'
+    and p.branch_id =  #{branchId,jdbcType=VARCHAR}
+    and tt.max_amount > 0
+    <if test="keywords != null and keywords !=''" >
+      AND (
+      p.product_name LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%') OR
+      p.product_specification LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    ) t,
+    gcfd_sys_dict d
+    where d.`code`= 'productAttributeType'
+    and d.id = t.product_attribute_type
+    order by d.num;
+  </select>
+
+
+  <select id="getProductInfo" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+    select p.*,tt.max_amount
+    from
+    gcfd_product p,
+    (
+    select al.product_id,(al.limit_amount - ifnull(t.useAmount,0)) max_amount
+    from gcfd_product_amount_limit al left join
+    (
+    select d.product_id,sum(d.amount) useAmount
+    from gcfd_order o,gcfd_order_product_detail d
+    where o.order_no = d.order_no
+    and o.is_del = 'F'
+    and d.is_del = 'F'
+    GROUP BY d.product_id) t
+    on(al.product_id = t.product_id)
+    ) tt
+    where p.id = tt.product_id
+    and p.is_del = 'F'
+    and tt.max_amount > 0
+    and p.id = #{productId,jdbcType=INTEGER}
+  </select>
+
+  <!--获取产品限单列表-->
+  <select id="getProductLimitList" resultMap="BaseResultMap">
+    SELECT
+      p.*,l.limit_amount,d.`name` productBussinessTypeName,attr.`name` productAttributeTypeName
+      FROM gcfd_product p INNER JOIN gcfd_product_amount_limit l
+      ON p.id=l.product_id
+      INNER JOIN gcfd_sys_dict d ON p.product_bussiness_type=d.id
+      AND d.code='productBussinessType'
+      INNER JOIN gcfd_sys_dict attr ON p.`product_attribute_type`=attr.`id`
+      AND attr.`code`='productAttributeType'
+    WHERE 1=1
+    <if test="isDel != null and isDel !=''" >
+      AND p.is_del=#{isDel}
+    </if>
+    <if test="keywords != null and keywords !=''" >
+      AND (
+      p.product_name LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%') OR
+      p.product_specification LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    order by p.create_time
+  </select>
+  <!--获取产品列表-->
+  <select id="getProductList" resultMap="BaseResultMap">
+    SELECT
+      p.*,l.limit_amount,d.`name` productBussinessTypeName,attr.`name` productAttributeTypeName
+      FROM gcfd_product p INNER JOIN gcfd_product_amount_limit l
+      ON p.id=l.product_id
+      INNER JOIN gcfd_sys_dict d ON p.product_bussiness_type=d.id
+      AND d.code='productBussinessType'
+      INNER JOIN gcfd_sys_dict attr ON p.`product_attribute_type`=attr.`id`
+      AND attr.`code`='productAttributeType'
+    WHERE 1=1
+    <if test="productBussinessType != null and productBussinessType !=''" >
+      AND p.product_bussiness_type=#{productBussinessType}
+    </if>
+    <if test="keywords != null and keywords !=''" >
+      AND (
+      p.product_name LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%') OR
+      p.product_specification LIKE CONCAT('%',#{keywords,jdbcType=VARCHAR},'%')
+      )
+    </if>
+    order by p.create_time
+  </select>
+
+  <!-- 查询产品编号的最大值 -->
+  <select id="getMaxProductNo" resultType="int">
+    SELECT
+    IFNULL(
+    MAX(
+    CONVERT(SUBSTRING(t.`product_no`, 2), SIGNED)
+    ),
+    0
+    )
+    FROM
+    `gcfd_product` t ;
+  </select>
+</mapper>

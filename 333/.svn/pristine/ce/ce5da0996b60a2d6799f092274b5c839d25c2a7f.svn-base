@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="gcfd-html:war">
+    <output-path>$PROJECT_DIR$/gcfd-html/target</output-path>
+    <root id="archive" name="gcfd-html-1.0.0.war">
+      <element id="artifact" artifact-name="gcfd-html:war exploded" />
+    </root>
+  </artifact>
+</component>

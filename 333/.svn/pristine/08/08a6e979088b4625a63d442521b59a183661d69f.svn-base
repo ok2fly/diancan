@@ -1,0 +1,66 @@
+package com.gcfd.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.gcfd.mapper.IApiMapper;
+import com.gcfd.model.Api;
+import com.gcfd.model.App;
+import com.gcfd.model.Group;
+import com.gcfd.service.IApiService;
+import com.gcfd.util.PageBean;
+
+@Service
+public class ApiService implements IApiService {
+
+	@Autowired
+	private IApiMapper apiMapper;
+	
+	@Override
+	public int getCounts() {
+		return apiMapper.getCounts() ;
+	}
+
+	@Override
+	public List<Api> getApis(PageBean page, String api_id) {
+		return apiMapper.getApis(page,api_id) ;
+	}
+
+	@Override
+	public void addApi(Api api) throws Exception {
+		apiMapper.addApi(api) ;
+	}
+
+	@Override
+	public void deleteApiById(Long id) throws Exception {
+		apiMapper.deleteApiById(id) ;		
+	}
+
+	@Override
+	public void updateApi(Api api) throws Exception {
+		apiMapper.updateApi(api) ;		
+	}
+
+	@Override
+	public List<Api> getApis(PageBean page, Group group) {
+	List<Api> apis = new ArrayList<Api>();
+		
+		List<Api> allApis = apiMapper.getApis(page, null);
+		
+		Set<Api> ckApis = apiMapper.getCheckApis(page, group.getGroup_id());
+		
+		for (Api api : allApis) {
+			if( ckApis.contains(api) ){
+				api.setLAY_CHECKED(true);
+			}
+			apis.add(api);
+		}
+		
+		return apis;
+	}
+
+}

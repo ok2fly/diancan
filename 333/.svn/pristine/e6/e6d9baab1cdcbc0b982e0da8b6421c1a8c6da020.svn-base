@@ -1,0 +1,31 @@
+package com.gcfd.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.gcfd.model.User;
+import com.gcfd.util.PageBean;
+
+public interface IUserMapper {
+	
+	public List<User> getUsers(@Param("page")PageBean page, @Param("user_name")String user_name );
+
+	public void addUser( User user ) throws Exception;
+	
+	public void updateUser(User user) throws Exception;
+	public void updateUserPwd(User user) throws Exception;
+
+	public void deleteUserById(String user_id) throws Exception;
+
+	public void addUserGroup(String user_id, Long group_id)throws Exception;
+
+	public void deleteGroupByUserId(String user_id)throws Exception;
+
+	public User onlyByUserName(String user_name);
+
+	public int getCounts();
+
+	public User login(User user);
+
+}

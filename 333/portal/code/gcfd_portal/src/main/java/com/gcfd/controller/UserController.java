@@ -1,0 +1,533 @@
+package com.gcfd.controller;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.gcfd.redis.service.UserInfoServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.gcfd.model.Api;
+import com.gcfd.model.App;
+import com.gcfd.model.User;
+import com.gcfd.redis.model.RedisObject;
+import com.gcfd.service.IApiService;
+import com.gcfd.service.IAppService;
+import com.gcfd.service.IUserService;
+import com.gcfd.util.CustomizedPropertyConfigurer;
+import com.gcfd.util.PageBean;
+import com.gcfd.util.ResponseUtil;
+import com.gcfd.util.Tools;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+/**
+ */
+@Controller
+@RequestMapping("/console")
+public class UserController {
+	
+	@Resource
+	private IUserService userService;
+
+	@Resource
+	private IAppService appService;
+	
+	@Resource
+	private IApiService apiService;
+	
+	@Autowired
+	@Qualifier("userInfoService")
+	private UserInfoServiceImpl userInfoService;
+	/**
+	 * 前台登录
+	 * @param model
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/frontLogin", method = RequestMethod.POST)
+	public ModelAndView frontLogin(User model, HttpSession session) {
+		
+		String sec_pwd =  Tools.EncoderByMd5( model.getUser_pwd() );
+		model.setUser_pwd(sec_pwd);
+		User user = userService.Login(model);
+		if (user == null ) {
+			ModelAndView mav = new ModelAndView("/win10-ui/login");
+			mav.getModel().put("error", "用户名或密码错误！");
+			return mav;
+		} else {
+			session.setAttribute("user", user );
+			ModelAndView mav = new ModelAndView("/win10-ui/index");
+			List<App> appsn= new LinkedList<App>();
+			
+			HashSet<String> hsapi =new HashSet<String>();
+			
+			Map<String,Object> appmap = new HashMap<String,Object>();
+			
+			List<String> applist = new LinkedList<String>();
+			
+			
+			/**
+			 * 单组权限
+			 */
+			List<App> authapps = appService.getAppAuth(user);
+			for(App app : authapps)
+			{
+					appsn.add(app);
+					applist.add(app.getApp_id());
+					
+					Map<String,Object> tmpappmp = new HashMap<String,Object>();
+					tmpappmp.put( "appid", app.getApp_id());
+					tmpappmp.put( "name", app.getApp_name());
+					tmpappmp.put( "url", app.getApp_url());
+					tmpappmp.put( "icon", app.getIcon());
+					tmpappmp.put( "status", app.getStatus());
+					tmpappmp.put( "version", app.getVersion ());
+					tmpappmp.put( "apis",new LinkedList());
+					appmap.put( app.getApp_id(), tmpappmp);
+					List<String> appids = new LinkedList<String>();
+					appids.add(app.getId().toString());
+					
+					java.util.Map<String , Object> param = new HashMap<String,Object>();
+					param.put("userid",user.getUser_id());
+					param.put("appids",appids);
+					
+					List<Api> apis = apiService.getApisAuth(param);
+					
+					for(Api api:apis)
+					{
+						if(hsapi.add(app.getId().toString()+"_"+api.getApi_id()))
+						{
+							Map<String,Object> apimp = new HashMap<String,Object>();
+							apimp.put("accesstoken",api.getAccess_token());
+							apimp.put("accesstype",api.getApi_access_type());
+							apimp.put("apiurl",api.getApi_url());
+							apimp.put("apiid",api.getApi_id());
+							List app_apilist = (List) tmpappmp.get("apis" );
+							app_apilist.add(apimp);
+						}
+					}
+					
+			}
+			/**
+			 * 组嵌套授权权限
+			 */
+			List<App> aroupauthapps = appService.getAppGroupAuth(user);
+
+			for(App app : aroupauthapps)
+			{
+				
+				if(!appmap.containsKey(app.getApp_id()))
+				{
+					appsn.add(app);
+					applist.add(app.getApp_id());
+					
+					Map<String,Object> tmpappmp = new HashMap<String,Object>();
+					tmpappmp.put( "appid", app.getApp_id());
+					tmpappmp.put( "name", app.getApp_name());
+					tmpappmp.put( "url", app.getApp_url());
+					tmpappmp.put( "icon", app.getIcon());
+					tmpappmp.put( "status", app.getStatus());
+					tmpappmp.put( "version", app.getVersion ());
+					tmpappmp.put( "apis",new LinkedList());
+					appmap.put( app.getApp_id(), tmpappmp);
+				}
+				
+				
+				List<String> appids = new LinkedList<String>();
+				appids.add(app.getId().toString());
+				
+				Map<String , Object> param = new HashMap<String,Object>();
+				param.put("userid",user.getUser_id());
+				param.put("appids",appids);
+				
+				List<Api> apis = apiService.getApisGroupAuth(param);
+				
+				for(Api api:apis)
+				{
+					if(hsapi.add(app.getId().toString()+"_"+api.getApi_id()))
+					{
+						Map<String,Object> apimp = new HashMap<String,Object>();
+						apimp.put("accesstoken",api.getAccess_token());
+						apimp.put("accesstype",api.getApi_access_type());
+						apimp.put("apiurl",api.getApi_url());
+						apimp.put("apiid",api.getApi_id());
+						List app_apilist = (List) ((Map)appmap.get( app.getApp_id())).get("apis");
+						app_apilist.add(apimp);
+					}
+				}
+				
+			}
+			
+			mav.addObject("apps", appsn);
+			/***********设置Redis begin************/
+			String token = UUID.randomUUID().toString();
+			session.setAttribute("token", token );
+			Map<String,Object> mp = new HashMap<String,Object>();
+			mp.put("token",token);
+			mp.put("user_id", user.getUser_id());
+			mp.put("user_name", user.getUser_name());
+			mp.put("user_status", user.getUser_status());
+			
+			List  mpright = new LinkedList();
+			for(String str : applist)
+			{
+				mpright.add(appmap.get(str) );
+			}
+			mp.put("right", mpright);
+			
+			RedisObject redisObjectToken = new RedisObject();
+			redisObjectToken.setKey(token);
+			redisObjectToken.setValue(mp);
+			userInfoService.saveObject(redisObjectToken);
+			
+			RedisObject redisObjectSession = new RedisObject();
+			redisObjectSession.setKey(session.getId());			
+			redisObjectSession.setValue(token);			
+			userInfoService.saveObject(redisObjectSession);
+			
+			/***********设置Redis end************/
+			
+			return mav;
+		}
+	}
+	
+	private void addRedisBySession(String username,String token,RedisObject sessioninfo) {
+		if(null != userInfoService.getObject(username))
+		{
+			userInfoService.getObject(username);
+			
+		}
+	}
+	
+	
+	/**
+	 * 后台登录
+	 * @param model
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public ModelAndView login(User model, HttpSession session) {
+		
+		model.setUser_pwd( Tools.EncoderByMd5( model.getUser_pwd() ));
+		User user = userService.Login(model);
+		if (user == null ) {
+			ModelAndView mav = new ModelAndView("/console/login");
+			mav.getModel().put("error", "用户名或密码错误！");
+			return mav;
+		} else {
+			Object admin = CustomizedPropertyConfigurer.getContextProperty("system.admin");
+			if(null != admin)
+			{
+				String str_admin = admin.toString();
+				String[] adm_arr = str_admin.split(",");
+				boolean isadmin = false;
+				for(String adm : adm_arr)
+				{
+					if(adm.trim().equals( model.getUser_name()))
+					{
+						isadmin = true;
+						break;
+					}
+				}
+				if(!isadmin)
+				{
+					ModelAndView mav = new ModelAndView("/console/login");
+					mav.getModel().put("error", "用户名或密码错误！");
+					return mav;
+				}
+			}
+			if(!"0".equals(user.getUser_status()))
+			{
+				ModelAndView mav = new ModelAndView("/console/login");
+				mav.getModel().put("error", "用户处于非正常状态，请联系管理员！");
+				return mav;
+			}
+			session.setAttribute("user", user );
+			
+			ModelAndView mav = new ModelAndView();
+			mav.setViewName("console/index");
+			
+			/***********设置Redis begin************/
+			String token = UUID.randomUUID().toString();
+			System.out.println(token);
+			session.setAttribute("token", token );
+			Map<String,Object> mp = new HashMap<String,Object>();
+			mp.put("token",token);
+			mp.put("user_id", user.getUser_id());
+			mp.put("user_name", user.getUser_name());
+			mp.put("user_sign", user.getUser_status());
+			
+			RedisObject redisObjectToken = new RedisObject();
+			redisObjectToken.setKey(token);
+			redisObjectToken.setValue(mp);
+			userInfoService.saveObject(redisObjectToken);
+			
+			RedisObject redisObjectSession = new RedisObject();
+			redisObjectSession.setKey(session.getId());			
+			redisObjectSession.setValue(token);			
+			userInfoService.saveObject(redisObjectSession);
+			
+			/***********设置Redis end************/
+			return mav;
+		}
+	}
+	@RequestMapping(value = "/loginOut")
+	public ModelAndView loginOut(HttpSession session) {
+		
+		try{
+			session.removeAttribute("user");
+			/***********remove Redis begin************/
+			String sessionid = session.getId();
+			Object obj = userInfoService.getObject(sessionid);
+			if(null != obj)
+			{
+				userInfoService.delObject(sessionid);
+				RedisObject redisObject = (RedisObject)obj;
+				String token = redisObject.getValue().toString();
+				userInfoService.delObject(token);
+				
+			}
+			/***********remove Redis end************/
+			return new ModelAndView("redirect:/console/login.jsp");
+		}catch(Exception e ){
+			e.printStackTrace();
+			ModelAndView mav = new ModelAndView();
+			mav.setViewName("console/index");
+			// mav.addObject("user", user);
+			return mav;
+		}
+	}
+	@RequestMapping(value = "/frontLoginout")
+	public ModelAndView frontLoginout(HttpSession session) {
+		
+		try{
+			session.removeAttribute("user");
+			/***********remove Redis begin************/
+			String sessionid = session.getId();
+			Object obj = userInfoService.getObject(sessionid);
+			if(null != obj)
+			{
+				userInfoService.delObject(sessionid);
+				RedisObject redisObject = (RedisObject)obj;
+				String token = redisObject.getValue().toString();
+				userInfoService.delObject(token);
+				
+			}
+			/***********remove Redis end************/
+		}catch(Exception e ){
+			e.printStackTrace();
+		}
+		return new ModelAndView("redirect:/win10-ui/login.jsp");
+	}
+
+	@RequestMapping(value = "/getUsers")
+	public void getUsers( HttpServletResponse response, HttpSession session, Integer page, Integer limit, String user_name ) {
+		
+		//查询总条数
+		int count = userService.getCounts();
+		
+		PageBean pageUtil = new PageBean(page,limit,count);
+		
+		List<User> users = userService.getUsers( pageUtil, user_name );
+		JSONObject result = new JSONObject();
+		JSONArray jsonArray = JSONArray.fromObject(users);
+		if( user_name== null || user_name == "" ){
+			result.put("count", count );
+		}else{
+			result.put("count", users.size() );
+		}
+		result.put("code", 0 );
+		result.put("msg", null );
+		result.put("data", jsonArray);
+		ResponseUtil.write(response, result);
+
+	}
+
+	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
+	public void add( HttpServletResponse response, User model) {
+
+		JSONObject result = new JSONObject();
+		String msg = null;
+		try {
+			model.setUser_id(Tools.generateId());
+			model.setUser_pwd(Tools.EncoderByMd5(model.getUser_pwd()));
+			userService.addUser(model);
+			msg="添加成功";
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg="添加失败";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+
+	}
+
+	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
+	public void update( HttpServletResponse response, User model) {
+
+		//未加密密码去查询，验证密码是否已经修改
+		User user = userService.Login(model);
+		
+		if( user == null ){
+			//已经修改
+			model.setUser_pwd(Tools.EncoderByMd5(model.getUser_pwd()));
+		}
+		
+		JSONObject result = new JSONObject();
+		String msg = null;
+		try {
+			userService.updateUser(model);
+			msg="更新成功";
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg="更新失败";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+
+	}
+	
+	@RequestMapping(value = "/updateUserPwd", method = RequestMethod.POST)
+	public void updateUserPwd( HttpServletResponse response, User model) {
+		
+		//未加密密码去查询，验证密码是否已经修改
+		User user = userService.Login(model);
+		
+		if( user == null ){
+			//已经修改
+			model.setUser_pwd(Tools.EncoderByMd5(model.getUser_pwd()));
+		}
+		
+		JSONObject result = new JSONObject();
+		String msg = null;
+		try {
+			userService.updateUserPwd(model);
+			msg="更新成功";
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg="更新失败";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+		
+	}
+	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
+	public void delete( HttpServletResponse response, String user_id ) {
+
+		JSONObject result = new JSONObject();
+		String msg = null;
+		try {
+			userService.deleteUserById( user_id );
+			msg="删除成功";
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg="删除失败";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+
+	}
+	@RequestMapping(value = "/userGroup", method = RequestMethod.POST)
+	public void userGroup( HttpServletResponse response, String param ) {
+		JSONArray json=JSONArray.fromObject(param);
+
+		Map<String,Object> map = null;
+		for(int i=0;i<json.size();i++){
+			map = new HashMap<String,Object>();
+			JSONObject jsonOne = json.getJSONObject(i); 
+			map.put("user_id", (String) jsonOne.get("user_id"));
+			map.put("groupids", jsonOne.get("groupids"));
+		}
+
+		JSONObject result = new JSONObject();
+		String msg = null;
+		try {
+			userService.addUserGroup(map);
+			msg="成功";
+		} catch (Exception e) {
+			e.printStackTrace();
+			msg="失败";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+
+	}
+	@RequestMapping(value = "/onlyByUserName", method = RequestMethod.POST)
+	public void onlyByUserName( HttpServletResponse response, String user_name) {
+		JSONObject result = new JSONObject();
+		String msg = null;
+		User user = userService.onlyByUserName(user_name);
+		if( user== null ){
+
+			msg="yes";
+		}else{
+
+			msg="no";
+		}
+		result.put("msg", msg );
+		ResponseUtil.write(response, result);
+
+	}
+	
+	
+	@RequestMapping(value = "/validate")
+	@ResponseBody
+	public String validate(String token,HttpSession session)
+	{
+		Map<String,Object> mp_result = new HashMap<String,Object>();
+		mp_result.put("code",1);
+		mp_result.put("message","NONE INFOMATION");
+		try {
+			
+			if(null != token && token.trim().length() > 0)
+			{
+				RedisObject redisObject = (RedisObject)userInfoService.getObject(token);
+				if(null != redisObject)
+				{
+					mp_result.put("code",0);
+					mp_result.put("message","OK");
+					mp_result.put("info",redisObject.getValue());
+				}
+			}
+			else
+			{
+				String sessionid = session.getId();
+				RedisObject redisObjectsess = (RedisObject)userInfoService.getObject(sessionid);
+				if(null != redisObjectsess)
+				{
+					String tok = redisObjectsess.getValue().toString();
+					RedisObject redisObjectToken = (RedisObject)userInfoService.getObject(tok);
+					if(null != redisObjectToken)
+					{
+						mp_result.put("code",0);
+						mp_result.put("message","OK");
+						mp_result.put("info",redisObjectToken.getValue());
+					}
+				}
+			}
+		} catch (Exception e) {
+			mp_result.put("code",-1);
+			mp_result.put("message","Exception Occured");
+			e.printStackTrace();
+		}
+		
+		JSONObject jo = JSONObject.fromObject(mp_result);
+		return jo.toString();
+	}
+}

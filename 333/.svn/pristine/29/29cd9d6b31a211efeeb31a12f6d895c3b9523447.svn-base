@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcfd.mapper.IGroupMapper">
+    <resultMap type="com.gcfd.model.Group" id="groupList">
+    	<result property="group_id" column="group_id"/>
+    	<result property="group_name" column="group_name"/>
+    </resultMap>
+    
+    
+    <select id="getGroups" resultMap="groupList" >
+    	SELECT 
+			group_id , group_name
+		 FROM gcfd_group
+    	<if test="group_name != null and group_name != ''">
+    		WHERE group_name LIKE CONCAT('%',#{group_name,jdbcType=VARCHAR},'%')   
+    	</if>
+    	<if test="page != null">
+    		LIMIT #{page.start},#{page.limit}
+    	</if>
+    	;
+    </select>
+    <select id="getGroupRel" resultMap="groupList" >
+    	SELECT g.group_id, g.group_name FROM ( 
+		SELECT r.authorize_group_id as group_id from gcfd_group_rel r LEFT JOIN gcfd_group g ON 
+    	r.group_id = g.group_id WHERE g.group_id=#{group_id} ) as ag 
+    	LEFT JOIN gcfd_group as g 
+    	ON g.group_id = ag.group_id
+    	<if test="page != null">
+    		LIMIT #{page.start},#{page.limit}
+    	</if>
+    	;
+    </select>
+    <select id="getMayGroupRel" resultMap="groupList" >
+    	<!-- SELECT g.group_id, g.group_name from gcfd_group g LEFT JOIN gcfd_group_rel r ON 
+    	g.group_id = r.group_id  WHERE r.group_id is null AND g.group_id != #{group_id} -->
+    	SELECT * from gcfd_group g LEFT JOIN gcfd_group_rel r ON 
+    	g.group_id = r.group_id  WHERE r.group_id is not null
+    	<if test="page != null">
+    		LIMIT #{page.start},#{page.limit}
+    	</if>
+    	;
+    </select>
+    
+    
+    
+    <select id="getCountsById" resultType="int">
+    	SELECT COUNT( g.group_id ) from ( 
+    		SELECT g.group_id, g.group_name from gcfd_group g LEFT JOIN gcfd_group_rel r ON 
+    	g.group_id = r.group_id WHERE r.group_id is NULL  and g.group_id != #{group_id} 
+    	) g
+    </select>
+
+    <select id="getCounts" resultType="int">
+    	SELECT count(group_id) FROM gcfd_group;
+    </select>
+    
+    <select id="onlyByGroupName" parameterType="String" resultType="com.gcfd.model.Group">
+    	SELECT group_id , group_name FROM gcfd_group WHERE group_name =#{group_name};
+    </select>
+    
+    <insert id="addGroup" parameterType="com.gcfd.model.Group" useGeneratedKeys="true" keyProperty="group_id">
+    	INSERT INTO gcfd_group(group_name) VALUES (#{group_name});
+    </insert>
+    
+    <update id="updateGroup" parameterType="com.gcfd.model.Group" >
+    	UPDATE gcfd_group SET group_name=#{group_name} WHERE group_id=#{group_id};
+    </update>
+    
+    <delete id="deleteGroupById" parameterType="Long">
+		delete from gcfd_group, gcfd_user_group_rel
+		using gcfd_group, gcfd_user_group_rel
+		where gcfd_group.group_id = gcfd_user_group_rel.group_id
+		and gcfd_group.group_id=#{group_id};
+    </delete>
+    
+    <delete id="deleteGroupRelById"  parameterType="Long">
+		DELETE FROM gcfd_group_rel WHERE group_id =#{group_id};
+    </delete>
+    <insert id="addGroupRel" parameterType="java.util.List">
+    	INSERT INTO gcfd_group_rel(group_id,authorize_group_id) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.groupid,jdbcType=INTEGER}, #{item.authid,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <insert id="groupAuth" parameterType="java.util.List">
+    	INSERT INTO gcfd_auth(group_id,app_id,api_id) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+           (#{item.groupid,jdbcType=INTEGER},#{item.appid,jdbcType=INTEGER},#{item.apiid,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    
+    <delete id="deleteAuthByGroupId" parameterType="Long">
+    	delete from gcfd_auth where group_id = #{group_id};
+    </delete>
+    
+    <select id="getGroupByUser" resultMap="groupList" parameterType="String">
+    	SELECT g.group_id, g.group_name from gcfd_group as g 
+    	LEFT JOIN gcfd_user_group_rel as ur ON g.group_id = ur.group_id 
+    	WHERE user_id = #{user_id};
+    </select>
+</mapper>

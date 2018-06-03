@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.SysUserMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.SysUser" >
+    <id column="user_id" property="userId" jdbcType="CHAR" />
+    <result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+    <result column="branch_id" property="branchId" jdbcType="INTEGER" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, user_pwd, branch_id, real_name, card_no, create_user_id, create_time, lst_modify_user_id, 
+    lst_modify_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_sys_user
+    where user_id = #{userId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from gcfd_sys_user
+    where user_id = #{userId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.SysUser" >
+    insert into gcfd_sys_user (user_id, user_pwd, branch_id, 
+      real_name, card_no, create_user_id, 
+      create_time, lst_modify_user_id, lst_modify_time
+      )
+    values (#{userId,jdbcType=CHAR}, #{userPwd,jdbcType=VARCHAR}, #{branchId,jdbcType=INTEGER}, 
+      #{realName,jdbcType=VARCHAR}, #{cardNo,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{lstModifyUserId,jdbcType=VARCHAR}, #{lstModifyTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.SysUser" >
+    insert into gcfd_sys_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userPwd != null" >
+        user_pwd,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="cardNo != null" >
+        card_no,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="userPwd != null" >
+        #{userPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=INTEGER},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.SysUser" >
+    update gcfd_sys_user
+    <set >
+      <if test="userPwd != null" >
+        user_pwd = #{userPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=INTEGER},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.SysUser" >
+    update gcfd_sys_user
+    set user_pwd = #{userPwd,jdbcType=VARCHAR},
+      branch_id = #{branchId,jdbcType=INTEGER},
+      real_name = #{realName,jdbcType=VARCHAR},
+      card_no = #{cardNo,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=CHAR}
+  </update>
+</mapper>

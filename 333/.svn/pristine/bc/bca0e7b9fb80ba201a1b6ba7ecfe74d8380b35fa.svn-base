@@ -1,0 +1,255 @@
+package com.gcfd.service.contorller;
+
+import com.gcfd.common.DataCenter;
+import com.gcfd.common.EnumNetCode;
+import com.gcfd.common.util.ConnectionFactory;
+import com.gcfd.common.util.UUIDUtil;
+import com.gcfd.common.util.UploadFileUtil;
+import com.gcfd.service.UserUtil;
+import com.gcfd.storage.dao.ProductAmountLimitMapper;
+import com.gcfd.storage.dao.ProductMapper;
+import com.gcfd.storage.dao.ProductPriceMapper;
+import com.gcfd.storage.entity.*;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+/**
+ * 智慧云餐厅产品应用
+ */
+@RestController
+@RequestMapping(value = "/service/scr/app/product")
+public class ScrAppProductController {
+    private static final Logger logger = LoggerFactory.getLogger(ScrAppSysController.class);
+    /**
+     * 获取产品列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getProductList",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> getProductList(Product product,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            ProductMapper productMapper = sqlsession.getMapper(ProductMapper.class);
+            List<Product> productList= productMapper.getProductList(product);
+            netData.setData(productList);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+    /**
+     * 根据id获取产品信息
+     * @param id
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getProductById",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> getProductById(int id,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            ProductMapper productMapper = sqlsession.getMapper(ProductMapper.class);
+            Product product= productMapper.selectByPrimaryKey(id);
+            netData.setData(product);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+    /**
+     * 修改产品信息
+     * @param product
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/updateProduct",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> updateProduct(Product product,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            ProductMapper productMapper = sqlsession.getMapper(ProductMapper.class);
+            product.setLstModifyUserId(sysUser.getUserId());
+            productMapper.updateByPrimaryKeySelective(product);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+    /**
+     * 新增产品信息
+     * @param product
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/insertProduct",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> insertProduct(Product product,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        String fileName=UUIDUtil.getUUID32()+"jpg";
+        //上传产品图片
+        UploadFileUtil.uploadFile(request,fileName);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession(false);
+            ProductMapper productMapper = sqlsession.getMapper(ProductMapper.class);
+            product.setProductNo("P"+String.format("%0196d",productMapper.getMaxProductNo()));
+            product.setCreateUserId(sysUser.getUserId());
+            product.setProductCover(fileName);
+            product.setLstModifyUserId(sysUser.getUserId());
+            productMapper.insertSelective(product);
+
+            ProductAmountLimit limit=new ProductAmountLimit();
+            limit.setProductId(product.getId());
+            limit.setProductNo(product.getProductNo());
+            limit.setCreateUserId(sysUser.getUserId());
+            limit.setLimitAmount(100);
+            limit.setLstModifyUserId(sysUser.getUserId());
+            ProductAmountLimitMapper limitMapper=sqlsession.getMapper(ProductAmountLimitMapper.class);
+            limitMapper.insert(limit);
+            sqlsession.commit();
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            sqlsession.rollback();
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+    /**
+     * 修改产品数量限制
+     * @param productAmountLimit
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/updateProductAmountLimit",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> updateProductAmountLimit(ProductAmountLimit productAmountLimit,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            productAmountLimit.setLstModifyUserId(sysUser.getUserId());
+            ProductAmountLimitMapper limitMapper=sqlsession.getMapper(ProductAmountLimitMapper.class);
+            limitMapper.updateByPrimaryKey(productAmountLimit);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+
+    /**
+     * 新增产品区间价格
+     * @param productPrice
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/insertProductPrice",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> insertProductPrice(ProductPrice productPrice,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            productPrice.setCreateUserId(sysUser.getUserId());
+            productPrice.setLstModifyUserId(sysUser.getUserId());
+            ProductPriceMapper productPriceMapper=sqlsession.getMapper(ProductPriceMapper.class);
+            productPriceMapper.insert(productPrice);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+
+    /**
+     * 修改产品区间价格
+     * @param productPrice
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/updateProductPrice",method = {RequestMethod.POST,RequestMethod.GET})
+    public DataCenter<Object> updateProductPrice(ProductPrice productPrice,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            productPrice.setLstModifyUserId(sysUser.getUserId());
+            ProductPriceMapper productPriceMapper=sqlsession.getMapper(ProductPriceMapper.class);
+            productPriceMapper.updateByPrimaryKey(productPrice);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+}

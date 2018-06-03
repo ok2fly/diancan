@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.OrderDispatchingMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.OrderDispatching" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+    <result column="client_name" property="clientName" jdbcType="VARCHAR" />
+    <result column="client_phone" property="clientPhone" jdbcType="VARCHAR" />
+    <result column="client_addr" property="clientAddr" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, client_id, client_name, client_phone, client_addr, create_user_id, 
+    create_time, lst_modify_user_id, lst_modify_time, is_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_order_dispatching
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from gcfd_order_dispatching
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.OrderDispatching" >
+    insert into gcfd_order_dispatching (id, order_no, client_id, 
+      client_name, client_phone, client_addr, 
+      create_user_id, create_time, lst_modify_user_id, 
+      lst_modify_time, is_del)
+    values (#{id,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{clientId,jdbcType=VARCHAR}, 
+      #{clientName,jdbcType=VARCHAR}, #{clientPhone,jdbcType=VARCHAR}, #{clientAddr,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{lstModifyUserId,jdbcType=VARCHAR}, 
+      #{lstModifyTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.OrderDispatching" >
+    insert into gcfd_order_dispatching
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+      <if test="clientName != null" >
+        client_name,
+      </if>
+      <if test="clientPhone != null" >
+        client_phone,
+      </if>
+      <if test="clientAddr != null" >
+        client_addr,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientName != null" >
+        #{clientName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientPhone != null" >
+        #{clientPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="clientAddr != null" >
+        #{clientAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.OrderDispatching" >
+    update gcfd_order_dispatching
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientName != null" >
+        client_name = #{clientName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientPhone != null" >
+        client_phone = #{clientPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="clientAddr != null" >
+        client_addr = #{clientAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.OrderDispatching" >
+    update gcfd_order_dispatching
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      client_name = #{clientName,jdbcType=VARCHAR},
+      client_phone = #{clientPhone,jdbcType=VARCHAR},
+      client_addr = #{clientAddr,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getOrderDispatchingInfo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from gcfd_order_dispatching
+    where order_no = #{orderId,jdbcType=VARCHAR}
+    and is_del = 'F'
+  </select>
+</mapper>

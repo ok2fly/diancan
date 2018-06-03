@@ -1,0 +1,79 @@
+package com.gcfd.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.gcfd.mapper.IGroupMapper;
+import com.gcfd.mapper.IUserMapper;
+import com.gcfd.model.App;
+import com.gcfd.model.Group;
+import com.gcfd.model.User;
+import com.gcfd.service.IUserService;
+import com.gcfd.util.PageBean;
+
+@Service
+public class UserService implements IUserService {
+
+	@Autowired
+	private IUserMapper userMapper;
+	@Autowired
+	private IGroupMapper groupMapper;
+	@Override
+	public List<User> getUsers(PageBean page, String user_name) {
+		return userMapper.getUsers( page,user_name );
+	}
+	@Override
+	public void addUser( User user) throws Exception {
+		userMapper.addUser( user );
+	}
+	@Override
+	public void updateUser(User user) throws Exception {
+		userMapper.updateUser(user);
+	}
+	@Override
+	public void deleteUserById(String user_id) throws Exception {
+		userMapper.deleteUserById(user_id);
+		
+	}
+	@Override
+	public void addUserGroup(Map<String, Object> map)throws Exception {
+		String user_id = (String) map.get("user_id");
+		
+		userMapper.deleteGroupByUserId( user_id );
+		
+		@SuppressWarnings("unchecked")
+		List<Integer> lists = (List<Integer>) map.get("groupids"); 
+		List<Long> groupids =new ArrayList<Long>();
+		for (Integer object : lists) {
+			groupids.add( object.longValue() );
+		}
+		if( groupids.size() == 0 ){
+			List<Group> groups = groupMapper.getGroups(null,null);
+			for (Group group : groups) {
+				groupids.add( group.getGroup_id() );
+			}
+		}
+		
+		for (Long group_id : groupids) {
+			userMapper.addUserGroup( user_id, group_id );
+		}
+	}
+	@Override
+	public User onlyByUserName(String user_name) {
+		return userMapper.onlyByUserName(user_name);
+	}
+	@Override
+	public int getCounts() {
+		return userMapper.getCounts();
+	}
+	@Override
+	public User Login(User user) {
+		return userMapper.login(user);
+	}
+	
+}

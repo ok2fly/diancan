@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+     <!--  **************************定义数据源Bean  ************************** -->
+    <!-- Druid -->
+    <bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath*:mybatis/mybatis.properties</value>
+			</array>
+		</property>
+	</bean>
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:mysql://${database.host}:${database.port}/${database.dbname}?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true" />
+        <property name="username" value="${database.username}" />
+        <property name="password" value="${database.password}" />
+    </bean>
+
+    <!--  **************************注册SqlSessionFactoryBean  ************************** -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!--  **************************自动扫描mappers.xml文件  **************************  -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+    
+    <!--  **************************Mapper接口所在包名，Spring会自动查找其下的类  **************************  -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.gcfd.mapper" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+</beans>

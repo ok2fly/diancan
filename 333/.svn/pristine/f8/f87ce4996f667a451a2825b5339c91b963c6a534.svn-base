@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcfd.mapper.IApiMapper">
+	<resultMap type="com.gcfd.model.Api" id="apiList">
+		<result property="id" column="id" />
+		<result property="api_id" column="api_id" />
+		<result property="api_name" column="api_name" />
+		<result property="api_bref_desc" column="api_bref_desc" />
+		<result property="api_desc" column="api_desc" />
+		<result property="status" column="status" />
+		<result property="version" column="version" />
+		<result property="access_token" column="access_token" />
+		<result property="api_access_type" column="api_access_type" />
+		<result property="api_url" column="api_url" />
+		<result property="api_request_parameters" column="api_request_parameters" />
+		<result property="api_request_parameters_memo" column="api_request_parameters_memo" />
+		<result property="api_reponse_data" column="api_reponse_data" />
+		<result property="api_reponse_data_memo" column="api_reponse_data_memo" />
+		<!-- <collection property="categories" ofType="com.gcfd.model.Group"> <id 
+			property="cid" column="cid" /> <result property="cname" column="cname" /> 
+			</collection> -->
+	</resultMap>
+
+	<select id="getApis" resultMap="apiList">
+		select api.id, api.api_id,api.api_name, api.api_bref_desc, api.api_desc, api.status,
+		api.version, api.access_token, api.api_access_type, api.api_url, api.api_request_parameters,
+		api.api_request_parameters_memo,api.api_reponse_data,api.api_reponse_data_memo from gcfd_api api 
+		<if test="api_id != null and api_id != ''">
+			WHERE  api.api_id LIKE CONCAT(#{api_id,jdbcType=VARCHAR},'%')   
+		</if>
+		<if test="page !=null">
+			LIMIT #{page.start},#{page.limit};
+		</if>
+	</select>
+	
+	<select id="getCheckApis" resultMap="apiList">
+		select api.id, api.api_id,api.api_name, api.api_bref_desc, api.api_desc, api.status,
+		api.version, api.access_token, api.api_access_type, api.api_url, api.api_request_parameters,
+		api.api_request_parameters_memo,api.api_reponse_data,api.api_reponse_data_memo from gcfd_api as api 
+		LEFT JOIN gcfd_auth as a ON api.id = a.api_id
+		<if test="group_id != null and group_id != ''">
+			WHERE a.group_id=#{group_id}
+		</if>
+		<if test="page !=null">
+			LIMIT #{page.start},#{page.limit};
+		</if>
+	</select>
+	
+	<select id="getCounts" resultType="int">
+		select count(api_id) from gcfd_api;
+	</select>
+	<insert id="addApi" parameterType="com.gcfd.model.Api" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO gcfd_api (
+		 api_id, api_name, api_bref_desc, api_desc, status, version, access_token, api_access_type,api_url,
+		 api_request_parameters,api_request_parameters_memo,api_reponse_data,api_reponse_data_memo) 
+		 VALUES(
+			#{api_id}, #{api_name}, #{api_bref_desc}, #{api_desc}, #{status}, #{version}, #{access_token},
+			 #{api_access_type},#{api_url},#{api_request_parameters},#{api_request_parameters_memo},
+			 #{api_reponse_data},#{api_reponse_data_memo}
+		 )
+	</insert>
+	<update id="updateApi" parameterType="com.gcfd.model.Api">
+		UPDATE gcfd_api SET 
+			api_id=#{api_id}, api_name=#{api_name}, api_bref_desc=#{api_bref_desc}, api_desc=#{api_desc}, 
+			status=#{status}, version=#{version}, access_token=#{access_token}, api_access_type=#{api_access_type},
+			api_url=#{api_url}, api_request_parameters=#{api_request_parameters},api_request_parameters_memo=#{api_request_parameters_memo},
+			api_reponse_data=#{api_reponse_data},api_reponse_data_memo=#{api_reponse_data_memo}
+		WHERE id=#{id};
+	</update>
+	<delete id="deleteApiById" parameterType="Long">
+		DELETE from gcfd_api WHERE id = #{id};
+		<!-- delete from gcfd_app, gcfd_user_group_rel
+		using gcfd_group, gcfd_user_group_rel
+		where gcfd_group.group_id = gcfd_user_group_rel.group_id
+		and gcfd_group.group_id=#{group_id}; -->
+	</delete>
+</mapper>

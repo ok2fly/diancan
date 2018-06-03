@@ -1,0 +1,98 @@
+package com.gcfd.storage.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class SysUser implements Serializable {
+    private String userId;
+
+    private String userPwd;
+
+    private String branchId;
+
+    private String realName;
+
+    private String cardNo;
+
+    private String createUserId;
+
+    private Date createTime;
+
+    private String lstModifyUserId;
+
+    private Date lstModifyTime;
+
+    private static final long serialVersionUID = 1L;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
+    }
+
+    public String getUserPwd() {
+        return userPwd;
+    }
+
+    public void setUserPwd(String userPwd) {
+        this.userPwd = userPwd == null ? null : userPwd.trim();
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId == null ? null : branchId.trim();
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName == null ? null : realName.trim();
+    }
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo == null ? null : cardNo.trim();
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId == null ? null : createUserId.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getLstModifyUserId() {
+        return lstModifyUserId;
+    }
+
+    public void setLstModifyUserId(String lstModifyUserId) {
+        this.lstModifyUserId = lstModifyUserId == null ? null : lstModifyUserId.trim();
+    }
+
+    public Date getLstModifyTime() {
+        return lstModifyTime;
+    }
+
+    public void setLstModifyTime(Date lstModifyTime) {
+        this.lstModifyTime = lstModifyTime;
+    }
+}

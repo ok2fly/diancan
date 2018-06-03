@@ -1,0 +1,25 @@
+package com.gcfd.storage.dao;
+
+import com.gcfd.storage.entity.ProductPrice;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+@Mapper
+public interface ProductPriceMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(ProductPrice record);
+
+    int insertSelective(ProductPrice record);
+
+    ProductPrice selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(ProductPrice record);
+
+    int updateByPrimaryKey(ProductPrice record);
+    List<ProductPrice> getProductPriceListByProductId(Integer productId);
+    //获得机构产品定价清单
+    List<ProductPrice> getBranchProfuctPriceList();
+
+
+}

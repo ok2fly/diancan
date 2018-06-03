@@ -1,0 +1,89 @@
+package com.gcfd.service.contorller;
+
+
+import com.gcfd.common.DataCenter;
+import com.gcfd.common.EnumNetCode;
+import com.gcfd.common.util.ConnectionFactory;
+import com.gcfd.common.util.UUIDUtil;
+import com.gcfd.service.UserUtil;
+import com.gcfd.storage.dao.*;
+import com.gcfd.storage.entity.Order;
+import com.gcfd.storage.entity.OrderInfo;
+import com.gcfd.storage.entity.SysBranch;
+import com.gcfd.storage.entity.SysUser;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * 智慧云餐厅系统设置应用
+ */
+@RestController
+@RequestMapping(value = "/service/scr/app/sys")
+public class ScrAppSysController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ScrAppSysController.class);
+    /**
+     * 根据机构ID获得机构信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getBranchInfo",method = RequestMethod.GET)
+    public DataCenter<Object> getBranchInfo(HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            SysBranchMapper sysBranchMapper = sqlsession.getMapper(SysBranchMapper.class);
+            SysBranch sysBranch = sysBranchMapper.selectByBranchId(sysUser.getBranchId());
+            netData.setData(sysBranch);
+            netData.setNetCode(EnumNetCode.Q1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.Q1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+    /**
+     * 根据机构ID修改机构信息
+     * @param sysBranch
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/updateBranchInfo",method = {RequestMethod.POST})
+    public DataCenter<Object> updateBranchInfo(SysBranch sysBranch,HttpServletRequest request){
+        SysUser sysUser= UserUtil.getCurrentUser(request);
+        //实例化返回参数
+        DataCenter<Object> netData = new DataCenter<Object>();
+        SqlSession sqlsession = null;
+        try{
+            sqlsession = ConnectionFactory.getSessionFactory(sysUser.getBranchId()).openSession();
+            SysBranchMapper sysBranchMapper = sqlsession.getMapper(SysBranchMapper.class);
+            sysBranchMapper.updateByPrimaryKey(sysBranch);
+            netData.setNetCode(EnumNetCode.UP1001);
+        }catch (Exception e) {
+            netData.setNetCode(EnumNetCode.UP1002);
+            logger.error("发生异常，异常信息如下：" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }finally {
+            if(sqlsession != null){
+                sqlsession.close();
+            }
+        }
+        return netData;
+    }
+
+}

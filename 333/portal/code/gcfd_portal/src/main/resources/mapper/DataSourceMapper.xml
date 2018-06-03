@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcfd.mapper.IDataSourceMapper">
+	<resultMap type="com.gcfd.model.DataSource" id="dataList">
+		<result property="data_source_id" column="data_source_id" />
+		<result property="data_source_url" column="data_source_url" />
+		<result property="data_source_user_name" column="data_source_user_name" />
+		<result property="data_source_user_pwd" column="data_source_user_pwd" />
+		<result property="data_source_desc" column="data_source_desc" />
+		<result property="data_source_status" column="data_source_status" />
+		<!-- <collection property="categories" ofType="com.gcfd.model.Group"> <id 
+			property="cid" column="cid" /> <result property="cname" column="cname" /> 
+			</collection> -->
+	</resultMap>
+
+	<select id="getDataSource" resultMap="dataList">
+		select data_source_id, data_source_url, data_source_user_name, data_source_user_pwd, data_source_desc,
+		data_source_status from gcfd_data_source data 
+		<if test="data_source_url != null and data_source_url != ''">
+			WHERE data_source_url LIKE CONCAT(#{data_source_url,jdbcType=VARCHAR},'%')    
+		</if>
+		<if test="page !=null">
+			LIMIT #{page.start},#{page.limit};
+		</if>
+	</select>
+	<select id="getCounts" resultType="int">
+		select count(data_source_id) from gcfd_data_source;
+	</select>
+	<insert id="addDataSource" parameterType="com.gcfd.mapper.IDataSourceMapper" useGeneratedKeys="true" keyProperty="data_source_id">
+		INSERT INTO gcfd_data_source (
+		 data_source_url, data_source_user_name, data_source_user_pwd, data_source_desc,
+		data_source_status) 
+		 VALUES(
+			#{data_source_url}, #{data_source_user_name}, #{data_source_user_pwd}, #{data_source_desc},
+			#{data_source_status}
+		 )
+	</insert>
+	<update id="updateDataSource" parameterType="com.gcfd.mapper.IDataSourceMapper">
+		UPDATE gcfd_data_source SET 
+			data_source_url=#{data_source_url}, data_source_user_name=#{data_source_user_name},
+			data_source_user_pwd=#{data_source_user_pwd}, data_source_desc=#{data_source_desc}, 
+			data_source_status=#{data_source_status}
+		WHERE data_source_id=#{data_source_id};
+	</update>
+	<delete id="deleteDataSourceById" parameterType="Long">
+		DELETE from gcfd_data_source WHERE data_source_id = #{data_source_id};
+		<!-- delete from gcfd_app, gcfd_user_group_rel
+		using gcfd_group, gcfd_user_group_rel
+		where gcfd_group.group_id = gcfd_user_group_rel.group_id
+		and gcfd_group.group_id=#{group_id}; -->
+	</delete>
+</mapper>

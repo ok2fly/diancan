@@ -1,0 +1,24 @@
+package com.gcfd.service;
+
+import java.util.List;
+
+import com.gcfd.model.App;
+import com.gcfd.model.Group;
+import com.gcfd.model.User;
+import com.gcfd.util.PageBean;
+
+public interface IAppService {
+	public List<App> getApps( PageBean page, String app_id) ;
+
+	public int getCounts();
+
+	public void addApp(App model) throws Exception;
+
+	public void updateApp(App model) throws Exception;
+
+	public void deleteAppById(Long id)throws Exception;
+
+	public List<App> getAppIcons(User user);
+
+	public List<App> getApps(PageBean page, Group group);
+}

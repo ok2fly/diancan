@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.SrcTableUserRelMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.SrcTableUserRel" >
+    <id column="user_id" property="userId" jdbcType="CHAR" />
+    <id column="table_id" property="tableId" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, table_id, create_user_id, create_time, lst_modify_user_id, lst_modify_time, 
+    is_del
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.gcfd.storage.entity.SrcTableUserRelKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_scr_table_user_rel
+    where user_id = #{userId,jdbcType=CHAR}
+      and table_id = #{tableId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.gcfd.storage.entity.SrcTableUserRelKey" >
+    delete from gcfd_scr_table_user_rel
+    where user_id = #{userId,jdbcType=CHAR}
+      and table_id = #{tableId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.SrcTableUserRel" >
+    insert into gcfd_scr_table_user_rel (user_id, table_id, create_user_id, 
+      create_time, lst_modify_user_id, lst_modify_time, 
+      is_del)
+    values (#{userId,jdbcType=CHAR}, #{tableId,jdbcType=INTEGER}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{lstModifyUserId,jdbcType=VARCHAR}, #{lstModifyTime,jdbcType=TIMESTAMP}, 
+      #{isDel,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.SrcTableUserRel" >
+    insert into gcfd_scr_table_user_rel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="tableId != null" >
+        table_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="tableId != null" >
+        #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.SrcTableUserRel" >
+    update gcfd_scr_table_user_rel
+    <set >
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=CHAR}
+      and table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.SrcTableUserRel" >
+    update gcfd_scr_table_user_rel
+    set create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR}
+    where user_id = #{userId,jdbcType=CHAR}
+      and table_id = #{tableId,jdbcType=INTEGER}
+  </update>
+</mapper>

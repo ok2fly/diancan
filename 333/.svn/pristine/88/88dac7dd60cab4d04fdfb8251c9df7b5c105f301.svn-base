@@ -1,0 +1,159 @@
+package com.gcfd.common.util;
+
+import com.alibaba.druid.pool.DruidDataSource;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.boot.autoconfigure.SpringBootVFS;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Properties;
+
+/**
+ * 多数据源管理
+ * 数据连接词管理，以机构为纬度的数据源管理
+ *
+ */
+
+public class ConnectionFactory {
+
+    private final static HashMap<String,SqlSessionFactory> sessionFactoryPool = new HashMap<String,SqlSessionFactory>();
+    private final static HashMap<String,DataSourceInfo> dataSourceInfoPool = new HashMap<String,DataSourceInfo>();
+    /**
+     * 获取数据源连接，每个机构一个数据源
+     * @param branchId
+     * @return
+     * @throws SQLException
+     */
+    public static final  SqlSessionFactory getSessionFactory(String branchId) throws Exception {
+
+        //1.判断数据源池中是否有该机构的sqlSession信息
+        if(sessionFactoryPool.get(branchId) != null){
+            return sessionFactoryPool.get(branchId);
+        }else{
+            //2.如果没有该机构的数据源信息，为该机构构sqlSession信息
+            SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+            sqlSessionFactoryBean.setDataSource(getDataSource(branchId));
+            sqlSessionFactoryBean.setTypeAliasesPackage("com.gcfd");
+            sqlSessionFactoryBean.setVfs(SpringBootVFS.class);
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
+            sessionFactoryPool.put(branchId,sqlSessionFactoryBean.getObject());
+            return sqlSessionFactoryBean.getObject();
+        }
+
+    }
+
+    /**
+     * 获取数据源
+     * @param branchId
+     * @return
+     */
+    private static DruidDataSource getDataSource(String branchId) throws SQLException {
+        DruidDataSource dataSource = new DruidDataSource();
+        //个性化信息设置
+        DataSourceInfo dataSourceInfo = dataSourceInfoPool.get(branchId);
+        if(dataSourceInfo == null) {
+            //如果没有，去门户中直接采用jdbc方式读取数据源信息
+           // dataSourceInfo = getDataSourceInfo(branchId);
+            dataSourceInfo = new DataSourceInfo();
+            dataSourceInfo.setUrl("jdbc:mysql://47.104.214.164:3306/gcfd_scr_00000001");
+            dataSourceInfo.setUserName("gcfduser");
+            dataSourceInfo.setPassword("zsb123_QAZ");
+            dataSourceInfoPool.put(branchId,dataSourceInfo);
+        }
+        dataSource.setUsername(dataSourceInfo.getUserName());
+        dataSource.setPassword(dataSourceInfo.getPassword());
+        dataSource.setUrl(dataSourceInfo.getUrl());
+        //数据源基本信息设置
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setInitialSize(5);
+        dataSource.setMinIdle(5);
+        dataSource.setMaxActive(20);
+        dataSource.setMaxWait(60000);//配置获取连接池等待超时时间
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);//配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        dataSource.setMinEvictableIdleTimeMillis(300000);//配置一个连接池中的最小生存时间，单位是毫秒
+        dataSource.setValidationQuery("SELECT 'x'");
+        dataSource.setTestWhileIdle(true);
+        dataSource.setTestOnBorrow(false);
+        dataSource.setTestOnReturn(false);
+        //打开PSCache，并且指定每个连接池上PSCache的大小
+        dataSource.setPoolPreparedStatements(true);
+        dataSource.setMaxOpenPreparedStatements(20);
+        //配置监控统计拦截的filters，去掉后监控界面sql将无法统计，'wall'用于防火墙
+        dataSource.setFilters("stat,wall,log4j");
+        //通过connectProperties属性 来打开mergesql功能；慢sql记录
+        Properties properties = new Properties();
+        properties.setProperty("duid.stat.mergeSql","true");
+        properties.setProperty("druid.stat.slowSqlMillis","5000");
+        dataSource.setConnectProperties(properties);
+        return dataSource;
+    }
+
+
+
+    /**
+     * 获取数据源连接信息
+     * @param branchId
+     * @return
+     */
+    private static DataSourceInfo getDataSourceInfo(String branchId){
+        DataSourceInfo dataSourceInfo = new DataSourceInfo();
+        Connection conn;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://47.104.214.164:3306/gcfd_portal","gcfduser","zsb123_QAZ");
+            preparedStatement = conn.prepareStatement("SELECT s.data_source_url,s.data_source_user_name,s.data_source_user_pwd from `gcfd_data_source` s where s.branch_id = '" + branchId + "'");
+            resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                dataSourceInfo.setUrl(resultSet.getString(1));
+                dataSourceInfo.setUserName(resultSet.getString(2));
+                dataSourceInfo.setPassword(resultSet.getString(3));
+            }
+            resultSet.close();
+            preparedStatement.close();
+            conn.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return dataSourceInfo;
+
+    }
+
+    static class DataSourceInfo{
+        private String userName;
+        private String password;
+        private String url;
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+    }
+}

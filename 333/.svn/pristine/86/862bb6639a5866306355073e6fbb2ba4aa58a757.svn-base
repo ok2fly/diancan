@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>智慧云餐厅</title>
+</head>
+<body>
+    <a href="/scr-app-order/index.html" target="_blank">应用-堂食订单</a><br/>
+    <a href="/scr-app-product/index.html" target="_blank">应用-产品</a><br/>
+    <a href="/scr-app-cooker/index.html" target="_blank">应用-后厨</a><br/>
+    <a href="/scr-app-waiter/index.html" target="_blank">应用-服务员</a><br/>
+    <a href="/scr-app-sys/index.html" target="_blank">应用-系统设置</a><br/>
+    <a href="/scr-app-business/index.html" target="_blank">应用-运营</a><br/>
+</body>
+</html>

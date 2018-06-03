@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gcfd.storage.dao.OrderFeeDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.gcfd.storage.entity.OrderFeeDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="fee_id" property="feeId" jdbcType="INTEGER" />
+    <result column="fee_name" property="feeName" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="orig_price" property="origPrice" jdbcType="DECIMAL" />
+    <result column="spec_price" property="specPrice" jdbcType="DECIMAL" />
+    <result column="real_total" property="realTotal" jdbcType="DECIMAL" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="lst_modify_user_id" property="lstModifyUserId" jdbcType="VARCHAR" />
+    <result column="lst_modify_time" property="lstModifyTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="CHAR" />
+    <result column="fee_no" property="feeNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, fee_id, fee_name, amount, orig_price, spec_price, real_total, create_user_id, 
+    create_time, lst_modify_user_id, lst_modify_time, is_del, fee_no
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from gcfd_order_fee_detail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from gcfd_order_fee_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.gcfd.storage.entity.OrderFeeDetail" >
+    insert into gcfd_order_fee_detail (id, order_no, fee_id, 
+      fee_name, amount, orig_price, 
+      spec_price, real_total, create_user_id, 
+      create_time, lst_modify_user_id, lst_modify_time, 
+      is_del, fee_no)
+    values (#{id,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{feeId,jdbcType=INTEGER}, 
+      #{feeName,jdbcType=VARCHAR}, #{amount,jdbcType=INTEGER}, #{origPrice,jdbcType=DECIMAL}, 
+      #{specPrice,jdbcType=DECIMAL}, #{realTotal,jdbcType=DECIMAL}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{lstModifyUserId,jdbcType=VARCHAR}, #{lstModifyTime,jdbcType=TIMESTAMP}, 
+      #{isDel,jdbcType=CHAR}, #{feeNo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gcfd.storage.entity.OrderFeeDetail" >
+    insert into gcfd_order_fee_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="feeId != null" >
+        fee_id,
+      </if>
+      <if test="feeName != null" >
+        fee_name,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="origPrice != null" >
+        orig_price,
+      </if>
+      <if test="specPrice != null" >
+        spec_price,
+      </if>
+      <if test="realTotal != null" >
+        real_total,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id,
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="feeNo != null" >
+        fee_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="feeId != null" >
+        #{feeId,jdbcType=INTEGER},
+      </if>
+      <if test="feeName != null" >
+        #{feeName,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="origPrice != null" >
+        #{origPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="specPrice != null" >
+        #{specPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="realTotal != null" >
+        #{realTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="feeNo != null" >
+        #{feeNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gcfd.storage.entity.OrderFeeDetail" >
+    update gcfd_order_fee_detail
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="feeId != null" >
+        fee_id = #{feeId,jdbcType=INTEGER},
+      </if>
+      <if test="feeName != null" >
+        fee_name = #{feeName,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="origPrice != null" >
+        orig_price = #{origPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="specPrice != null" >
+        spec_price = #{specPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="realTotal != null" >
+        real_total = #{realTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstModifyUserId != null" >
+        lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="lstModifyTime != null" >
+        lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=CHAR},
+      </if>
+      <if test="feeNo != null" >
+        fee_no = #{feeNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gcfd.storage.entity.OrderFeeDetail" >
+    update gcfd_order_fee_detail
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      fee_id = #{feeId,jdbcType=INTEGER},
+      fee_name = #{feeName,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=INTEGER},
+      orig_price = #{origPrice,jdbcType=DECIMAL},
+      spec_price = #{specPrice,jdbcType=DECIMAL},
+      real_total = #{realTotal,jdbcType=DECIMAL},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      lst_modify_user_id = #{lstModifyUserId,jdbcType=VARCHAR},
+      lst_modify_time = #{lstModifyTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=CHAR},
+      fee_no = #{feeNo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getOrderFeeList" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from gcfd_order_fee_detail
+    where order_no = #{orderNo,jdbcType=VARCHAR}
+    and is_del = 'F'
+  </select>
+</mapper>

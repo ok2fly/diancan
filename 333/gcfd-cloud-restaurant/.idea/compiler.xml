@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="gcfd-client-consumer" />
+        <module name="gcfd-common" />
+        <module name="gcfd-db-storage" />
+        <module name="gcfd-html" />
+        <module name="gcfd-private-service" />
+        <module name="gcfd-registration-discovery" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="gcfd-client-consumer" target="1.8" />
+      <module name="gcfd-cloud-restaurant" target="1.8" />
+      <module name="gcfd-common" target="1.8" />
+      <module name="gcfd-db-storage" target="1.8" />
+      <module name="gcfd-html" target="1.5" />
+      <module name="gcfd-private-service" target="1.8" />
+      <module name="gcfd-registration-discovery" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
