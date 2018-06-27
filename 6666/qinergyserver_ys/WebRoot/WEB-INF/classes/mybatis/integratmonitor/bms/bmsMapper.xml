@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bms">
+
+	
+	
+	<!--查询所有 储能电池 数据  -->
+	<select id="getBmsInfo" resultType="java.util.LinkedHashMap">
+			select * from iscs_equ_bms
+	</select>
+	
+	
+	
+	<!--查询储能电池 根据编号查看详情  -->
+	<select id="getBmsInfoNew" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				crtTim,
+				stat,
+				statBatts,
+				udc,
+				idc,
+				pdc,
+				soc,
+				capacity,
+				rechg,
+				redischg,
+				uHigh,
+				uLow,
+				tempHigh,
+				tempLow,
+				iChgMax,
+				iDischgMax,
+				tempHighLimit,
+				tempLowLimit,
+				uHighCell,
+				ulowCell,
+				faultCode,
+				healthStat
+			FROM
+				iscs_equ_bms
+			where  equ_num = #{equ_num}
+			<!-- order by crtTim desc
+			limit 1 -->
+				AND TO_DAYS(crtTim) =  TO_DAYS(NOW())
+		ORDER BY crtTim DESC LIMIT 1
+			
+			
+			
+	</select>
+	
+	<!--查询储能电池 当天图表信息数据显示  -->
+	<select id="getBmsInfoList"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				crtTim,
+				udc,
+				idc,
+				pdc,
+				soc
+			FROM
+				iscs_equ_bms 
+			WHERE
+				to_days(crtTim) = to_days(now())
+				and equ_num = #{equ_num}
+	</select>
+	
+	<!--查询储能电池 最新数据的设备和保修概况  -->
+	<select id="getBmsInfoListById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				app.rtd_pow,
+				app.app_mod,
+				man.man_nam,
+				equ.pro_tim,
+				equ.ope_tim,
+				equ.equ_num,
+				equ.equ_cod,
+				equ.lst_mat_tim,
+				equ.fnl_mat_tim,
+				equ.nxt_mat_tim
+			FROM
+				iscs_equ_bms bms,
+				sys_bas_equ equ,
+				sys_bas_app app,
+				sys_bas_man man
+			WHERE
+				bms.equ_num = equ.equ_num
+			AND equ.equ_mod_id = app.id
+			AND app.man_id = man.id
+			AND equ.del_flag = 0
+			AND app.del_flag = 0
+			AND man.del_flag = 0
+			AND bms.id = #{id}
+	</select>
+	
+	
+	<!-- 储能电池 按 年 查询图表信息  -->
+	<select id="getBmsInfoByYear" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					MONTH,
+					id,
+					sum(udc) AS udc,
+					sum(idc) AS idc,
+					sum(pdc) AS pdc,
+					sum(soc) AS soc
+				FROM
+					(
+						SELECT
+							id,
+							udc,
+							idc,
+							pdc,
+							soc,
+							DATE_FORMAT(crtTim, '%m') MONTH
+						FROM
+							iscs_equ_bms_history
+						WHERE
+							DATE_FORMAT(crtTim, '%Y') = #{year} and equ_num = #{equ_num}
+					) a
+				GROUP BY
+					MONTH
+			
+	</select>
+	
+	
+	<!-- 储能电池 按 年 查询列表信息  -->
+	<select id="getBmsInfoByYearList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+							
+			SELECT
+				id,
+				udc,
+				idc,
+				pdc,
+				soc,
+				crtTim
+			FROM
+				iscs_equ_bms_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim DESC
+			
+	</select>
+	
+	
+	<!-- 储能电池 按 月 查询图表信息  -->
+	<select id="getBmsInfoByMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+										
+						
+			SELECT
+				DATE_FORMAT(lefttable.date, '%Y-%m') AS yearMonth,
+				lefttable.date,
+				IFNULL(righttable.udc, '0') udc,
+				IFNULL(righttable.idc, '0') idc,
+				IFNULL(righttable.pdc, '0') pdc,
+				IFNULL(righttable.soc, '0') soc
+			FROM
+				(
+					SELECT
+						ADDDATE(y. FIRST, x.d - 1) AS date
+					FROM
+						(
+							SELECT
+								01 AS d
+							UNION ALL
+								SELECT
+									02
+								UNION ALL
+									SELECT
+										03
+									UNION ALL
+										SELECT
+											04
+										UNION ALL
+											SELECT
+												05
+											UNION ALL
+												SELECT
+													06
+												UNION ALL
+													SELECT
+														07
+													UNION ALL
+														SELECT
+															08
+														UNION ALL
+															SELECT
+																09
+															UNION ALL
+																SELECT
+																	10
+																UNION ALL
+																	SELECT
+																		11
+																	UNION ALL
+																		SELECT
+																			12
+																		UNION ALL
+																			SELECT
+																				13
+																			UNION ALL
+																				SELECT
+																					14
+																				UNION ALL
+																					SELECT
+																						15
+																					UNION ALL
+																						SELECT
+																							16
+																						UNION ALL
+																							SELECT
+																								17
+																							UNION ALL
+																								SELECT
+																									18
+																								UNION ALL
+																									SELECT
+																										19
+																									UNION ALL
+																										SELECT
+																											20
+																										UNION ALL
+																											SELECT
+																												21
+																											UNION ALL
+																												SELECT
+																													22
+																												UNION ALL
+																													SELECT
+																														23
+																													UNION ALL
+																														SELECT
+																															24
+																														UNION ALL
+																															SELECT
+																																25
+																															UNION ALL
+																																SELECT
+																																	26
+																																UNION ALL
+																																	SELECT
+																																		27
+																																	UNION ALL
+																																		SELECT
+																																			28
+																																		UNION ALL
+																																			SELECT
+																																				29
+																																			UNION ALL
+																																				SELECT
+																																					30
+																																				UNION ALL
+																																					SELECT
+																																						31
+						) x,
+						(
+							SELECT
+								CONCAT(#{year}, '-01') AS FIRST,
+								DAY (
+									LAST_DAY(
+										str_to_date(#{year}, '%Y-%m')
+									)
+								) AS last
+						) y
+					WHERE
+						x.d &lt;= y.last
+					AND ADDDATE(y. FIRST, x.d - 1) &lt;= CURDATE()
+				) AS lefttable
+			LEFT JOIN (
+				SELECT
+					sum(af2.udc) AS udc,
+					sum(af2.idc) AS idc,
+					sum(af2.pdc) AS pdc,
+					sum(af2.soc) AS soc,
+					DATE_FORMAT(af2.crtTim, '%Y-%m-%d') AS gptime
+				FROM
+					iscs_equ_bms_history af2
+				WHERE
+					DATE_FORMAT(af2.crtTim, '%Y-%m') = #{year} and equ_num = #{equ_num}
+				GROUP BY
+					DATE_FORMAT(af2.crtTim, '%Y-%m-%d')
+			) AS righttable ON DATE_FORMAT(lefttable.date, '%Y-%m-%d') = righttable.gptime
+						
+	</select>
+	
+	
+	<!-- 储能电池 按 月 查询列表信息  -->
+	<select id="getBmsInfoByMonthList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				udc,
+				idc,
+				pdc,
+				soc,
+				crtTim
+			FROM
+				iscs_equ_bms_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim DESC		
+	</select>
+	
+	
+	<!-- 储能电池 按  日  查询列表信息  -->
+	<select id="getBmsInfoByDayList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				udc,
+				idc,
+				pdc,
+				soc,
+				crtTim
+			FROM
+				iscs_equ_bms_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m-%d') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim
+			LIMIT #{start},#{everyPage}	
+	</select>
+	<!-- 储能电池 按  日  查询列表信息(分页)  -->
+	<select id="getBmsInfoByDayListCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				COUNT(id) cou
+			FROM
+				iscs_equ_bms_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m-%d') = #{year} and equ_num = #{equ_num}
+	</select>
+	
+	<!-- 储能电池 按  日  查询列表信息  -->
+	<select id="getBmsInfoByDayGraph" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				iep.id,
+				iep.udc,
+				iep.idc,
+				iep.pdc,
+				iep.soc,
+				iep.crtTim
+			FROM
+				iscs_equ_bms_history iep
+			WHERE
+				 iep.equ_num = #{equ_num}
+				 
+			 <if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY iep.crtTim
+	</select>
+	
+	<!-- 电池 状态 数量  0 通讯中断-->
+	<select id="getBmsStatOne"  resultType="java.util.LinkedHashMap">
+			SELECT
+				count(stat) count
+			FROM
+				iscs_equ_bms
+			WHERE
+				stat = 0
+	</select>
+	
+	<!-- 电池 状态 数量  1 正常运行-->
+	<select id="getBmsStatTwo"  resultType="java.util.LinkedHashMap">
+			SELECT
+				count(stat) count
+			FROM
+				iscs_equ_bms
+			WHERE
+				stat = 1
+	</select>
+	
+	<!-- 电池 状态 数量  2  正常停机-->
+	<select id="getBmsStatThree"  resultType="java.util.LinkedHashMap">
+			SELECT
+				count(stat) count
+			FROM
+				iscs_equ_bms
+			WHERE
+				stat = 2
+	</select>
+	
+	<!-- 电池 状态 数量  3  告警运行-->
+	<select id="getBmsStatFour" resultType="java.util.LinkedHashMap">
+			SELECT
+				count(stat) count
+			FROM
+				iscs_equ_bms
+			WHERE
+				stat = 3
+	</select>
+	
+	<!-- 电池 状态 数量  4  故障停机-->
+	<select id="getBmsStatFive"  resultType="java.util.LinkedHashMap">
+			SELECT
+				count(stat) count
+			FROM
+				iscs_equ_bms
+			WHERE
+				stat = 4
+	</select>
+	
+	
+	<!-- ====获取 电池信息列表=== --> 
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getBmsLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+
+	</select>
+	
+	<!-- 获取 电池 设备的最新实时数据(列表页中)-->
+	<select id="getBmsInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			iscs_equ_bms
+		WHERE
+			equ_num = #{equ_num}
+			
+		ORDER BY
+			crtTim DESC
+		LIMIT 1
+	</select>
+	
+	
+	
+	
+	
+</mapper>

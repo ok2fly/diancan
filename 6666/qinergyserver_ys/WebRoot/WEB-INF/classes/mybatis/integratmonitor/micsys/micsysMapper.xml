@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="micsysMapper">
+
+
+	<!--  根据设备编号 获取最新的 设备状态数据 (数据 ) -->
+	<select id="getMicSysRealByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			equ_num,
+			stat,
+			healthStat,
+			mode,
+			gridStat,
+			faultNum,
+			pGrid,
+			pLoad,
+			pBatts,
+			pPV,
+			pEV,
+			power4Grid,
+			power2Grid,
+			powerLoad,
+			powerCharge,
+			powerDisCharge,
+			powerPV,
+			powerEV
+		FROM
+			iscs_equ_mic_sys
+		WHERE
+			equ_num = #{equ_num}
+			<if test="stat != null">
+				AND stat = #{stat}
+			</if>
+		ORDER BY crtTim DESC
+		LIMIT 1
+	</select>
+	<select id="getMicSysRealsByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			iscs_equ_mic_sys
+		WHERE
+			equ_num = #{equ_num}
+		ORDER BY crtTim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 根据设备编号 获取当天的设备分析数据 -->
+	<select id="getMicSysRealList" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			stat,
+			healthStat,
+			mode,
+			gridStat,
+			faultNum,
+			pGrid,
+			pLoad,
+			pBatts,
+			pPV,
+			pEV,
+			power4Grid,
+			power2Grid,
+			powerLoad,
+			powerCharge,
+			powerDisCharge,
+			powerPV,
+			powerEV,
+			crtTim
+		FROM
+			iscs_equ_mic_sys
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+	
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim
+	</select>
+
+
+	<!-- 历史分析 根据设备编号 获取设备某一天的 数据的条数 -->
+	<select id="getMicSysHistoryCount" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			count(1) cou
+		FROM
+			iscs_equ_mic_sys_history
+		WHERE
+			equ_num = #{equ_num}
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+	</select>
+	
+
+	<!-- 历史分析 根据设备编号 获取设备某一天的 数据00：00到23:59 -->
+	<select id="getMicSysHistoryList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+		SELECT
+			stat,
+			healthStat,
+			mode,
+			gridStat,
+			faultNum,
+			pGrid,
+			pLoad,
+			pBatts,
+			pPV,
+			pEV
+		FROM
+			iscs_equ_mic_sys_history
+		WHERE
+			equ_num = #{equ_num}
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+			ORDER BY crtTim 
+			LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 历史分析 根据设备编号 获取设备 电量  -->
+	<select id="getMicSysTolPower" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			power4Grid,
+			power2Grid,
+			powerLoad,
+			powerCharge,
+			powerDisCharge,
+			powerPV,
+			powerEV,
+			crtTim
+		FROM
+			iscs_equ_mic_sys_history
+		WHERE
+			equ_num = #{equ_num}
+			<if test="startTim != null">
+				AND crtTim &gt; #{startTim}
+			</if>
+			<if test="endTim != null">
+				AND crtTim &lt;= #{endTim}
+			</if>
+			ORDER BY crtTim desc
+			LIMIT 1
+	</select>
+	
+<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getEquLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+		
+
+	</select>
+	
+	<!-- 获取微网（微型电网）的最新实时数据(列表页中)-->
+	<select id="getMicsysInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.id,
+			iep.power2Grid,
+			iep.powerLoad,
+			iep.powerCharge,
+			iep.powerDisCharge,
+			iep.powerPV,
+			iep.powerEV,
+			iep.stat,
+			iep.pBatts,
+			iep.pGrid,
+			iep.pLoad,
+			iep.pPV,
+			iep.pEV
+		FROM
+			iscs_equ_mic_sys iep
+		WHERE
+			iep.equ_num = #{equ_num}
+			
+		ORDER BY
+			iep.crtTim DESC
+		LIMIT 1
+	</select>
+</mapper>

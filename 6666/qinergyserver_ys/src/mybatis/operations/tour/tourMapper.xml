@@ -1,0 +1,3474 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tour">
+
+<!-- 巡视路线 -->
+
+<!-- 根据电站获取所有巡视路线 -->
+	<select id="getrouteByPws" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				tr.id,
+				pws.pws_nam,
+				u.use_nam,
+				tr.route_sort,
+				trn.route_name,
+				trn.crate_time,
+				tr.route_name_id
+			FROM
+				tour_route tr,
+				sys_bas_pws pws,
+				use_use u,
+				tour_route_nam trn
+			WHERE
+				u.id = trn.crate_name_id
+			AND pws.id = tr.pws_id
+			AND pws.del_flag = 0
+			AND trn.id = tr.route_name_id
+			and tr.del_flag = 0
+			and trn.del_flag = 0
+
+			<if test="pws_id != null and pws_id != ''">
+
+				AND tr.pws_id = #{pws_id}
+			</if>
+			
+			<if test="pws_nam != null and pws_nam != ''">
+				AND pws.pws_nam Like '%${pws_nam}%'
+			</if>
+			
+			<if test="use_nam != null and use_nam != ''">
+		
+				AND u.use_nam Like '%${use_nam}%'
+			</if>
+			
+			<if test="route_name != null and route_name != ''">
+		
+				AND trn.route_name Like '%${route_name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND trn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND trn.crate_time < #{end_tim} ]]>
+			</if>
+		
+		
+		
+			
+				
+		
+		
+			
+	
+	</select>
+
+
+
+<!-- 根据公司id获取所有站点id -->
+	<select id="getTourPwsByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select pws.id
+			from sys_bas_com com,sys_bas_pws pws
+			where com.id = pws.com_id 
+			and pws.com_id = #{com_id}
+			and pws.del_flag= 0
+	
+	</select>
+
+
+
+<!-- 根据路线id获取记录信息 -->
+	<select id="getTourRecordByRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select 
+				tre.id,
+				tre.sta_time,
+				tre.end_time,
+				tre.tour_route_id,
+				tre.tour_complete,
+				tre.tour_task_id,
+				tre.remark,
+				u.use_nam
+			from tour_record tre,
+				tour_route tro,
+				use_use u
+			where tre.tour_route_id= tro.id 
+			and u.id = tre.tour_people_id 
+			and tro.del_flag = 0
+			and tre.del_flag = 0
+
+			<if test="id != null and id != ''">
+
+				AND tro.id = #{id}
+			</if>
+			
+			<if test="tour_complete != null and tour_complete != ''">
+				AND tre.tour_complete Like '%${tour_complete}%'
+			</if>
+			
+			<if test="remark != null and remark != ''">
+				AND tre.remark Like '%${remark}%'
+			</if>
+			<if test="use_nam_record != null and use_nam_record != ''">
+				AND u.use_nam Like '%${use_nam_record}%'
+			</if>
+			
+			<if test="sta_tim_record != null and sta_tim_record != ''">
+				<![CDATA[ AND tre.sta_time >= #{sta_tim_record} ]]>
+			</if>
+			
+			<if test="end_tim_record != null and end_tim_record != ''">
+				<![CDATA[ AND tre.end_time < #{end_tim_record} ]]>
+			</if>
+		
+	</select>
+
+
+	<!-- 添加路线表 -->
+	<insert id="insertRouteNam" parameterType="java.util.LinkedHashMap">
+
+	insert into tour_route_nam
+	(crate_name_id,crate_time,route_name)
+	values(#{crate_name_id},#{crate_time},#{route_name})
+	
+	</insert>
+
+
+
+<select id="selTourRoteByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	select * from tour_route_nam where route_name = #{route_name} and del_flag = 0
+
+</select>
+
+
+
+	<!-- 添加路线节点表 -->
+	<insert id="insertRoute" parameterType="java.util.LinkedHashMap">
+	
+	insert into tour_route
+	(pws_id,crt_use_id,crt_tim,route_name_id,route_sort)
+	values
+	(#{pws_id},#{crt_use_id},#{crt_tim},#{route_name_id},#{route_sort});
+	
+	</insert>
+
+
+<!-- 查询路线最新一条信息 -->
+	<select id="getRouteNamNew" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select * from tour_route_nam where del_flag = 0 ORDER BY crate_time DESC LIMIT 1 
+	</select>
+
+
+
+<!-- 路线删除 -->
+	<update id="delRouteNam" parameterType="java.util.LinkedHashMap">
+	
+	update tour_route_nam 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+
+
+<!-- 路线节点删除 -->
+	<update id="delRoute" parameterType="java.util.LinkedHashMap">
+	update tour_route 
+	set del_flag = 1
+	where id = #{id}
+	
+	</update>
+
+
+
+<!-- id查询路线 -->
+	<select id="getRouteById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT tr.id,
+				tr.pws_id,
+				sbp.pws_nam,
+				tr.crt_use_id,
+				u.use_nam,
+				tr.crt_tim,
+				tr.route_name_id,
+				trn.route_name,
+				trn.crate_name_id,
+				(SELECT uu.use_nam FROM use_use uu WHERE uu.id = trn.crate_name_id) trn_crate_name,
+				trn.crate_time,
+				tr.route_sort
+			FROM
+				tour_route tr,
+				tour_route_nam trn,
+				use_use u,
+				sys_bas_pws sbp
+			WHERE
+				tr.route_name_id = trn.id
+			AND tr.crt_use_id = u.id
+			AND tr.pws_id = sbp.id
+			and sbp.del_flag = 0
+			AND tr.id = #{id}
+	
+	</select>
+
+	
+	<!-- 路线更新 -->
+	<update id="updRoute" parameterType="java.util.LinkedHashMap">
+	
+	UPDATE tour_route tr,
+	 tour_route_nam trn
+	SET tr.pws_id = #{pws_id},
+	 tr.crt_tim = #{crt_tim},
+	 tr.route_sort = #{route_sort},
+	 trn.route_name = #{route_name},
+	 trn.crate_time = #{crate_time}
+	WHERE
+		tr.id = #{id}
+	AND tr.route_name_id = trn.id
+	
+	</update>
+	
+	
+	
+<!-- 记录添加 -->
+	<insert id="insertRecord" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_record (
+				sta_time,
+				end_time,
+				tour_route_id,
+				tour_people_id,
+				tour_complete,
+				tour_task_id,
+				remark
+			)
+			VALUES
+				(
+					#{sta_time},
+					#{end_time},
+					#{tour_route_id},
+					#{tour_people_id},
+					#{tour_complete},
+					#{tour_task_id},
+					#{remark}
+				)
+			
+	</insert>
+	
+	
+	
+	
+	<!--记录 删除 -->
+	<update id="delRecord" parameterType="java.util.LinkedHashMap">
+	update tour_record 
+	set del_flag = 1
+	where id = #{id}
+	
+	</update>
+	
+	
+	
+	<!-- id查询记录  -->
+	<select id="getRecordById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select * from tour_record where id = #{id}
+
+	</select>
+	
+	
+	
+	<!--记录 更新 -->
+	<update id="updRecord" parameterType="java.util.LinkedHashMap">
+	update tour_record 
+		set sta_time = #{sta_time},
+			end_time = #{end_time},
+			tour_route_id = #{tour_route_id},
+			tour_people_id = #{tour_people_id},
+			tour_complete = #{tour_complete},
+			tour_task_id = #{tour_task_id},
+			remark = #{remark}
+		where id = #{id}
+	
+	</update>
+	
+	
+<!-- 检修路线 -->
+
+<!-- 根据电站获取所有检修路线 -->
+	<select id="getOverhaulRouteByPws" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				tr.id,
+				pws.pws_nam,
+				u.use_nam,
+				tr.route_sort,
+				trn.route_name,
+				trn.crate_time,
+				tr.route_name_id
+			FROM
+				overhaul_route tr,
+				sys_bas_pws pws,
+				use_use u,
+				overhaul_route_nam trn
+			WHERE
+				u.id = trn.crate_name_id
+			AND pws.id = tr.pws_id
+			AND pws.del_flag = 0
+			AND trn.id = tr.route_name_id
+			and tr.del_flag = 0
+			and trn.del_flag = 0
+
+			<if test="pws_id != null and pws_id != ''">
+
+				AND tr.pws_id = #{pws_id}
+			</if>
+			
+			<if test="pws_nam != null and pws_nam != ''">
+				AND pws.pws_nam Like '%${pws_nam}%'
+			</if>
+			
+			<if test="use_nam != null and use_nam != ''">
+		
+				AND u.use_nam Like '%${use_nam}%'
+			</if>
+			
+			<if test="route_name != null and route_name != ''">
+		
+				AND trn.route_name Like '%${route_name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND trn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND trn.crate_time < #{end_tim} ]]>
+			</if>
+		
+		
+		
+			
+				
+		
+		
+			
+	
+	</select>
+
+
+
+<!-- 根据路线id获取记录信息 -->
+	<select id="getOverhaulTourRecordByRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select 
+				tre.id,
+				tre.sta_time,
+				tre.end_time,
+				tre.tour_route_id,
+				tre.tour_complete,
+				tre.tour_task_id,
+				tre.remark,
+				u.use_nam
+			from overhaul_record tre,
+				overhaul_route tro,
+				use_use u
+			where tre.tour_route_id= tro.id 
+			and u.id = tre.tour_people_id 
+			and tro.del_flag = 0
+			and tre.del_flag = 0
+
+			<if test="id != null and id != ''">
+
+				AND tro.id = #{id}
+			</if>
+			
+			<if test="tour_complete != null and tour_complete != ''">
+				AND tre.tour_complete Like '%${tour_complete}%'
+			</if>
+			
+			<if test="remark != null and remark != ''">
+				AND tre.remark Like '%${remark}%'
+			</if>
+			<if test="use_nam_record != null and use_nam_record != ''">
+				AND u.use_nam Like '%${use_nam_record}%'
+			</if>
+			
+			<if test="sta_tim_record != null and sta_tim_record != ''">
+				<![CDATA[ AND tre.sta_time >= #{sta_tim_record} ]]>
+			</if>
+			
+			<if test="end_tim_record != null and end_tim_record != ''">
+				<![CDATA[ AND tre.end_time < #{end_tim_record} ]]>
+			</if>
+		
+	</select>
+
+
+
+<!-- 添加检修路线表 -->
+	<insert id="insertOverhaulRouteNam" parameterType="java.util.LinkedHashMap">
+
+	insert into overhaul_route_nam
+	(crate_name_id,crate_time,route_name)
+	values(#{crate_name_id},#{crate_time},#{route_name})
+	
+	</insert>
+
+<select id="selOverhaulRoteByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	select * from overhaul_route_nam where route_name = #{route_name} and del_flag = 0
+
+</select>
+
+
+
+
+
+
+
+	<!-- 添加检修路线节点表 -->
+	<insert id="insertOverhaulRoute" parameterType="java.util.LinkedHashMap">
+	
+	insert into overhaul_route
+	(pws_id,crt_use_id,crt_tim,route_name_id,route_sort)
+	values
+	(#{pws_id},#{crt_use_id},#{crt_tim},#{route_name_id},#{route_sort});
+	
+	</insert>
+
+
+<!-- 查询检修路线最新一条信息 -->
+	<select id="getOverhaulRouteNamNew" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select * from overhaul_route_nam where del_flag = 0 ORDER BY crate_time DESC LIMIT 1 
+	</select>
+
+
+	
+<!-- 检修路线删除 -->
+	<update id="delOverhaulRouteNam" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_route_nam 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+
+
+<!-- 检修路线节点删除 -->
+	<update id="delOverhaulRoute" parameterType="java.util.LinkedHashMap">
+	update overhaul_route 
+	set del_flag = 1
+	where id = #{id}
+	
+	</update>
+	
+	
+<!-- id查询检修路线 -->
+	<select id="getOverhaulRouteById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT tr.id,
+				tr.pws_id,
+				sbp.pws_nam,
+				tr.crt_use_id,
+				u.use_nam,
+				tr.crt_tim,
+				tr.route_name_id,
+				trn.route_name,
+				trn.crate_name_id,
+				(SELECT uu.use_nam FROM use_use uu WHERE uu.id = trn.crate_name_id) trn_crate_name,
+				trn.crate_time,
+				tr.route_sort
+			FROM
+				overhaul_route tr,
+				overhaul_route_nam trn,
+				use_use u,
+				sys_bas_pws sbp
+			WHERE
+				tr.route_name_id = trn.id
+			AND tr.crt_use_id = u.id
+			AND tr.pws_id = sbp.id
+			and sbp.del_flag = 0
+			and tr.del_flag = 0
+			and trn.del_flag = 0
+			and u.del_flag = 0
+			AND tr.id = #{id}
+	</select>
+	
+	
+	
+	<!-- 路线更新 -->
+	<update id="updOverhaulRoute" parameterType="java.util.LinkedHashMap">
+	
+	UPDATE overhaul_route tr,
+	overhaul_route_nam trn
+	SET tr.pws_id = #{pws_id},
+	 tr.crt_tim = #{crt_tim},
+	 tr.route_sort = #{route_sort},
+	 trn.route_name = #{route_name},
+	 trn.crate_time = #{crate_time}
+	WHERE
+		tr.id = #{id}
+	AND tr.route_name_id = trn.id
+	
+	</update>
+	
+	
+<!-- 记录添加 -->
+	<insert id="insertOverhaulRecord" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO overhaul_record (
+				sta_time,
+				end_time,
+				tour_route_id,
+				tour_people_id,
+				tour_complete,
+				tour_task_id,
+				remark
+			)
+			VALUES
+				(
+					#{sta_time},
+					#{end_time},
+					#{tour_route_id},
+					#{tour_people_id},
+					#{tour_complete},
+					#{tour_task_id},
+					#{remark}
+				)
+			
+	</insert>
+	
+	
+	<!--记录 删除 -->
+	<update id="delOverhaulRecord" parameterType="java.util.LinkedHashMap">
+	update overhaul_record 
+	set del_flag = 1
+	where id = #{id}
+	
+	</update>
+	
+	
+	
+	<!-- id查询记录  -->
+	<select id="getOverhaulRecordById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select * from overhaul_record where id = #{id}
+
+	</select>
+	
+	
+	
+	<!--记录 更新 -->
+	<update id="updOverhaulRecord" parameterType="java.util.LinkedHashMap">
+	update overhaul_record 
+		set sta_time = #{sta_time},
+			end_time = #{end_time},
+			tour_route_id = #{tour_route_id},
+			tour_people_id = #{tour_people_id},
+			tour_complete = #{tour_complete},
+			tour_task_id = #{tour_task_id},
+			remark = #{remark}
+		where id = #{id}
+	
+	</update>
+	
+	
+	
+	<!-- 根据巡视路线id 获取巡视计划 -->
+	<select id="getTourPlanByroutId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			tp.*, u.use_nam as tour_use,
+			(select uu.use_nam from use_use uu where uu.id = tp.crt_use_id) as crt_use_nam
+		FROM
+			tour_plan tp,
+			tour_route tr,
+			use_use u
+		WHERE
+			tp.tour_route_id = tr.id
+		and tr.del_flag = '0' and tp.del_flag = '0'
+		AND u.id = tp.tour_use_id
+		
+		<if test="id != null and id != ''">
+		
+			AND tr.id = #{id}
+			
+		</if>
+		
+		<if test="search!=null">
+ 		 	  and (u.use_nam like '%${search}%' 
+ 		 	  or tp.frequency like '%${search}%'  	
+ 		 	  or tp.tour_plan_name like '%${search}%'	  
+ 		 	  or tp.remark like '%${search}%')
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND tp.first_time >= #{first_time} ]]>
+		</if>
+			
+		<if test="end_tim != null and end_tim != ''">
+			<![CDATA[ AND tp.first_time < #{first_time} ]]>
+		</if>
+
+	</select>
+	
+	<!-- 根据巡视计划  获取任务 -->
+	<select id="getTaskByPlanId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select tt.* ,u.use_nam appoint ,
+		(select uu.use_nam from use_use uu where uu.id = tt.task_check_id) task_check,
+(select uuu.use_nam from use_use uuu where uuu.id = tt.task_execute_id) task_execute 
+		from tour_task tt,tour_plan tp,tour_route tr,use_use u
+		where tt.tour_plan_id = tp.id
+		and tt.tour_route_id = tr.id
+		and u.id = tt.appoint_id
+		and tt.del_flag = '0'
+		and tp.del_flag = '0'
+		and tr.del_flag = '0'
+		and u.del_flag = '0'
+		and tt.tour_plan_id = #{id}
+		
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+<!-- 查询路线最新一条信息 -->
+	<select id="getTourPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select * from tour_plan where del_flag = 0 ORDER BY crt_tim DESC LIMIT 1 
+	</select>
+	
+	
+	
+	
+<!-- 巡视任务添加 -->
+	<insert id="insertTourTask" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_task (
+				tour_plan_id,
+				tour_route_id,
+				appoint_id,
+				task_sta,
+				task_typ,
+				crt_tim
+			)
+			VALUES
+				(
+					#{tour_plan_id},
+					#{tour_route_id},
+					#{appoint_id},
+					#{task_sta},
+					#{task_typ},
+					now()
+				)
+			
+	</insert>
+	
+	
+	
+	
+
+		
+	<!--巡视 任务  更新 -->
+	<update id="updTourTask" parameterType="java.util.LinkedHashMap">
+	update tour_task 
+		set tour_plan_id = #{tour_plan_id},
+			tour_route_id = #{tour_route_id},
+			appoint_id = #{appoint_id},
+			task_sta = #{task_sta},
+			task_typ = #{task_typ},			
+		where tour_plan_id = #{tour_plan_id}
+	
+	</update>
+	
+	
+<!-- 检修计划 -->
+	
+	<!-- 根据检修路线id 获取检修计划 -->
+	<select id="getOverhaulPlanByroutId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			op.*, u.use_nam as tour_use,
+			(select uu.use_nam from use_use uu where uu.id = op.crt_use_id) as crt_use_nam
+		FROM
+			overhaul_plan op,
+			overhaul_route oro,
+			use_use u
+		WHERE
+			op.tour_route_id = oro.id
+		and oro.del_flag = '0' and op.del_flag = '0'
+		AND u.id = op.tour_use_id
+		
+		<if test="id != null and id != ''">
+		
+			AND oro.id = #{id}
+			
+		</if>
+		
+		<if test="search!=null">
+ 		 	  and (u.use_nam like '%${search}%' 
+ 		 	  or op.frequency like '%${search}%'  	
+ 		 	  or op.tour_plan_name like '%${search}%'	  
+ 		 	  or op.remark like '%${search}%')
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND op.first_time >= #{first_time} ]]>
+		</if>
+			
+		<if test="end_tim != null and end_tim != ''">
+			<![CDATA[ AND op.first_time < #{first_time} ]]>
+		</if>
+
+	</select>
+	
+	
+	<!-- 根据检修计划  获取任务 -->
+	<select id="getOverhaulTaskByPlanId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select ot.* ,u.use_nam appoint ,
+		(select uu.use_nam from use_use uu where uu.id = ot.task_check_id) task_check ,
+		(select uuu.use_nam from use_use uuu where uuu.id = ot.task_execute_id) task_execute 
+		FROM
+			overhaul_task ot,
+			overhaul_plan op,
+			overhaul_route oro,
+			use_use u
+		WHERE
+			ot.tour_plan_id = op.id
+		AND ot.tour_route_id = oro.id
+		AND u.id = ot.appoint_id
+		AND ot.del_flag = '0'
+		AND op.del_flag = '0'
+		AND oro.del_flag = '0'
+		AND u.del_flag = '0'
+		AND ot.tour_plan_id = #{id}
+		
+	</select>
+	
+	
+	
+	
+<!-- 查询检修计划最新一条信息 -->
+	<select id="getOverhaulPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select * from overhaul_plan where del_flag = 0 ORDER BY crt_tim DESC LIMIT 1 
+	</select>
+	
+	
+	
+	
+<!-- 检修任务添加 -->
+	<insert id="insertOverhaulTask" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO overhaul_task (
+				tour_plan_id,
+				tour_route_id,
+				appoint_id,
+				task_sta,
+				task_typ,
+				crt_tim
+			)
+			VALUES
+				(
+					#{tour_plan_id},
+					#{tour_route_id},
+					#{appoint_id},
+					#{task_sta},
+					#{task_typ},
+					now()
+				)
+			
+	</insert>
+
+
+	<!--检修 任务  更新 -->
+	<update id="updOverhaulTask" parameterType="java.util.LinkedHashMap">
+	update overhaul_task 
+		set tour_plan_id = #{tour_plan_id},
+			tour_route_id = #{tour_route_id},
+			appoint_id = #{appoint_id},
+			task_sta = #{task_sta},
+			task_typ = #{task_typ},			
+		where tour_plan_id = #{tour_plan_id}
+	
+	</update>
+
+
+<!-- ****************报修管理 查看跟自己有关的报修任务**************** -->
+	<select id="getRepairByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				a.*
+			FROM
+				(
+					SELECT
+						tr.*, (
+							SELECT
+								uu.use_nam
+							FROM
+								use_use uu
+							WHERE
+								uu.id = tr.crt_use_id
+						) crt_name,
+						(
+							SELECT
+								uu.use_nam
+							FROM
+								use_use uu
+							WHERE
+								uu.id = tr.crt_use_id
+						) repair_name,
+						(
+							SELECT
+								uu.use_nam
+							FROM
+								use_use uu
+							WHERE
+								uu.id = tr.crt_use_id
+						) check_name
+					FROM
+						t_repair tr
+					WHERE 1=1
+					
+					<if test="type == 1">
+					
+						and tr.crt_use_id = #{id}
+						
+					</if>
+					<if test="type == 2">
+					
+						and tr.repair_use_id = #{id}
+						
+					</if>
+					<if test="type == 3">
+					
+						and tr.check_use_id = #{id}
+						
+					</if>
+						
+				) a
+			WHERE
+				a.del_flag = 0
+
+	</select>
+
+<!-- 报修任务添加 -->
+	<insert id="insertRepairTask" parameterType="java.util.LinkedHashMap" >
+						
+			INSERT INTO t_repair (
+				equ_num,
+				crt_time,
+				repair_reason,
+				crt_use_id,
+				repair_use_id,
+				stat,
+				if_change,
+				img_id,
+				file_id,
+				check_use_id
+			)
+			VALUES
+				(
+					#{equ_num},
+					#{crt_time},
+					#{repair_reason},
+					#{crt_use_id},
+					#{repair_use_id},
+					#{stat},
+					#{if_change},
+					#{img_id},
+					#{file_id},
+					#{check_use_id}
+				)
+			
+	</insert>
+
+
+<!-- 报修任务添加 -->
+	<insert id="insertRepairTaskImg" parameterType="java.util.LinkedHashMap" >
+		
+		INSERT INTO tour_image (
+			tour_image_name,
+			image_path,
+			tour_image_id,
+			tour_record_id,
+			image_typ
+		)
+		VALUES
+			(
+				#{tour_image_name},
+				#{image_path},
+				#{tour_image_id},
+				#{tour_record_id},
+				#{image_typ}
+			);
+	</insert>
+
+
+
+
+<!-- ********************************巡视****************************************************-->
+<!-- 查看巡视路线 -->
+	<select id="getTourRouteNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				tr.*, u.use_nam,sbp.pws_nam,trn.route_name
+			FROM
+				tour_route tr,
+				use_use u,
+			sys_bas_pws sbp,
+			tour_route_nam trn
+			WHERE
+				tr.del_flag = 0
+			AND u.del_flag = 0
+			and sbp.del_flag = 0
+			AND u.id = tr.crt_use_id
+			and sbp.id = tr.pws_id
+			and trn.id = tr.route_name_id
+			<if test="name != null and name != ''">
+		
+				AND trn.route_name Like '%${name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND tr.crt_tim >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND tr.crt_tim < #{end_tim} ]]>
+			</if>
+	</select>
+	
+<!-- 查看检修路线 -->
+	<select id="getOverhaulRouteNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					oro.*, u.use_nam,sbp.pws_nam,orn.route_name
+				FROM
+					overhaul_route oro,
+					use_use u,
+				sys_bas_pws sbp,
+				overhaul_route_nam orn
+				WHERE
+					oro.del_flag = 0
+				AND u.del_flag = 0
+				and sbp.del_flag = 0
+				AND u.id = oro.crt_use_id
+				and sbp.id = oro.pws_id
+				and orn.id = oro.route_name_id
+			<if test="name != null and name != ''">
+		
+				AND orn.route_name Like '%${name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND oro.crt_tim >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND oro.crt_tim < #{end_tim} ]]>
+			</if>
+	</select>
+
+<!-- 查询所有巡视路线节点 -->
+	<select id="selTourRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">		
+		SELECT
+			tr.*, sbp.pws_nam
+		FROM
+			tour_route tr,
+			sys_bas_pws sbp
+		WHERE
+			tr.del_flag = 0
+		AND sbp.del_flag = 0
+		AND tr.pws_id = sbp.id
+		AND tr.route_name_id = #{id}
+	
+	</select>
+
+<!-- 查询所有巡视路线-->
+	<select id="selTourRouteName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+				select trn.*, u.use_nam from tour_route_nam trn,use_use u
+				where trn.del_flag = 0 and u.id = trn.crate_name_id and u.del_flag = 0
+			<if test="name != null and name != ''">
+		
+				AND trn.route_name Like '%${name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND trn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND trn.crate_time < #{end_tim} ]]>
+			</if>
+			
+			<!-- <if test="sta_tim != null and sta_tim != '' and end_tim != null and end_tim != ''">
+			and
+			DATE_FORMAT(trn.crate_time,'%Y-%m-%d') 
+			between #{sta_tim}
+			and #{end_tim}
+			</if>
+			 -->
+			
+			ORDER BY
+			trn.crate_time 
+			<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+				LIMIT #{start},#{everyPage}
+			</if>
+	
+	</select>
+
+<!-- 查询所有巡视路线  分页-->
+	<select id="selTourRouteNameCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+				select count(trn.id) cou,trn.* from tour_route_nam trn
+				where trn.del_flag = 0
+			<if test="name != null and name != ''">
+		
+				AND trn.route_name Like '%${name}%'
+			</if>
+			
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND trn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND trn.crate_time < #{end_tim} ]]>
+			</if>
+			 
+	 
+	 <!-- 	<if test="sta_tim != null and sta_tim != '' and end_tim != null and end_tim != ''">
+			and
+			DATE_FORMAT(trn.crate_time,'%Y-%m-%d') 
+			between #{sta_tim}
+			and #{end_tim}
+			</if>
+			 -->
+	 
+	</select>
+
+<!-- 查询所有检修路线节点 -->
+	<select id="selOverhaulRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">		
+		SELECT
+			oro.*, sbp.pws_nam
+		FROM
+			overhaul_route oro,
+			sys_bas_pws sbp
+		WHERE
+			oro.del_flag = 0
+		AND sbp.del_flag = 0
+		AND oro.pws_id = sbp.id
+		AND oro.route_name_id = #{id}
+	
+	</select>
+
+<!-- 查询所有检修路线-->
+	<select id="selOverhaulRouteName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select orn.* ,u.use_nam from overhaul_route_nam orn,use_use u
+			where orn.del_flag = 0 and u.id = orn.crate_name_id and u.del_flag = 0
+			<if test="name != null and name != ''">
+		
+				AND orn.route_name Like '%${name}%'
+			</if>
+			 
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND orn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND orn.crate_time < #{end_tim} ]]>
+			</if> 
+			<!-- <if test="sta_tim != null and sta_tim != '' and end_tim != null and end_tim != ''">
+			and
+			DATE_FORMAT(orn.crate_time,'%Y-%m-%d') 
+			between #{sta_tim}
+			and #{end_tim}
+			</if> -->
+			ORDER BY
+				orn.crate_time 
+			<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+				LIMIT #{start},#{everyPage}
+			</if>
+	</select>
+
+<!-- 查询所有检修路线 分页-->
+	<select id="selOverhaulRouteNameCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select count(orn.id) cou,orn.* from overhaul_route_nam orn
+			where orn.del_flag = 0
+			<if test="name != null and name != ''">
+		
+				AND orn.route_name Like '%${name}%'
+			</if>
+			 
+			<if test="sta_tim != null and sta_tim != ''">
+				<![CDATA[ AND orn.crate_time >= #{sta_tim} ]]>
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND orn.crate_time <= #{end_tim} ]]>
+			</if>
+			<!-- <if test="sta_tim != null and sta_tim != '' and end_tim != null and end_tim != ''">
+			and
+			DATE_FORMAT(orn.crate_time,'%Y-%m-%d') 
+			between #{sta_tim}
+			and #{end_tim}
+			</if> -->
+	
+	</select>
+
+
+<!-- 根据路线id查询巡视路线的电站经纬度-->
+	<select id="selRouteNamePwsByRouteNameId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			SELECT
+				tro.*,trn.route_name, sbp.id,
+				sbp.pws_nam,
+				sbp.pws_lon,
+				sbp.pws_lat
+			FROM
+				tour_route tro,tour_route_nam trn,
+				sys_bas_pws sbp
+			WHERE
+				tro.pws_id = sbp.id and trn.id = tro.route_name_id
+			AND tro.del_flag = 0
+			AND sbp.del_flag = 0
+			AND tro.route_name_id = #{route_name_id}
+	
+	</select>
+
+<!-- 根据路线id查询检修路线的电站经纬度-->
+	<select id="selOverhaulNamePwsByRouteNameId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			SELECT
+				oro.*, orn.route_name,sbp.id,
+				sbp.pws_nam,
+				sbp.pws_lon,
+				sbp.pws_lat
+			FROM
+				overhaul_route oro,overhaul_route_nam orn,
+				sys_bas_pws sbp
+			WHERE
+				oro.pws_id = sbp.id and orn.id = oro.route_name_id
+			AND oro.del_flag = 0
+			AND sbp.del_flag = 0
+			AND oro.route_name_id = #{route_name_id}
+	
+	</select>
+
+
+
+
+<!-- ********** -->
+<!--巡视路线 更新 -->
+	<update id="updateTourRoute" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_plan 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+
+
+<!--检修路线 更新 -->
+	<update id="updateOverHaulRoute" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_route 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////巡视管理//////////////////////////////////////// -->
+
+<!-- 巡视任务查看-->
+	<select id="selRouteTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select a.* from (SELECT tot.id,
+			trn.route_name,
+			trn.id trnId,
+			tot.task_sta,
+			tot.task_reject_reason,
+			tot.appoint_id,
+			tot.task_typ,
+			(select uu.use_nam from use_use uu where uu.id = tot.appoint_id) appoint_name,
+			tot.task_check_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_check_id) check_name,
+			tot.task_execute_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_execute_id) execute_name,
+			tot.task_check_time
+			FROM
+				tour_task tot,
+				tour_route_nam trn
+			WHERE
+				tot.tour_route_id = trn.id
+			and tot.del_flag = 0 and trn.del_flag = 0
+			
+			<if test="type !=null and type == '0'.toString()">		
+				and (tot.task_execute_id = #{user_id}
+			or tot.task_check_id = #{user_id}
+			or tot.appoint_id = #{user_id})
+			group by tot.id
+			</if>
+			
+			<if test="type !=null and type == '1'.toString()">
+				AND tot.task_execute_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+				AND tot.appoint_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+				AND tot.task_check_id = #{user_id}
+			</if>
+			) a 
+			
+			where 1=1
+			
+			<if test="task_sta != null and task_sta != ''">
+				AND a.task_sta = #{task_sta}
+			</if>
+			
+			<if test="task_typ != null and task_typ != ''">
+				AND a.task_typ = #{task_typ}
+			</if>
+			
+			ORDER BY
+			a.id 
+		LIMIT #{start},#{everyPage}
+	</select>
+<!-- 巡视任务查看  分页-->
+	<select id="selRouteTaskCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select COUNT(a.id) cou from (SELECT tot.id,
+			trn.route_name,
+			trn.id trnId,
+			tot.task_sta,
+			tot.task_reject_reason,
+			tot.appoint_id,
+			tot.task_typ,
+			(select uu.use_nam from use_use uu where uu.id = tot.appoint_id) appoint_name,
+			tot.task_check_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_check_id) check_name,
+			tot.task_execute_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_execute_id) execute_name,
+			tot.task_check_time
+			FROM
+				tour_task tot,
+				tour_route_nam trn
+			WHERE
+				tot.tour_route_id = trn.id
+			and tot.del_flag = 0 and trn.del_flag = 0
+			
+			<if test="type !=null and type == '0'.toString()">		
+				and (tot.task_execute_id = #{user_id}
+			or tot.task_check_id = #{user_id}
+			or tot.appoint_id = #{user_id})
+			group by tot.id
+			</if>
+			
+			<if test="type !=null and type == '1'.toString()">
+				AND tot.task_execute_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+				AND tot.appoint_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+				AND tot.task_check_id = #{user_id}
+			</if>
+			
+			) a 
+			where 1=1
+			<if test="task_sta != null and task_sta != ''">
+		
+				AND a.task_sta = #{task_sta}
+			</if>
+			
+			<if test="task_typ != null and task_typ != ''">
+		
+				AND a.task_typ = #{task_typ}
+			</if>
+	</select>
+
+
+<!-- 巡视任务查看  type-->
+	<select id="selRouteTaskType" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			SELECT
+			trn.route_name,
+			tot.task_sta,
+			tot.task_reject_reason,
+			tot.appoint_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.appoint_id) appoint_name,
+			tot.task_check_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_check_id) check_name,
+			tot.task_execute_id,
+			(select uu.use_nam from use_use uu where uu.id = tot.task_execute_id) execute_name,
+			tot.task_check_time
+			FROM
+				tour_task tot,
+				tour_route_nam trn
+			WHERE
+				tot.tour_route_id = trn.id
+			and tot.del_flag = 0 and trn.del_flag = 0
+			<if test="task_execute_id != null and task_execute_id != ''">
+				and( tot.task_execute_id = #{task_execute_id}
+			</if>
+			<if test="appoint_id != null and appoint_id != ''">
+				or tot.appoint_id = #{appoint_id}
+			</if>
+			<if test="task_check_id != null and task_check_id != ''">
+				or tot.task_check_id = #{task_check_id})
+			</if>
+	</select>
+	
+<!-- 巡视任务 审核通过-->
+	<select id="updTourTaskStaCheck" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE tour_task
+				SET task_sta = 5,
+				 task_check_id = #{task_check_id},
+				task_check_time = #{task_check_time}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+<!-- 巡视任务 驳回-->
+	<select id="updTourTaskStaReject" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE tour_task
+				SET task_sta = 6,
+				 task_check_id = #{task_check_id},
+				 task_check_time = #{task_check_time},
+				 task_reject_reason = #{task_reject_reason}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+<!-- 巡视任务  开始任务-->
+	<select id="updTourTaskStaExecute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE tour_task
+				SET task_sta = 3,
+				 task_execute_id = #{task_execute_id}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+<!-- 巡视任务 增加流程记录  开始-->
+	<select id="insertTourRecordProcess" parameterType="java.util.LinkedHashMap">	
+			INSERT INTO tour_record (
+			sta_time,
+			tour_people_id,
+			tour_complete,
+			tour_task_id,
+			remark,
+			task_stat
+			<!-- tour_route_id -->
+		)
+		VALUES
+			(#{sta_time}, #{tour_people_id}, #{tour_complete}, #{tour_task_id}, #{remark}, #{task_stat}<!-- ,#{tour_route_id} -->)
+		
+	</select>
+	
+		
+<!-- 巡视任务 增加流程记录  查询 防止重复-->
+	<select id="selTourRecordProcess" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from  tour_record 
+			where tour_people_id = #{tour_people_id} 
+			and tour_task_id = #{tour_task_id} 
+			and task_stat = #{task_stat}
+		
+	</select>
+	
+		
+<!-- 巡视任务 增加流程记录  修改 -->
+	<select id="updTourRecordProcess" parameterType="java.util.LinkedHashMap">	
+			UPDATE tour_record
+				SET sta_time = #{sta_tim}
+			WHERE
+				id = #{id}
+		
+	</select>
+	
+		
+<!-- 巡视任务  删除-->
+	<select id="delTourTaskSta" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE tour_task
+				SET del_flag = 1
+			WHERE
+				id = #{id}
+	</select>
+	
+	
+
+<!-- 巡视任务 新增-->
+	<select id="insTourTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		
+		INSERT INTO tour_task (
+			tour_route_id,
+			appoint_id,
+			task_sta,
+			task_execute_id,
+			task_typ,
+			remark,
+			crt_tim
+		)
+		VALUES
+			(#{tour_route_id}, #{appoint_id}, #{task_sta}, #{task_execute_id}, #{task_typ}, #{remark},now())
+		
+	</select>
+	
+
+<!-- 巡视任务 最新的信息-->
+	<select id="selTourTaskNew" resultType="java.util.LinkedHashMap">	
+			
+			select * from tour_task
+			ORDER BY id DESC
+			limit 1	
+			
+	</select>	
+	
+	
+
+
+<!-- 巡视任务 查询路线-->
+	<select id="selRouteNameById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				trn.id,
+				trn.route_name,
+				tta.task_sta
+			FROM
+				tour_route_nam trn,
+				tour_task tta
+			WHERE
+				trn.id = tta.tour_route_id
+			AND trn.del_flag = 0
+			AND tta.del_flag = 0
+			AND tta.id = #{tour_task_id}
+		
+	</select>
+
+
+<!-- 巡视任务 查询路线节点-->
+	<select id="selRouteById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+		<!-- SELECT
+			tre.id,
+			tro.pws_id,
+			tre.tour_complete
+		FROM
+			tour_record tre,
+			tour_route tro
+		WHERE
+			tre.tour_route_id = tro.id
+		AND tre.del_flag = 0
+		AND tro.del_flag = 0
+		AND tre.tour_task_id = #{tour_task_id} -->
+		
+		<!-- SELECT
+			tro.id,
+			tro.pws_id,
+			tre.tour_complete,
+			sbp.pws_nam,
+			tre.id treId
+		FROM
+			tour_route tro,
+			tour_record tre,
+			sys_bas_pws sbp
+			
+		WHERE tro.pws_id = sbp.id 
+		and	tro.id = tre.tour_route_id 
+		and tro.del_flag = 0 
+		and tre.del_flag = 0 
+		and sbp.del_flag = 0
+		and tre.tour_task_id = #{tour_task_id} -->
+		
+select tr.*,
+(select sbp.pws_nam from sys_bas_pws sbp where tr.pws_id = sbp.id) pws_nam
+from tour_route tr 
+where tr.route_name_id = #{tour_route_id} and tr.del_flag = 0 order by tr.route_sort
+		
+	</select>
+
+
+
+<!-- 巡视任务  查询节点状态-->
+	<select id="selTourRecordByTaskRoute" resultType="java.util.LinkedHashMap">	
+		SELECT
+			tr.*
+		FROM
+			tour_record tr
+		WHERE
+			tr.tour_route_id = #{tour_route_id}
+		AND tr.tour_task_id = #{tour_task_id}
+		AND tr.del_flag = 0
+		<!-- order by tr.sta_time desc -->
+		order by tr.id desc 
+		limit 1
+		
+
+	</select>
+
+
+<!-- 检修任务  查询节点状态-->
+	<select id="selOverhaulRecordByTaskRoute" resultType="java.util.LinkedHashMap">	
+		SELECT
+			tr.*
+		FROM
+			overhaul_record tr
+		WHERE
+			tr.tour_route_id = #{tour_route_id}
+		AND tr.tour_task_id = #{tour_task_id}
+		AND tr.del_flag = 0
+		<!-- order by tr.sta_time desc -->
+		order by tr.id desc
+		limit 1
+
+	</select>
+
+
+
+
+
+<!-- 巡视记录 查询最新的-->
+	<select id="selRouteTaskById" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">	
+		select tr.* from tour_record tr where tr.tour_people_id = #{user_id} and tr.del_flag = 0
+		ORDER BY tr.id DESC
+		LIMIT 1
+
+	</select>
+	
+	
+<!-- 检修记录 查询最新的-->
+	<select id="selOverhaulNewTaskById" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">	
+
+	    select ore.* from overhaul_record ore where ore.tour_people_id = #{user_id} and ore.del_flag = 0
+		ORDER BY ore.id DESC
+		LIMIT 1
+
+	</select>
+
+
+	
+<!-- 巡视记录修改 -->
+	<update id="updTourRecord" parameterType="java.util.LinkedHashMap">
+	
+		UPDATE tour_record
+		SET sta_time = #{sta_time},
+		 end_time = #{end_time},
+		 tour_people_id = #{tour_people_id},
+		 tour_complete = #{tour_complete},
+		 remark = #{remark}
+		WHERE
+			id = #{treId}
+	</update>
+
+
+<!-- 巡视任务 通过记录id查看是否有记录-->
+	<select id="selTourRecordByRouteId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from tour_record tre where tre.id = #{treId} 
+	</select>
+
+<!--巡视  通过记录id  查看图片-->
+	<select id="selTourImgByRouteId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select ti.*,ti.image_path fil_url
+			from tour_image ti where ti.tour_record_id = #{treId} and ti.image_typ=#{imageType}
+	</select>
+<!--巡视  通过记录id  查看文件-->
+	<select id="selTourFileByRouteId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select tf.*,tf.file_path fil_url
+			 from tour_file tf where tf.tour_record_id = #{treId} and tf.file_typ=#{fileType}
+	</select>
+	
+	
+	
+<!--App 巡视  通过记录id  查看图片-->
+	<select id="selTourImgByRouteIdApp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select ti.id,
+			ti.tour_image_name,
+			ti.image_path fil_url,
+			ti.tour_image_id,
+			ti.tour_record_id,
+			ti.image_typ,
+			ti.type
+			from tour_image ti where ti.tour_record_id = #{treId} and ti.image_typ=#{imageType}
+	</select>
+<!--App 巡视  通过记录id  查看文件-->
+	<select id="selTourFileByRouteIdApp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select tf.id,
+			tf.file_name,
+			tf.file_path fil_url,
+			tf.tour_file_id,
+			tf.tour_record_id,
+			tf.file_typ,
+			tf.type
+			from tour_file tf where tf.tour_record_id = #{treId} and tf.file_typ=#{fileType}
+	</select>
+	
+	
+	
+	
+<!--巡视  通过任务 和 路线  查询所有 记录信息-->
+	<select id="selTourAllByTaskRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		select tre.*,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = tro.pws_id) pws_nam
+		from tour_record tre,
+		tour_route tro
+		where tre.tour_task_id = #{tour_task_id}
+		and tro.route_name_id = #{tour_route_id}
+		and tro.id = tre.tour_route_id
+		and tre.del_flag = 0
+		and tro.del_flag = 0
+		group by tre.id
+	</select>
+	
+<!--巡视  通过任务 查询所有 记录信息-->
+	<select id="selTourAllByTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		select tre.*
+		from tour_record tre
+		where tre.tour_task_id = #{tour_task_id}
+		and tre.tour_route_id = 0
+		and tre.del_flag = 0
+	</select>
+
+	
+	
+<!--巡视  通过任务 查询所有 记录信息-->
+	<select id="selTourAllRecord" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		<!-- select tre.*,
+		(select sbp.pws_nam from sys_bas_pws sbp,tour_route tro where sbp.id = tro.pws_id and tro.id = tre.tour_route_id) pws_nam
+		from tour_record tre
+		where tre.tour_task_id = #{tour_task_id}
+		or tre.tour_route_id = #{tour_route_id}
+		order by tre.task_stat ASC,tre.sta_time DESC -->
+		
+		select tre.*,
+		(select sbp.pws_nam from sys_bas_pws sbp,tour_route tro where sbp.id = tro.pws_id and tro.id = tre.tour_route_id) pws_nam
+		from tour_record tre,tour_task tt
+		where tre.tour_task_id = #{tour_task_id}
+		and tt.id = tre.tour_task_id
+		<!-- order by tre.task_stat ASC,tre.sta_time DESC -->
+		order by tre.id
+		
+	</select>
+
+	
+<!--检修  通过任务 查询所有 记录信息-->
+	<select id="selOverhaulAllRecord" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		<!-- select ore.*,
+		(select sbp.pws_nam from sys_bas_pws sbp,overhaul_route oro where sbp.id = oro.pws_id and oro.id = ore.tour_route_id) pws_nam
+		from overhaul_record ore
+		where ore.tour_task_id = #{tour_task_id}
+		or ore.tour_route_id = #{tour_route_id}
+		order by ore.task_stat ASC,ore.sta_time DESC -->
+		
+		select ore.*,
+		(select sbp.pws_nam from sys_bas_pws sbp,overhaul_route oro where sbp.id = oro.pws_id and oro.id = ore.tour_route_id) pws_nam
+		from overhaul_record ore,overhaul_task ot
+		where ore.tour_task_id = #{tour_task_id}
+		and ot.id = ore.tour_task_id
+		<!-- order by ore.task_stat ASC,ore.sta_time DESC -->
+		order by ore.id
+		
+	</select>
+	
+	
+	
+	
+<!--检修 通过任务 和 路线  查询所有 记录信息-->
+	<select id="selOverhaulAllByTaskRoute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		select tre.*,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = tro.pws_id) pws_nam
+		from overhaul_record tre,
+		overhaul_route tro
+		where tre.tour_task_id = #{tour_task_id}
+		and tro.route_name_id = #{tour_route_id}
+		and tro.id = tre.tour_route_id
+		and tre.del_flag = 0
+		and tro.del_flag = 0
+		group by tre.id
+	</select>
+
+<!--检修  通过任务 查询所有 记录信息-->
+	<select id="selOverhaulAllByTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		select ore.*
+		
+		<!-- (select sbp.pws_nam from sys_bas_pws sbp,
+		overhaul_route vor  
+		where sbp.id = vor.pws_id 
+		and vor.id = ore.tour_people_id) pws_nam -->
+		
+		from overhaul_record ore
+		where ore.tour_task_id = #{tour_task_id}
+		and ore.tour_route_id = 0
+		and ore.del_flag = 0
+	</select>
+
+<!-- 巡视记录新增 -->
+	<update id="insTourRecord" parameterType="java.util.LinkedHashMap">
+	
+		insert into tour_record
+			(sta_time,
+			 end_time,
+			 tour_route_id,
+			 tour_people_id,
+			 tour_complete,
+			 remark,
+			 tour_task_id,
+			 task_stat)
+		 values (
+			 #{sta_time},
+			 #{end_time},
+			 #{tour_route_id},
+			  #{tour_people_id},
+			  #{tour_complete},
+			  #{remark},
+			  #{tour_task_id},
+			  #{task_stat}
+			 )
+			
+	</update>
+
+	<!-- 指派 -->
+	<update id="tourTaskAppoint" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET task_execute_id = #{task_execute_id},
+		task_sta = 2
+		WHERE
+		id = #{id}
+
+	</update>
+
+	<!-- 任务提交 -->
+	<update id="tourTaskSubmit" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET task_sta = 4,
+		task_check_id = #{task_check_id}
+		WHERE
+		id = #{id}
+
+	</update>
+
+
+<!-- 修改任务 -->
+<update id="updTourTaskById" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET tour_route_id = #{tour_route_id},
+		 appoint_id = #{appoint_id},
+		 task_execute_id = #{task_execute_id},
+		 remark = #{remark}
+		WHERE
+			id = #{id}
+
+	</update>
+
+
+<!-- 巡视任务 回显示-->
+	<select id="selTourTaskById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from tour_task
+			WHERE
+				id = #{id}
+	</select>
+
+<!-- 检修管理 -->
+
+<!-- 检修任务查看-->
+	<select id="selOverhaulTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select a.* from (SELECT ota.id,
+			orn.route_name,
+			orn.id ornId,
+			ota.task_sta,
+			ota.task_reject_reason,
+			ota.appoint_id,
+			ota.task_typ,
+			(select uu.use_nam from use_use uu where uu.id = ota.appoint_id) appoint_name,
+			ota.task_check_id,
+			(select uu.use_nam from use_use uu where uu.id = ota.task_check_id) check_name,
+			ota.task_execute_id,
+			(select uu.use_nam from use_use uu where uu.id = ota.task_execute_id) execute_name,
+			ota.task_check_time
+			FROM
+				overhaul_task ota,
+				overhaul_route_nam orn
+			WHERE
+				ota.tour_route_id = orn.id
+			and ota.del_flag = 0 and orn.del_flag = 0
+			
+			<if test="type !=null and type == '0'.toString()">		
+				and (ota.task_execute_id = #{user_id}
+			or ota.task_check_id = #{user_id}
+			or ota.appoint_id = #{user_id})
+			group by ota.id
+			</if>
+			
+			<if test="type !=null and type == '1'.toString()">
+				AND ota.task_execute_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+				AND ota.appoint_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+				AND ota.task_check_id = #{user_id}
+			</if>
+			
+			) a 
+			
+			where 1=1
+			
+			<if test="task_sta != null and task_sta != ''">
+		
+				AND a.task_sta = #{task_sta}
+			</if>
+			
+			<if test="task_typ != null and task_typ != ''">
+		
+				AND a.task_typ = #{task_typ}
+			</if>
+			order by a.id
+			LIMIT #{start},#{everyPage}
+	</select>
+
+<!-- 检修任务查看  分页-->
+	<select id="selOverhaulTaskCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			SELECT COUNT(a.id) cou from (select ota.id,
+			orn.route_name,
+			orn.id ornId,
+			ota.task_sta,
+			ota.task_reject_reason,
+			ota.appoint_id,
+			ota.task_typ,
+			(select uu.use_nam from use_use uu where uu.id = ota.appoint_id) appoint_name,
+			ota.task_check_id,
+			(select uu.use_nam from use_use uu where uu.id = ota.task_check_id) check_name,
+			ota.task_execute_id,
+			(select uu.use_nam from use_use uu where uu.id = ota.task_execute_id) execute_name,
+			ota.task_check_time
+			FROM
+				overhaul_task ota,
+				overhaul_route_nam orn
+			WHERE
+				ota.tour_route_id = orn.id
+			and ota.del_flag = 0 and orn.del_flag = 0
+			
+			<if test="type !=null and type == '0'.toString()">		
+				and (ota.task_execute_id = #{user_id}
+			or ota.task_check_id = #{user_id}
+			or ota.appoint_id = #{user_id})
+			group by ota.id
+			</if>
+			
+			<if test="type !=null and type == '1'.toString()">
+				AND ota.task_execute_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+				AND ota.appoint_id = #{user_id}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+				AND ota.task_check_id = #{user_id}
+			</if>
+			) a 
+			where 1=1
+			<if test="task_sta != null and task_sta != ''">
+		
+				AND a.task_sta = #{task_sta}
+			</if>
+			
+			<if test="task_typ != null and task_typ != ''">
+		
+				AND a.task_typ = #{task_typ}
+			</if>
+
+	</select>
+
+<!-- 检修任务 审核通过-->
+	<select id="updOverhaulTaskStaCheck" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE overhaul_task
+				SET task_sta = 5,
+				 task_check_id = #{task_check_id},
+				 task_check_time = #{task_check_time}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+<!-- 检修任务 驳回-->
+	<select id="updOverhaulTaskStaReject" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE overhaul_task
+				SET task_sta = 6,
+				 task_check_id = #{task_check_id},
+				 task_check_time = #{task_check_time},
+				 task_reject_reason = #{task_reject_reason}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+<!-- 检修任务  开始任务-->
+	<select id="updOverhaulTaskStaExecute" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE overhaul_task
+				SET task_sta = 3,
+				 task_execute_id = #{task_execute_id}
+			WHERE
+				id = #{id}
+	</select>
+	
+		
+		
+<!-- 检修任务 增加流程记录  开始-->
+	<select id="insertOverhaulRecordProcess" parameterType="java.util.LinkedHashMap">	
+			INSERT INTO  overhaul_record (
+			sta_time,
+			tour_people_id,
+			tour_complete,
+			tour_task_id,
+			remark,
+			task_stat
+			<!-- tour_route_id -->
+		)
+		VALUES
+			(#{sta_time}, #{tour_people_id}, #{tour_complete}, #{tour_task_id}, #{remark}, #{task_stat}<!-- ,#{tour_route_id} -->)
+		
+	</select>
+	
+		
+<!-- 巡视任务 增加流程记录  查询 防止重复-->
+	<select id="selOverhaulRecordProcess" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from   overhaul_record 
+			where tour_people_id = #{tour_people_id} 
+			and tour_task_id = #{tour_task_id} 
+			and task_stat = #{task_stat}
+		
+	</select>
+	
+		
+<!-- 巡视任务 增加流程记录  修改 -->
+	<select id="updOverhaulRecordProcess" parameterType="java.util.LinkedHashMap">	
+			UPDATE  overhaul_record
+				SET sta_time = #{sta_tim}
+			WHERE
+				id = #{id}
+		
+	</select>
+		
+		
+		
+		
+		
+<!-- 检修任务  删除-->
+	<select id="delOverhaulTaskSta" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			UPDATE overhaul_task
+				SET del_flag = 1
+			WHERE
+				id = #{id}
+	</select>
+	
+			
+		
+<!-- 检修任务 新增-->
+	<select id="instOverhaulTask" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+		
+		INSERT INTO overhaul_task (
+			tour_route_id,
+			appoint_id,
+			task_sta,
+			task_execute_id,
+			task_typ,
+			remark,
+			crt_tim
+		)
+		VALUES
+			(#{tour_route_id}, #{appoint_id}, #{task_sta}, #{task_execute_id}, #{task_typ}, #{remark},now())
+		
+	</select>
+			
+
+
+
+<!-- 检修任务 查询路线-->
+	<select id="selOverhaulRouteNameById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				orn.id,
+				orn.route_name,
+				ota.task_sta
+			FROM
+				overhaul_route_nam orn,
+				overhaul_task ota
+			WHERE
+				orn.id = ota.tour_route_id
+			AND orn.del_flag = 0
+			AND ota.del_flag = 0
+			AND ota.id = #{tour_task_id}
+		
+	</select>
+
+
+<!-- 巡视任务 查询路线节点-->
+	<select id="selOverhaulRouteById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+	<!-- 
+		SELECT
+			oro.id,
+			oro.pws_id,
+			ore.tour_complete,
+			sbp.pws_nam,
+			ore.id oreId
+		FROM
+			overhaul_route oro,
+			overhaul_record ore,
+			sys_bas_pws sbp
+			
+		WHERE oro.pws_id = sbp.id 
+		and	oro.id = ore.tour_route_id 
+		and oro.del_flag = 0 
+		and ore.del_flag = 0 
+		and sbp.del_flag = 0
+		and ore.tour_task_id = #{tour_task_id} -->
+			
+select tr.*,
+(select sbp.pws_nam from sys_bas_pws sbp where tr.pws_id = sbp.id) pws_nam
+from overhaul_route tr 
+where tr.route_name_id = #{tour_route_id} and tr.del_flag = 0 order by tr.route_sort,tr.id 
+
+		
+	</select>
+
+
+	
+<!-- 检修记录修改 -->
+	<update id="updateOverhaulRecord" parameterType="java.util.LinkedHashMap">
+	
+		UPDATE overhaul_record
+		SET sta_time = #{sta_time},
+		 end_time = #{end_time},
+		 tour_people_id = #{tour_people_id},
+		 tour_complete = #{tour_complete},
+		 remark = #{remark}
+		WHERE
+			id = #{oreId}
+	</update>
+
+
+<!-- 检修任务 通过记录id查看是否有记录-->
+	<select id="selOverhaulRecordByRouteId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from overhaul_record ore where ore.id = #{oreId} 
+	</select>
+
+
+<!-- 检修记录新增 -->
+	<update id="insOverhaulRecord" parameterType="java.util.LinkedHashMap">
+	
+		insert into overhaul_record
+			(sta_time,
+			 end_time,
+			 tour_route_id,
+			 tour_people_id,
+			 tour_complete,
+			 remark,
+			 tour_task_id,
+			 task_stat)
+		 values (
+			 #{sta_time},
+			 #{end_time},
+			 #{tour_route_id},
+			  #{tour_people_id},
+			  #{tour_complete},
+			  #{remark},
+			  #{tour_task_id},
+			  #{task_stat}
+			 )
+			
+	</update>
+
+
+<!--检修 指派 -->
+	<update id="overhaulTaskAppoint" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET task_execute_id = #{task_execute_id},
+		task_sta = 2
+		WHERE
+		id = #{id}
+
+	</update>
+
+<!--检修  任务提交 -->
+	<update id="overhaulTaskSubmit" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET task_sta = 4,
+		task_check_id = #{task_check_id}
+		WHERE
+		id = #{id}
+
+	</update>
+
+
+
+<!--检修 修改任务 -->
+<update id="updOverhaulTaskById" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET tour_route_id = #{tour_route_id},
+		 appoint_id = #{appoint_id},
+		 task_execute_id = #{task_execute_id},
+		 remark = #{remark}
+		WHERE
+			id = #{id}
+
+	</update>
+
+
+
+<!-- 巡视任务 回显示-->
+	<select id="selOverhaulTaskById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from overhaul_task
+			WHERE
+				id = #{id}
+	</select>
+
+
+
+<!-- //////////////////////////////////报修管理//////////////////////////////// -->
+
+<!-- 报修 列表显示-->
+	<select id="selRepair" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			select a.* from (SELECT
+				tre.*,
+				(select u.use_nam from use_use u where u.id = tre.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tre.repair_use_id) repair_nam,
+				(select u.use_nam from use_use u where u.id = tre.check_use_id) check_nam
+			FROM
+				t_repair tre
+			WHERE
+				tre.del_flag = 0
+				
+				<if test="type !=null and type == '0'.toString()">		
+				and (tre.crt_use_id = #{userId}
+			or tre.repair_use_id = #{userId}
+			or tre.check_use_id = #{userId})
+			group by tre.id
+			</if>
+				
+			<if test="type !=null and type == '1'.toString()">
+		
+				AND tre.crt_use_id = #{userId}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+		
+				AND tre.repair_use_id = #{userId}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+		
+				AND tre.check_use_id = #{userId}
+			</if>
+			
+			) a 
+			where 1 = 1
+			<if test="check_sta != null and check_sta != ''">
+		
+				AND a.check_sta = #{check_sta}
+			</if>
+			order by a.crt_tim
+			LIMIT #{start},#{everyPage}
+	</select>
+<!-- 报修 列表显示  分页-->
+	<select id="selRepairCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT count(a.id) cou from 
+				(select tre.*,
+				(select u.use_nam from use_use u where u.id = tre.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tre.repair_use_id) repair_nam,
+				(select u.use_nam from use_use u where u.id = tre.check_use_id) check_nam
+			FROM
+				t_repair tre
+			WHERE
+				tre.del_flag = 0
+				<if test="type !=null and type == '0'.toString()">		
+				and (tre.crt_use_id = #{userId}
+			or tre.repair_use_id = #{userId}
+			or tre.check_use_id = #{userId})
+			group by tre.id
+			</if>
+				
+			<if test="type !=null and type == '1'.toString()">
+		
+				AND tre.crt_use_id = #{userId}
+			</if>
+			
+			<if test="type !=null and type == '2'.toString()">
+		
+				AND tre.repair_use_id = #{userId}
+			</if>
+			
+			<if test="type !=null and type == '3'.toString()">
+		
+				AND tre.check_use_id = #{userId}
+			</if>
+			
+			) a 
+			where 1 = 1
+			<if test="check_sta != null and check_sta != ''">
+		
+				AND a.check_sta = #{check_sta}
+			</if>
+	</select>
+
+
+
+	<!-- 报修 新建报修任务-->
+	<insert id="insertRepair" parameterType="java.util.LinkedHashMap">
+	
+		insert into t_repair 
+		(equ_num,crt_tim,repair_reason,crt_use_id,repair_use_id,if_change,check_sta,remark,tour_nam)
+		values
+		(#{equ_num},#{crt_tim},#{repair_reason},#{crt_use_id},#{repair_use_id},#{if_change},#{check_sta},#{remark},#{tour_nam})
+	
+	</insert>
+
+
+	
+	<!--报修  修改报修任务 -->
+	<update id="updateRepair" parameterType="java.util.LinkedHashMap">
+	
+			UPDATE t_repair
+			SET equ_num = #{equ_num},
+			 upd_tim = #{upd_tim},
+			 repair_reason = #{repair_reason},
+			 crt_use_id = #{crt_use_id},
+			 repair_use_id = #{repair_use_id},
+			 if_change = #{if_change},
+			 remark = #{remark}
+			WHERE
+				id = #{id}
+	
+		</update>
+
+<!-- 报修 修改任务 信息回显-->
+	<select id="selRepairById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			
+			select tre.*, 
+			(select u.use_nam from use_use u where u.id = tre.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tre.repair_use_id) repair_nam,
+				(select u.use_nam from use_use u where u.id = tre.check_use_id) check_nam
+			
+			from t_repair tre where tre.id = #{id}		
+			
+	</select>
+
+<!-- 报修 根据报修任务id 和状态 查询信息-->
+	<select id="selRepairNodeByRepairSta" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			
+			select trn.* 
+			from t_repair_node trn 
+			where 
+			trn.repair_id = #{repair_id}	
+			and trn.sta = #{sta}	
+			order by trn.crt_tim DESC
+			limit 1
+	</select>
+
+<!--报修  删除报修任务 -->
+	<update id="delRepair" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair
+		SET del_flag = 1
+		WHERE
+		id = #{id}
+
+	</update>
+
+
+
+	<!-- 报修 节点添加-->
+	<insert id="insertRepariNode" parameterType="java.util.LinkedHashMap">
+	
+		insert into t_repair_node 
+		(repair_id,crt_id,sta_time,end_time,sta,if_success,repair_result,remark,crt_tim)
+		values
+		(#{repair_id},#{crt_id},#{sta_time},#{end_time},#{sta},#{if_success},#{repair_result},#{remark},#{crt_tim})
+	
+	</insert>
+	
+	
+	
+	<!--报修节点  最新的一条记录 -->
+	<select id="selRepairNodeNew" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		select trn.*
+		from 
+			t_repair_node trn 
+		where trn.crt_id = #{crt_id} and trn.sta = #{sta} and trn.del_flag = 0
+		order by trn.crt_tim desc
+		limit 1
+
+	</select>
+	
+	
+	
+	
+	
+	<!--报修  开始报修任务 -->
+	<update id="updRepairSta" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair
+		SET check_sta = 3
+		WHERE
+		id = #{id}
+
+	</update>
+	
+	
+<!-- 报修任务 增加流程记录  开始-->
+	<select id="insertRepairRecordProcess" parameterType="java.util.LinkedHashMap">	
+			INSERT INTO t_repair_node (
+			repair_id,
+			crt_id,
+			sta,
+			if_success,
+			repair_result,
+			remark,
+			crt_tim,
+			sta_time
+		)
+		VALUES
+			(#{repair_id}, 
+			#{crt_id},
+			 #{sta}, 
+			 #{if_success}, 
+			 #{repair_result}, 
+			 #{remark},
+			 #{crt_tim},
+			 #{sta_time})
+		
+	</select>
+	
+		
+<!-- 报修任务 增加流程记录  查询 防止重复-->
+	<select id="selRepairRecordProcess" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			select * from  t_repair_node 
+			where crt_id = #{crt_id} 
+			and repair_id = #{repair_id} 
+			and sta = #{sta}
+		
+	</select>
+	
+		
+<!-- 报修任务 增加流程记录  修改 -->
+	<select id="updRepairRecordProcess" parameterType="java.util.LinkedHashMap">	
+			UPDATE t_repair_node
+				SET crt_tim = #{crt_tim},
+				sta_time = #{sta_time}
+			WHERE
+				id = #{id}
+		
+	</select>
+	
+	
+	<!--报修  根据报修id查询报修节点记录 -->
+	<select id="selRepairNodeByRepairId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		select trn.*,
+			(select u.use_nam from use_use u where u.id = trn.crt_id and u.del_flag = 0) crt_nam
+		from 
+			t_repair_node trn 
+		where trn.repair_id = #{id} 
+		and trn.del_flag = 0
+		<!-- order by trn.sta ASC,trn.crt_tim DESC -->
+		order by trn.crt_tim ASC
+
+	</select>
+	
+	
+	<!--报修  报修节点修改 -->
+	<update id="updRepairNode" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair_node SET 
+		sta_time = #{sta_time},
+		end_time = #{end_time},
+		if_success = #{if_success},
+		repair_result = #{repair_result},
+		remark = #{remark}
+		WHERE
+		id = #{id}
+
+	</update>
+	
+	<!--报修  根据报修节点id查看  信息回显 -->
+	<select id="selRepairNodeById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		select trn.*,
+			(select u.use_nam from use_use u where u.id = trn.crt_id and u.del_flag = 0) crt_nam
+		from 
+			t_repair_node trn 
+		where trn.id = #{id} 
+		and trn.del_flag = 0
+
+	</select>
+	
+	
+	<!--报修  任务提交  报修任务待审核 -->
+	<update id="updRepairStaFour" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair SET 
+		check_use_id = #{check_use_id},
+		check_sta = 4
+		WHERE
+		id = #{id}
+
+	</update>
+	
+	
+	<!--报修  审核或驳回 -->
+	<update id="updRepairStaIfSuccess" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair SET 
+		check_use_id = #{check_use_id},
+		check_time = #{check_time},
+		check_remark = #{check_remark},
+		check_sta = #{check_sta}
+		WHERE
+		id = #{id}
+
+	</update>
+	
+	
+	
+	
+
+<!-- //////////////////////////////////报废管理//////////////////////////////// -->
+
+<!-- 报报废 列表显示-->
+	<select id="selScrap" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				tsc.*,
+				(select u.use_nam from use_use u where u.id = tsc.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tsc.one_check_use_id) one_check_nam,
+				(select u.use_nam from use_use u where u.id = tsc.two_chcek_use_id) two_check_nam
+			FROM
+				t_scrap tsc
+			WHERE
+				tsc.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND tsc.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="one_check_use_id != null and one_check_use_id != ''">
+		
+				AND tsc.one_check_use_id = #{one_check_use_id}
+			</if>
+			
+			<if test="two_chcek_use_id != null and two_chcek_use_id != ''">
+		
+				AND tsc.two_chcek_use_id = #{two_chcek_use_id}
+			</if>
+			
+			<if test="check_sta != null and check_sta != ''">
+		
+				AND tsc.check_sta = #{check_sta}
+			</if>
+			order by tsc.crt_tim
+			LIMIT #{start},#{everyPage}
+	</select>
+
+<!-- 报报废 列表显示   分页-->
+	<select id="selScrapCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT count(tsc.id) cou,
+				tsc.*,
+				(select u.use_nam from use_use u where u.id = tsc.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tsc.one_check_use_id) one_check_nam,
+				(select u.use_nam from use_use u where u.id = tsc.two_chcek_use_id) two_check_nam
+			FROM
+				t_scrap tsc
+			WHERE
+				tsc.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND tsc.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="one_check_use_id != null and one_check_use_id != ''">
+		
+				AND tsc.one_check_use_id = #{one_check_use_id}
+			</if>
+			
+			<if test="two_chcek_use_id != null and two_chcek_use_id != ''">
+		
+				AND tsc.two_chcek_use_id = #{two_chcek_use_id}
+			</if>
+			
+			<if test="check_sta != null and check_sta != ''">
+		
+				AND tsc.check_sta = #{check_sta}
+			</if>
+	</select>
+
+
+<!-- 报废 新建报废任务-->
+	<insert id="insertScrap" parameterType="java.util.LinkedHashMap">
+	
+		insert into t_scrap 
+		(crt_use_id,
+		crt_tim,
+		equ_num,
+		scrap_resaon,
+		scrap_opinion,
+		one_check_use_id,
+		check_sta,
+		remark,
+		tour_nam)
+		values
+		(#{crt_use_id},
+		#{crt_tim},
+		#{equ_num},
+		#{scrap_resaon},
+		#{scrap_opinion},
+		#{one_check_use_id},
+		#{check_sta},
+		#{remark},
+		#{tour_nam})
+	
+	</insert>
+
+<!--报废  修改报废任务 -->
+	<update id="updateScrap" parameterType="java.util.LinkedHashMap">
+	
+			UPDATE t_scrap
+			SET crt_use_id = #{crt_use_id},
+			 equ_num = #{equ_num},
+			 scrap_resaon = #{scrap_resaon},
+			 scrap_opinion = #{scrap_opinion},
+			 one_check_use_id = #{one_check_use_id},
+			 remark = #{remark},
+			 check_sta = #{check_sta}
+			WHERE
+				id = #{id}
+	
+		</update>
+
+
+<!-- 报废 修改任务 信息回显-->
+	<select id="selScrapById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+			
+			select tsc.*, 
+			(select u.use_nam from use_use u where u.id = tsc.crt_use_id) crt_nam,
+				(select u.use_nam from use_use u where u.id = tsc.one_check_use_id) one_check_nam,
+				(select u.use_nam from use_use u where u.id = tsc.two_chcek_use_id) two_check_nam
+			
+			from t_scrap tsc where tsc.id = #{id}		
+			
+	</select>
+
+<!-- 报废 最新的信息-->
+	<select id="selScrapNew" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">	
+			
+			select * from t_scrap where crt_use_id = #{crt_use_id}
+			ORDER BY id DESC
+			limit 1	
+			
+	</select>
+
+
+
+<!--报废  删除报废任务 -->
+	<update id="delScrap" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET del_flag = 1
+		WHERE
+		id = #{id}
+
+	</update>
+
+
+
+<!--报废   第一次审核或驳回 -->
+	<update id="updScrapStaOne" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET one_check_detail = #{one_check_detail},
+		one_check_tim = #{one_check_tim},
+		check_sta = #{check_sta},
+		two_chcek_use_id = #{two_chcek_use_id}
+		WHERE
+		id = #{id}
+
+	</update>
+
+
+<!--报废   第二次审核或驳回 -->
+	<update id="updScrapStaTwo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET two_check_detail = #{two_check_detail},
+		two_check_tim = #{two_check_tim},
+		check_sta = #{check_sta}
+		WHERE
+		id = #{id}
+
+	</update>
+
+	
+
+<!-- //////////////////////////////////巡视计划//////////////////////////////// -->
+
+<!-- 巡视计划 列表显示-->
+	<select id="selTourPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				tp.id,
+				tp.tour_route_id,
+				tp.first_time,
+				tp.day_type,
+				tp.frequency,
+				tp.plan_tour_time,
+				tp.crt_use_id,
+				tp.tour_plan_name,
+				tp.crt_tim,
+				tp.remark,
+				tp.end_time,
+				tp.run_flat,
+				tp.del_flag,
+				(select trn.route_name from tour_route_nam trn where trn.id = tp.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = tp.crt_use_id) crt_nam,
+				<![CDATA[ (case when tp.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (tp.frequency-(DATEDIFF(SYSDATE(),tp.first_time)%(tp.frequency))) DAY) END) next_time ]]>
+			FROM
+				tour_plan tp
+			WHERE
+				tp.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND tp.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="run_flat != null and run_flat != ''">
+		
+				AND tp.run_flat = #{run_flat}
+			</if>
+			order by tp.crt_tim
+			LIMIT #{start},#{everyPage}
+	</select>
+
+<!-- 巡视计划 列表显示  分页-->
+	<select id="selTourPlanCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT count(tp.id) cou,
+				tp.*,
+				(select trn.route_name from tour_route_nam trn where trn.id = tp.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = tp.crt_use_id) crt_nam
+			FROM
+				tour_plan tp
+			WHERE
+				tp.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND tp.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="run_flat != null and run_flat != ''">
+		
+				AND tp.run_flat = #{run_flat}
+			</if>
+	</select>
+
+
+
+<!-- 巡视计划 列表显示  导出功能-->
+	<select id="selTourPlanAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				tp.*,
+				(select trn.route_name from tour_route_nam trn where trn.id = tp.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = tp.crt_use_id) crt_nam
+			FROM
+				tour_plan tp
+			WHERE
+				tp.del_flag = 0
+	</select>
+
+
+
+
+<!-- 巡视计划添加 -->
+	<insert id="insertTourPlan" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_plan (
+				tour_route_id,
+				first_time,
+				next_time,
+				day_type,
+				frequency,
+				plan_tour_time,
+				crt_use_id,
+				tour_plan_name,
+				crt_tim,
+				remark,
+				end_time,
+				run_flat
+			)
+			VALUES
+				(
+					#{tour_route_id},
+					#{first_time},
+					#{next_time},
+					#{day_type},
+					#{frequency},
+					#{plan_tour_time},
+					#{crt_use_id},
+					#{tour_plan_name},
+					#{crt_tim},
+					#{remark},
+					#{end_time},
+					#{run_flat}
+				)
+			
+	</insert>
+
+	<!--巡视 计划  更新 -->
+	<update id="updTourPlan" parameterType="java.util.LinkedHashMap">
+	update tour_plan 
+		set tour_route_id = #{tour_route_id},
+			first_time = #{first_time},
+			next_time = #{next_time},
+			day_type = #{day_type},
+			frequency = #{frequency},
+			plan_tour_time = #{plan_tour_time},
+			crt_use_id = #{crt_use_id},
+			tour_plan_name = #{tour_plan_name},
+			crt_tim = #{crt_tim},
+			remark = #{remark},
+			end_time = #{end_time},
+			run_flat = #{run_flat}
+		where id = #{id}
+	
+	</update>
+
+
+<!-- 根据id查看巡视 计划 -->
+	<select id="getTourPlanById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			<!-- select * from tour_plan where id = #{id} and del_flag = 0 -->
+			
+			SELECT
+				tp.id,
+				tp.tour_route_id,
+				tp.first_time,
+				tp.day_type,
+				tp.frequency,
+				tp.plan_tour_time,
+				tp.crt_use_id,
+				tp.tour_plan_name,
+				tp.crt_tim,
+				tp.remark,
+				tp.end_time,
+				tp.run_flat,
+				tp.del_flag,
+				(select trn.route_name from tour_route_nam trn where trn.id = tp.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = tp.crt_use_id) crt_nam,
+	  <![CDATA[ (case when tp.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (tp.frequency-(DATEDIFF(SYSDATE(),tp.first_time)%(tp.frequency))) DAY) END) next_time ]]>
+			FROM
+				tour_plan tp
+			WHERE
+				tp.del_flag = 0
+				and  tp.id = #{id}
+			
+			
+	</select>
+	
+
+<!-- 根据id查看巡视 计划 -->
+	<select id="getTourPlanMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				tp.id,
+				tp.tour_route_id,
+				tp.first_time,
+				tp.day_type,
+				tp.frequency,
+				tp.plan_tour_time,
+				tp.crt_use_id,
+				tp.tour_plan_name,
+				tp.crt_tim,
+				tp.remark,
+				tp.end_time,
+				tp.run_flat,
+				tp.del_flag,
+				(select trn.route_name from tour_route_nam trn where trn.id = tp.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = tp.crt_use_id) crt_nam,
+	  <![CDATA[ (case when tp.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (tp.frequency-(DATEDIFF(SYSDATE(),tp.first_time)%(tp.frequency))) DAY) END) next_time ]]>
+			FROM
+				tour_plan tp
+			WHERE
+				tp.del_flag = 0
+				and  tp.id = #{id}
+	</select>
+	
+
+<!--巡视计划 添加 下次时间 -->
+	<update id="addTourPlanNextTime" parameterType="java.util.LinkedHashMap">
+	
+	update tour_plan 
+	set next_time = #{next_time},
+		run_flat = #{run_flat}
+	where id = #{id}
+	</update>
+	
+<!--巡视计划 删除 -->
+	<update id="delTourPlan" parameterType="java.util.LinkedHashMap">
+	
+	update tour_plan 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+	
+	
+<!--巡视计划    开始执行-->
+	<update id="updTourPlanRunFlat" parameterType="java.util.LinkedHashMap">
+	
+	update tour_plan 
+	set run_flat = 1
+	where id = #{id}
+	</update>
+	
+	
+	
+	
+<!--巡视计划    停止-->
+	<update id="updTourPlanFlat" parameterType="java.util.LinkedHashMap">
+	
+	update tour_plan 
+	set run_flat = #{run_flat}
+	where id = #{id}
+	</update>
+	
+	
+	
+<!-- 巡视  计划   自动添加巡视任务 -->
+	<insert id="insTourTaskAutomatic" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_task (
+				tour_plan_id,
+				tour_route_id,
+				appoint_id,
+				task_sta,
+				task_typ,
+				crt_tim
+			)
+			VALUES
+				(
+					#{tour_plan_id},
+					#{tour_route_id},
+					#{appoint_id},
+					#{task_sta},
+					#{task_typ},
+					now()
+				)
+			
+	</insert>
+	
+
+
+<!-- //////////////////////////////////检修计划//////////////////////////////// -->
+
+<!-- 检修计划 列表显示-->
+	<select id="selOverhaulPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				op.id,
+				op.tour_route_id,
+				op.first_time,
+				op.last_time,
+				op.day_type,
+				op.frequency,
+				op.plan_tour_time,
+				op.crt_use_id,
+				op.tour_plan_name,
+				op.crt_tim,
+				op.remark,
+				op.end_time,
+				op.run_flat,
+				op.del_flag,
+
+				(select trn.route_name from overhaul_route_nam trn where trn.id = op.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = op.crt_use_id) crt_nam,
+				<![CDATA[ (case when op.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (op.frequency-(DATEDIFF(SYSDATE(),op.first_time)%(op.frequency))) DAY) END) next_time ]]>
+			FROM
+				overhaul_plan op
+			WHERE
+				op.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND op.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="run_flat != null and run_flat != ''">
+		
+				AND op.run_flat = #{run_flat}
+			</if> 
+			order by op.crt_tim
+			LIMIT #{start},#{everyPage}
+	</select>
+
+<!-- 检修计划 显示 id查询-->
+	<select id="selOverhaulPlanMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				op.id,
+				op.tour_route_id,
+				op.first_time,
+				op.day_type,
+				op.frequency,
+				op.plan_tour_time,
+				op.crt_use_id,
+				op.tour_plan_name,
+				op.crt_tim,
+				op.remark,
+				op.end_time,
+				op.run_flat,
+				op.del_flag,
+				(select orn.route_name from overhaul_route_nam orn where orn.id = op.tour_route_id) orn_nam, 
+				(select u.use_nam from use_use u where u.id = op.crt_use_id) crt_nam,
+	  <![CDATA[ (case when op.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (op.frequency-(DATEDIFF(SYSDATE(),op.first_time)%(op.frequency))) DAY) END) next_time ]]>
+			FROM
+				overhaul_plan op
+			WHERE
+				op.del_flag = 0
+				and  op.id = #{id}
+			
+	</select>
+
+<!-- 巡视计划 列表显示  分页-->
+	<select id="selOverhaulPlanCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT count(op.id) cou,
+				op.*,
+				(select trn.route_name from tour_route_nam trn where trn.id = op.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = op.crt_use_id) crt_nam
+			FROM
+				overhaul_plan op
+			WHERE
+				op.del_flag = 0
+			<if test="crt_use_id != null and crt_use_id != ''">
+		
+				AND op.crt_use_id = #{crt_use_id}
+			</if>
+			
+			<if test="run_flat != null and run_flat != ''">
+		
+				AND op.run_flat = #{run_flat}
+			</if>
+	</select>
+
+<!-- 巡视计划 列表显示  导出-->
+	<select id="selOverhaulPlanAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">	
+					
+			SELECT
+				op.*,
+				(select trn.route_name from tour_route_nam trn where trn.id = op.tour_route_id) trn_nam, 
+				(select u.use_nam from use_use u where u.id = op.crt_use_id) crt_nam
+			FROM
+				overhaul_plan op
+			WHERE
+				op.del_flag = 0
+	</select>
+
+
+<!-- 检修计划添加 -->
+	<insert id="insertOverhaulPlan" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO overhaul_plan (
+				tour_route_id,
+				first_time,
+				next_time,
+				day_type,
+				frequency,
+				plan_tour_time,
+				crt_use_id,
+				tour_plan_name,
+				crt_tim,
+				remark,
+				end_time,
+				run_flat
+			)
+			VALUES
+				(
+					#{tour_route_id},
+					#{first_time},
+					#{next_time},
+					#{day_type},
+					#{frequency},
+					#{plan_tour_time},
+					#{crt_use_id},
+					#{tour_plan_name},
+					#{crt_tim},
+					#{remark},
+					#{end_time},
+					#{run_flat}
+				)
+			
+	</insert>
+
+
+	<!--检修 计划  更新 -->
+	<update id="updOverhaulPlan" parameterType="java.util.LinkedHashMap">
+	update overhaul_plan 
+		set tour_route_id = #{tour_route_id},
+			first_time = #{first_time},
+			next_time = #{next_time},
+			day_type = #{day_type},
+			frequency = #{frequency},
+			plan_tour_time = #{plan_tour_time},
+			crt_use_id = #{crt_use_id},
+			tour_plan_name = #{tour_plan_name},
+			crt_tim = #{crt_tim},
+			remark = #{remark},
+			end_time = #{end_time},
+			run_flat = #{run_flat}
+		where id = #{id}
+	
+	</update>
+		
+
+<!-- 根据id查看检修 计划  按日-->
+	<select id="getOverhaulPlanById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			<!-- select * from overhaul_plan where id = #{id} -->
+			SELECT
+				op.id,
+				op.tour_route_id,
+				op.first_time,
+				op.day_type,
+				op.frequency,
+				op.plan_tour_time,
+				op.crt_use_id,
+				op.tour_plan_name,
+				op.crt_tim,
+				op.remark,
+				op.end_time,
+				op.run_flat,
+				op.del_flag,
+				(select orn.route_name from overhaul_route_nam orn where orn.id = op.tour_route_id) orn_nam, 
+				(select u.use_nam from use_use u where u.id = op.crt_use_id) crt_nam,
+	  <![CDATA[ (case when op.end_time < SYSDATE() then '计划已过期' else  DATE_ADD(SYSDATE(),INTERVAL (op.frequency-(DATEDIFF(SYSDATE(),op.first_time)%(op.frequency))) DAY) END) next_time ]]>
+			FROM
+				overhaul_plan op
+			WHERE
+				op.del_flag = 0
+				and  op.id = #{id}
+			
+			
+			
+	</select>
+
+<!--检修计划 添加 下次时间 -->
+	<update id="addOverhaulNextTime" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_plan 
+	set next_time = #{next_time},
+	run_flat = #{run_flat}
+	where id = #{id}
+	</update>
+	
+<!--检修计划 删除 -->
+	<update id="delOverhaulPlan" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_plan 
+	set del_flag = 1
+	where id = #{id}
+	</update>
+
+
+<!--检修计划    开始执行-->
+	<update id="updOverhaulPlanRunFlat" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_plan 
+	set run_flat = 1
+	where id = #{id}
+	</update>
+
+
+<!--检修计划    停止-->
+	<update id="updOverhaulPlanFlat" parameterType="java.util.LinkedHashMap">
+	
+	update overhaul_plan 
+	set run_flat = #{run_flat}
+	where id = #{id}
+	</update>
+
+
+	
+<!-- 检修 计划   自动添加巡视任务 -->
+	<insert id="insOverhaulTaskAutomatic" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO overhaul_task (
+				tour_plan_id,
+				tour_route_id,
+				appoint_id,
+				task_sta,
+				task_typ,
+				crt_tim
+			)
+			VALUES
+				(
+					#{tour_plan_id},
+					#{tour_route_id},
+					#{appoint_id},
+					#{task_sta},
+					#{task_typ},
+					now()
+				)
+			
+	</insert>
+	
+
+
+
+
+
+
+
+
+<!-- 运维 图片添加 -->
+<insert id="insTourOrOverhaulImg" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_image (
+				tour_image_name,
+				image_path,
+				tour_image_id,
+				tour_record_id,
+				image_typ,
+				remark
+			)
+			VALUES
+				(
+					#{tour_image_name},
+					#{image_path},
+					#{tour_image_id},
+					#{tour_record_id},
+					#{image_typ},
+					#{remark}
+				)
+			
+	</insert>
+
+<!-- 运维 文件添加 -->
+<insert id="insTourOrOverhaulFile" parameterType="java.util.LinkedHashMap" >
+			INSERT INTO tour_file (
+				file_name,
+				file_path,
+				tour_file_id,
+				tour_record_id,
+				file_typ,
+				remark
+			)
+			VALUES
+				(
+					#{file_name},
+					#{file_path},
+					#{tour_file_id},
+					#{tour_record_id},
+					#{file_typ},
+					#{remark}
+				)
+			
+	</insert>
+
+<!-- 运维 id查看图片 -->
+	<select id="getTourImageById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select ti.*, ti.image_path fil_url from tour_image ti where ti.id = #{id}
+	</select>
+
+<!-- 运维 id查看文件 -->
+	<select id="getTourFileById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select tf.*,tf.file_path fil_url from tour_file tf where tf.id = #{id}
+	</select>
+
+
+
+
+	<!-- app 任务 功能  -->
+	
+	<!-- 巡视任务     我创建的-->
+	<select id="selTourTaskAppointByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			tt.*,tt.tour_route_id trnId,
+			(select tp.tour_plan_name from tour_plan tp where tt.tour_plan_id = tp.id) plan_nam,
+			trn.route_name,
+			uus.use_nam appoint_name,
+			(select uus.use_nam from use_use us where us.id = tt.task_execute_id) execute_name,
+			(select uus.use_nam from use_use us where us.id = tt.task_check_id) check_name
+		FROM
+			tour_task tt,
+			tour_route_nam trn,
+			use_use uus
+		WHERE
+		tt.tour_route_id = trn.id
+		AND tt.appoint_id = uus.id
+		AND tt.del_flag = 0 and trn.del_flag = 0
+		AND tt.task_sta != 5
+		AND tt.appoint_id = #{appoint_id}
+	</select>
+	
+	
+	<!-- 巡视任务     我执行的-->
+	<select id="selTourTaskExecuteByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			tt.*,tt.tour_route_id trnId,
+			(select tp.tour_plan_name from tour_plan tp where tt.tour_plan_id = tp.id) plan_nam,
+			trn.route_name,
+			uus.use_nam execute_name,
+			(select uus.use_nam from use_use us where us.id = tt.appoint_id) appoint_name,
+			(select uus.use_nam from use_use us where us.id = tt.task_check_id) check_name
+		FROM
+			tour_task tt,
+			tour_route_nam trn,
+			use_use uus
+		WHERE
+			tt.tour_route_id = trn.id
+		AND tt.task_execute_id = uus.id
+		AND tt.del_flag = 0 and trn.del_flag = 0
+		AND tt.task_sta != 5
+		AND tt.task_execute_id = #{task_execute_id}
+	</select>
+	
+	
+	<!-- 巡视任务     我审核的-->
+	<select id="selTourTaskCheckByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			tt.*,tt.tour_route_id trnId, 
+			(select tp.tour_plan_name from tour_plan tp where tt.tour_plan_id = tp.id) plan_nam,
+			trn.route_name,
+			uus.use_nam check_name,
+			(select uus.use_nam from use_use us where us.id = tt.appoint_id) appoint_name,
+			(select uus.use_nam from use_use us where us.id = tt.task_execute_id) execute_name
+		FROM
+			tour_task tt,
+			tour_route_nam trn,
+			use_use uus
+		WHERE
+			tt.tour_route_id = trn.id
+		AND tt.task_check_id = uus.id
+		AND tt.del_flag = 0 and trn.del_flag = 0
+		AND tt.task_sta != 5
+		AND tt.task_check_id = #{task_check_id}
+	</select>
+	
+	
+	
+	<!-- 检修任务     我创建的-->
+	<select id="selOverhaulTaskAppointByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			ot.*,ot.tour_route_id ornId, 
+			(select op.tour_plan_name from overhaul_plan op where ot.tour_plan_id = op.id) plan_nam,
+			orn.route_name,
+			uus.use_nam appoint_name,
+			(select uus.use_nam from use_use us where us.id = ot.task_check_id) check_name,
+			(select uus.use_nam from use_use us where us.id = ot.task_execute_id) execute_name
+		FROM
+			overhaul_task ot,
+			overhaul_route_nam orn,
+			use_use uus
+		WHERE
+		 	ot.tour_route_id = orn.id
+		AND ot.appoint_id = uus.id
+		AND ot.del_flag = 0 and orn.del_flag = 0
+		AND ot.task_sta != 5
+		AND ot.appoint_id = #{appoint_id}
+	
+	</select>
+	
+	
+	<!-- 检修任务    我执行的-->
+	<select id="selOverhaulTaskExecuteByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			ot.*,ot.tour_route_id ornId, 
+			(select op.tour_plan_name from overhaul_plan op where ot.tour_plan_id = op.id) plan_nam,
+			orn.route_name,
+			uus.use_nam execute_name,
+			(select uus.use_nam from use_use us where us.id = ot.task_check_id) check_name,
+			(select uus.use_nam from use_use us where us.id = ot.appoint_id) appoint_name
+		FROM
+			overhaul_task ot,
+			overhaul_route_nam orn,
+			use_use uus
+		WHERE
+			ot.tour_route_id = orn.id
+		AND ot.task_execute_id = uus.id
+		AND ot.del_flag = 0 and orn.del_flag = 0
+		AND ot.task_sta != 5
+		AND ot.task_execute_id = #{task_execute_id}
+	</select>
+	
+	
+	<!-- 检修任务     我审核的-->
+	<select id="selOverhaulTaskCheckByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			ot.*,ot.tour_route_id ornId, 
+			(select op.tour_plan_name from overhaul_plan op where ot.tour_plan_id = op.id) plan_nam,
+			orn.route_name,
+			uus.use_nam check_name,
+			(select uus.use_nam from use_use us where us.id = ot.task_execute_id) execute_name,
+			(select uus.use_nam from use_use us where us.id = ot.appoint_id) appoint_name
+		FROM
+			overhaul_task ot,
+			overhaul_route_nam orn,
+			use_use uus
+		WHERE
+		ot.tour_route_id = orn.id
+		AND ot.task_check_id = uus.id
+		AND ot.del_flag = 0 and orn.del_flag = 0
+		AND ot.task_sta != 5
+		AND ot.task_check_id = #{task_check_id}
+	</select>
+	
+	
+	<!-- 报修任务     我创建的-->
+	<select id="selRepairTaskCrtByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			tre.*, 
+			(select sbe.equ_nam from sys_bas_equ sbe where sbe.equ_num = tre.equ_num) equ_nam,
+			(select uus.use_nam from use_use uus where tre.crt_use_id = uus.id) crt_use_nam,
+			(select uus.use_nam from use_use uus where tre.repair_use_id = uus.id) repair_use_nam,
+			(select uus.use_nam from use_use uus where tre.check_use_id = uus.id) check_use_nam
+		FROM
+			t_repair tre
+		WHERE
+ 			tre.del_flag = 0
+		AND tre.check_sta != 5
+		AND tre.crt_use_id = #{crt_use_id}
+	</select>
+	
+	
+	<!-- 报修任务     我维修的-->
+	<select id="selRepairTaskRepairByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			tre.*, 
+			(select sbe.equ_nam from sys_bas_equ sbe where sbe.equ_num = tre.equ_num) equ_nam,
+			(select uus.use_nam from use_use uus where tre.crt_use_id = uus.id) crt_use_nam,
+			(select uus.use_nam from use_use uus where tre.repair_use_id = uus.id) repair_use_nam,
+			(select uus.use_nam from use_use uus where tre.check_use_id = uus.id) check_use_nam
+		FROM
+			t_repair tre
+		WHERE
+ 			tre.del_flag = 0
+		AND tre.check_sta != 5
+		AND tre.repair_use_id = #{repair_use_id}
+	</select>
+	
+	<!-- 报修任务     我审核的-->
+	<select id="selRepairTaskCheckByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			tre.*, 
+			(select sbe.equ_nam from sys_bas_equ sbe where sbe.equ_num = tre.equ_num) equ_nam,
+			(select uus.use_nam from use_use uus where tre.crt_use_id = uus.id) crt_use_nam,
+			(select uus.use_nam from use_use uus where tre.repair_use_id = uus.id) repair_use_nam,
+			(select uus.use_nam from use_use uus where tre.check_use_id = uus.id) check_use_nam
+		FROM
+			t_repair tre
+		WHERE
+ 			tre.del_flag = 0
+		AND tre.check_sta != 5
+		AND tre.check_use_id = #{check_use_id}
+	</select>
+	
+	
+<!-- 新增接口 -->
+
+<!-- 运维模块  系统消息添加 查询用户姓名-->
+	<select id="selUserNameById" resultType="java.util.LinkedHashMap"  parameterType="java.util.LinkedHashMap">
+		
+		SELECT
+		us.id,
+		us.use_nam
+	FROM
+		use_use us
+	WHERE
+		us.del_flag = 0
+	AND us.id = #{id}
+	
+	</select>
+
+	
+
+<!-- 运维模块    选择执行人时使用  根据登录用户id 查询用户所在公司-->
+	<select id="selComByUserId" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+		
+		SELECT
+		us.id,
+		us.com_id,
+		(select sbc.com_lev from sys_bas_com sbc where sbc.id = us.com_id) com_lev
+	FROM
+		use_use us
+	WHERE
+		us.del_flag = 0 
+	AND us.id = #{use_id}
+	
+	</select>
+	
+	
+<!-- 运维模块    选择执行人时使用  根据公司id 查询下级公司-->
+	<select id="selComByComId" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+	
+	SELECT
+		sbc.id com_id,
+		sbc.com_nam,
+		sbc.com_lev
+	FROM
+		sys_bas_com sbc
+	WHERE
+		sbc.del_flag = 0
+	AND sbc.com_sta = 1
+	AND sbc.com_fat_id = #{id}
+	
+	</select>
+	
+<!-- 运维模块    选择审核人时使用  根据公司id 查询公司-->
+	<select id="selComByComFatId" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+	
+	SELECT
+		sbc.id com_id,
+		sbc.com_nam,
+		sbc.com_fat_id,
+		sbc.com_lev
+	FROM
+		sys_bas_com sbc
+	WHERE
+		sbc.del_flag = 0
+	AND sbc.com_sta = 1
+	AND sbc.id = #{id}
+	
+	</select>
+	
+
+<!-- 运维模块 查询所有运维人员   选择执行人时用此接口  通过公司id  查询 所有运维人员-->
+	<select id="selUserNameTour" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+		
+		SELECT
+		us.id,
+		us.use_nam
+	FROM
+		use_use us
+	WHERE
+		us.del_flag = 0 
+	AND us.use_typ = 1 and us.use_sta = 1
+	AND us.com_id = #{com_id}
+	
+	</select>
+	
+
+<!-- 运维模块 使用公司id 获取 本公司所有人员信息  筛选用-->
+	<select id="selComPanyUserName" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+		
+		SELECT
+		us.id,
+		us.use_nam
+	FROM
+		use_use us
+	WHERE
+		us.del_flag = 0 and us.use_sta = 1
+	AND us.com_id = #{com_id}
+	
+	</select>
+	
+
+</mapper>

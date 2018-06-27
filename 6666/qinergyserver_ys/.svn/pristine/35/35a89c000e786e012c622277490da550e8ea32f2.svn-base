@@ -1,0 +1,48 @@
+# Properties file with JDBC-related settings.
+# Applied by PropertyPlaceholderConfigurer from "dataAccessContext-local.xml".
+# Targeted at system administrators, to avoid touching the context XML filescom.microsoft.jdbc.sqlserver.SQLServerDriver 
+
+
+## MySQL master 
+#jdbc.driverClassName=com.mysql.jdbc.Driver
+#jdbc.web.url=jdbc:mysql://139.196.235.134:3306/qinergyserver?useUnicode=true&characterEncoding=utf8
+#jdbc.web.username=byrt
+#jdbc.web.password=byrt123
+#file.upload.path=/usr/qinergy/file/
+#file.prefix=http://139.196.235.134/file/
+
+## MySQL dongruan 
+jdbc.driverClassName=com.mysql.jdbc.Driver
+jdbc.web.url=jdbc:mysql://139.196.235.134:3306/test?useUnicode=true&characterEncoding=utf8
+jdbc.web.username=byrt
+jdbc.web.password=byrt123
+file.upload.path=/usr/qinergy/file/
+file.prefix=http://47.100.84.163/file/ 
+
+
+#=============== MySQL com Ops ==================
+#jdbc.driverClassName=com.mysql.jdbc.Driver
+#jdbc.web.url=jdbc:mysql://39.104.93.43:3306/qinergyserver?useUnicode=true&characterEncoding=utf8
+#jdbc.web.username=qngk
+#jdbc.web.password=qngk456789
+#file.upload.path=/usr/qinergy/file/
+#file.prefix=http://39.104.93.43/file/
+
+
+## MySQL com test: qinergyDev
+#jdbc.driverClassName=com.mysql.jdbc.Driver
+#jdbc.web.url=jdbc:mysql://39.104.93.43:3306/qinergytest?useUnicode=true&characterEncoding=utf8
+#jdbc.web.username=qngk
+#jdbc.web.password=qngk456789
+#file.upload.path=/usr/qinergyDev/file/
+#file.prefix=http://39.104.93.43/file/
+
+jdbc.maxActive=20
+jdbc.maxIdle=2
+maxPoolSize=200
+minPoolSize=1
+initialPoolSize=1
+maxIdleTime=20000
+
+
+

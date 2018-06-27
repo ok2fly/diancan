@@ -1,0 +1,4905 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="system">
+	<!-- 用户基础数据维护 start -->
+	
+	<!-- 用户信息查询，以登录名为条件(PC) -->
+	<select id="getUserByLoginNamePC" parameterType="com.qinergy.dto.system.UserDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			u.id,
+			u.acc_num,
+			u.use_mal,
+			u.use_nam,
+			u.use_sex,
+			u.use_mob,
+			u.use_idc,
+			u.use_typ,
+			u.slt_opt_sta,
+			u.is_def_sta,
+			u.use_add,
+			u.pic_url,
+			u.use_sta,
+			(
+				SELECT
+					bp.pos_nam
+				FROM
+					sys_bas_pos bp
+				WHERE
+					bp.id = u.pos_id
+			) pos_nam,
+			u.use_maj,
+			(
+				SELECT
+					be.edu_nam
+				FROM
+					sys_bas_edu be
+				WHERE
+					be.id = u.edu_id
+			) edu_nam,
+			u.tak_tim,
+			u.pla_ori,
+			u.remark,
+			u.use_pas,
+			u.rol_id,
+			(
+				SELECT
+					br.rol_nam
+				FROM
+					sys_bas_rol br
+				WHERE
+					br.id = u.rol_id
+			) rol_nam,
+			u.edu_id,
+			(
+				SELECT
+					be.edu_nam
+				FROM
+					sys_bas_edu be
+				WHERE
+					be.id = u.edu_id
+			) edu_nam,
+			u.com_id,
+			(
+				SELECT
+					bc.com_nam
+				FROM
+					sys_bas_com bc
+				WHERE
+					bc.id = u.com_id
+			) com_nam
+		FROM
+			use_use u
+		WHERE
+			1 = 1
+
+		<if test="login_name != null and login_name != ''">
+
+			AND u.acc_num = #{login_name} 
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+
+			AND u.com_id = #{com_id} 
+		</if>
+	</select>
+	
+	<!-- 用户信息查询，以登录名为条件(PC) -->
+	<select id="getUserByLoginNamePCT" parameterType="com.qinergy.dto.system.UserDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			u.id,
+			u.acc_num,
+			u.use_mal,
+			u.use_nam,
+			u.use_sex,
+			u.use_mob,
+			u.use_idc,
+			u.use_add,
+			u.use_sta,
+			(
+				SELECT
+					bp.pos_nam
+				FROM
+					sys_bas_pos bp
+				WHERE
+					bp.id = u.pos_id
+			) pos_nam,
+			u.use_maj,
+			(
+				SELECT
+					be.edu_nam
+				FROM
+					sys_bas_edu be
+				WHERE
+					be.id = u.edu_id
+			) edu_nam,
+			u.tak_tim,
+			u.pla_ori,
+			u.remark,
+			u.use_pas,
+			u.rol_id,
+			(
+				SELECT
+					br.rol_nam
+				FROM
+					sys_bas_rol br
+				WHERE
+					br.id = u.rol_id
+			) rol_nam,
+			u.edu_id,
+			(
+				SELECT
+					be.edu_nam
+				FROM
+					sys_bas_edu be
+				WHERE
+					be.id = u.edu_id
+			) edu_nam,
+			u.com_id,
+			(
+				SELECT
+					bc.com_nam
+				FROM
+					sys_bas_com bc
+				WHERE
+					bc.id = u.com_id
+			) com_nam
+		FROM
+			use_use u
+		WHERE
+			1 = 1
+
+		<if test="login_name != null and login_name != ''">
+
+			AND u.use_mob Like concat('%',#{login_name},'%')  
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+
+			AND u.com_id = #{com_id} 
+		</if>
+		
+		ORDER BY
+			id
+		LIMIT #{start},#{evertPage}
+	</select>
+	
+	<!-- 用户信息查询，以登录名为条件(PC) -->
+	<select id="getUserByLoginNamePCTCou" parameterType="com.qinergy.dto.system.UserDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			count(u.id) count
+		FROM
+			use_use u
+		WHERE
+			1 = 1
+
+		<if test="login_name != null and login_name != ''">
+
+			AND u.use_mob Like concat('%',#{login_name},'%')  
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+
+			AND u.com_id = #{com_id} 
+		</if>
+	</select>
+	<!-- 用户信息查询，以Id为条件(PC) -->
+	<select id="getUserById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			u.id,
+			u.acc_num,
+			u.use_mal,
+			u.use_nam,
+			u.use_sex,
+			u.use_mob,
+			u.use_idc,
+			u.use_add,
+			u.use_sta,
+			(
+				SELECT
+					bp.pos_nam
+				FROM
+					sys_bas_pos bp
+				WHERE
+					bp.id = u.pos_id
+			) pos_nam,
+			u.pos_id,
+			u.use_maj,
+			u.dep_id,
+			(
+				SELECT
+					bd.dep_nam
+				FROM
+					sys_bas_dep bd
+				WHERE
+					bd.id = u.dep_id
+			) dep_nam,
+			date_format(
+				u.tak_tim,
+				'%Y-%c-%d %h:%i:%s'
+			) tak_tim,
+			u.pla_ori,
+			u.remark,
+			u.use_pas,
+			u.rol_id,
+			(
+				SELECT
+					br.rol_nam
+				FROM
+					sys_bas_rol br
+				WHERE
+					br.id = u.rol_id
+			) rol_nam,
+			u.edu_id,
+			(
+				SELECT
+					be.edu_nam
+				FROM
+					sys_bas_edu be
+				WHERE
+					be.id = u.edu_id
+			) edu_nam,
+			u.com_id,
+			(
+				SELECT
+					bc.com_nam
+				FROM
+					sys_bas_com bc
+				WHERE
+					bc.id = u.com_id
+			) com_nam
+		FROM
+			use_use u
+		WHERE
+			1 = 1
+
+		<if test="use_id != null and use_id != ''">
+
+			AND u.id = #{use_id} 
+		</if>
+	</select>
+	
+	<!-- 用户信息添加    -->
+    <insert id="insertUser" parameterType="java.util.LinkedHashMap" >
+         INSERT INTO use_use (
+			acc_num,
+			use_mal,
+			use_nam,
+			use_sex,
+			use_mob,
+			use_idc,
+			use_add,
+			use_sta,
+			pos_id,
+			use_maj,
+			edu_id,
+			tak_tim,
+			pla_ori,
+			remark,
+			use_pas,
+			rol_id,
+			com_id,
+			dep_id
+		)
+		VALUES
+			(
+				#{acc_num}, 
+				#{use_mal}, 
+				#{use_nam}, 
+				#{use_sex}, 
+				#{use_mob}, 
+				#{use_idc},
+				#{use_add},
+				#{use_sta},
+				#{pos_id},
+				#{use_maj},
+				#{edu_id},
+				#{tak_tim},
+				#{pla_ori},
+				#{remark},
+				#{use_pas},
+				#{rol_id},
+				#{com_id},
+				#{dep_id}
+			)
+    </insert>
+    
+    <!-- 用户信息修改，以手机号、公司ID为条件    -->
+    <update id="updateUser" parameterType="java.util.LinkedHashMap" >
+	    UPDATE use_use
+		SET acc_num = #{acc_num},
+		use_mal = #{use_mal},
+		use_nam = #{use_nam},
+		use_sex = #{use_sex},
+		use_mob = #{use_mob},
+		use_idc = #{use_idc},
+		use_add = #{use_add},
+		use_sta = #{use_sta},
+		pos_id = #{pos_id},
+		use_maj = #{use_maj},
+		edu_id = #{edu_id}, 
+		tak_tim = #{tak_tim}, 
+		pla_ori = #{pla_ori}, 
+		remark = #{remark}, 
+		rol_id = #{rol_id}, 
+		com_id = #{com_id}, 
+		dep_id = #{dep_id},
+		slt_opt_sta = #{slt_opt_sta},
+		use_typ = #{use_typ},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim},
+		is_def_sta = #{is_def_sta}
+		WHERE
+			id = #{id} 
+    </update>
+    
+    <!-- 用户信息修改，以手机号、公司ID为条件App    -->
+    <update id="updateUserApp" parameterType="java.util.LinkedHashMap" >
+	    UPDATE use_use 
+		SET	use_mal = #{use_mal},
+			use_nam = #{use_nam},
+			use_sex = #{use_sex},
+			use_mob = #{use_mob},
+			use_add = #{use_add},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE
+			id = #{id} 
+    </update>
+    
+    <!-- 用户信息删除，以用户ID为条件    -->
+    <delete id="deleteUser" parameterType="java.util.LinkedHashMap" >
+	 
+	 	DELETE
+		FROM
+			use_use
+		WHERE
+			id = #{id}
+	 
+	</delete>
+
+	<!-- 角色信息添加 -->
+	<insert id="insertUserRole" parameterType="com.qinergy.dto.system.UserRoleDto">
+		INSERT INTO sys_bas_rol (
+			rol_nam,
+			rol_ide,
+			com_id,
+			bud_tim,
+			remark,
+			crt_use_id
+		)
+		VALUES
+			(
+				#{rol_nam},
+				#{rol_ide},
+				#{com_id},
+				#{bud_tim},
+				#{remark},
+				#{crt_use_id}
+			)
+	</insert>
+	
+	<!-- id查看  角色信息 -->
+	<select id="getUserRoleById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT * FROM sys_bas_rol where del_flag = 0 and  id = #{id} 
+	</select>
+	
+	<!-- 角色名称 查看  角色信息 -->
+	<select id="getUserRoleByRolNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT * FROM sys_bas_rol where del_flag = 0 and  rol_nam = #{rol_nam} 
+	</select>
+	
+	<!-- 角色信息  修改 -->
+	<update id="updateUserRole" parameterType="java.util.LinkedHashMap">
+		UPDATE sys_bas_rol
+		SET rol_nam = #{rol_nam},
+			rol_ide = #{rol_ide},
+			remark = #{remark},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE
+			id = #{id}
+	</update>
+
+	<!-- 角色信息与模块信息中间表信息添加 -->
+	<insert id="insertUserRoleByModule" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+		INSERT INTO sys_bas_men_rol (
+			rol_id, 
+			module_id
+		)
+		VALUES
+		(
+			#{role_id},
+			#{module_id}
+		)
+	</insert>
+	
+	<!-- 角色信息与模块信息中间表信息删除 -->
+	<delete id="deleteUserRoleByModule" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+
+		DELETE
+		FROM
+			sys_bas_men_rol
+		WHERE
+			rol_id = #{role_id}
+
+	</delete>
+
+	<!-- 角色信息与模块信息中间表信息添加 -->
+	<insert id="insertUserRoleByModuleApp" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+		INSERT INTO sys_bas_men_rol_app (
+			rol_id, 
+			module_id
+		)
+		VALUES
+		(
+			#{role_id},
+			#{module_id}
+		)
+	</insert>
+	
+	<!-- 角色信息与模块信息中间表信息删除 -->
+	<delete id="deleteUserRoleByModuleApp" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+
+		DELETE
+		FROM
+			sys_bas_men_rol_app
+		WHERE
+			rol_id = #{role_id}
+
+	</delete>
+	
+	<!-- 角色信息删除 -->
+	<delete id="deleteUserRole" parameterType="com.qinergy.dto.system.UserRoleDto">
+
+		<!-- DELETE
+		FROM
+			sys_bas_rol
+		WHERE
+			id = #{id} -->
+			
+			update sys_bas_rol set
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim},
+			del_flag = 1
+			where id = #{id}
+				
+
+	</delete>
+
+	<!-- 模块信息查询（全部） -->
+	<select id="getUserModule" parameterType="com.qinergy.dto.system.UserModuleDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.description
+		FROM
+			sys_bas_men bm
+	</select>
+
+	<!-- 获取指定角色的角色与菜单中间表的所有数据唯一性标记 -->
+	<select id="getUserRoleModuleCrtIde" parameterType="com.qinergy.dto.system.UserRoleModuleDto" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			sbmr.crt_ide
+		FROM
+			sys_bas_men_rol sbmr
+		WHERE
+			sbmr.rol_id = #{role_id}
+	</select>
+
+	<!-- 获取指定的菜单下的已选中的按钮 -->
+	<select id="getUserRoleModuleButtonByRolMod" parameterType="com.qinergy.dto.system.UserRoleModuleDto" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			sbb.*
+		FROM
+			
+			sys_bas_men_rol_btt sbmrb,
+			sys_bas_btt sbb
+		WHERE
+			
+			sbmrb.btt_id = sbb.id
+		AND sbmrb.role_id = #{role_id}
+		AND sbmrb.module_id = #{module_id}
+	</select>
+	
+	
+	<!-- 获取指定的菜单下的所有按钮 -->
+	<select id="getUserRoleModuleButtonByMod" parameterType="com.qinergy.dto.system.UserRoleModuleDto" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			sbb.*
+		FROM
+			
+			sys_bas_btt sbb
+		WHERE 1=1
+			
+		AND sbb.men_id = #{module_id}
+	</select>
+
+	<!-- 使用指定角色获取角色与菜单中间表的所有数据唯一性标记删除已分配权限的菜单与按钮的中间关系表中的数据 -->
+	<delete id="deleteUserRoleModuleButtonByCrtIde" parameterType="com.qinergy.dto.system.UserRoleModuleButtonDto">
+
+		DELETE
+		FROM
+			sys_bas_men_rol_btt
+		WHERE
+			role_id = #{role_id} 
+		AND module_id = #{module_id}
+			
+
+	</delete>
+	
+	<!-- 向已分配权限的菜单与按钮的中间关系表中添加信息-->
+	<insert id="insertUserRoleModuleButton" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+		INSERT INTO sys_bas_men_rol_btt (
+			role_id,
+			module_id,
+			btt_id,
+			crt_use_id,
+			crt_tim
+		)
+		VALUES
+			(
+				#{role_id},
+				#{module_id},
+				#{btt_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 用户基础数据维护 end -->
+
+	<!-- 用户数据操作 start -->
+	<!-- 使用角色ID获取菜单列表信息 -->
+	<select id="getUserRoleByModule" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.description
+		FROM
+			sys_bas_men bm,
+			sys_bas_men_rol bmr
+		WHERE
+			bm.id = bmr.module_id
+		AND bmr.rol_id = #{role_id}
+	</select>
+	
+	<!-- 使用菜单与权限中间表的ID做条件，查询出所有配给该权限下的某一菜单的所有按钮 -->
+	<select id="getButtonByMenuAndRole" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sbb.btt_nam
+		FROM
+			sys_bas_btt sbb,
+			sys_bas_men_rol_btt sbmrb
+		WHERE
+			sbb.id = sbmrb.btt_id
+		AND sbmrb.rol_module_id = #{rol_module_id}
+	</select>
+
+
+	<!-- 用户信息查询，展示1级菜单 -->
+	<select id="getUserRoleByModule1Levl" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men bm,
+			sys_bas_men_rol bmr
+		WHERE
+			bm.id = bmr.module_id
+		AND bmr.rol_id = #{rol_id} 
+		AND bm.module_level = 1
+		ORDER BY
+			bm.module_sort
+	</select>
+	
+	<!-- 查询与某权限有关的所有菜单 -->
+	<select id="getAppUserRoleByRolId" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm,
+			sys_bas_men_rol_app bmr
+		WHERE
+			bm.id = bmr.module_id
+		AND bmr.rol_id = #{rol_id} 
+		ORDER BY
+			bm.module_sort
+	</select>
+	
+	<!-- 查询App所有菜单 -->
+	<select id="getAppUserRole" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm
+		
+		ORDER BY
+			bm.module_sort
+	</select>
+	
+	
+	<!-- 用户信息查询，展示1级菜单(App) -->
+	<select id="getUserRoleByModule1LevlApp" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm,
+			sys_bas_men_rol_app bmr
+		WHERE
+			bm.id = bmr.module_id
+		AND bmr.rol_id = #{rol_id} 
+		AND bm.module_level = 1
+		ORDER BY
+			bm.module_sort
+	</select>
+	
+	<!-- 用户信息查询，展示1级菜单(所有) -->
+	<select id="getUserRoleByModule1LevlAll" 
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men bm
+		WHERE
+			bm.module_level = 1
+		ORDER BY
+			bm.module_sort
+	</select>
+	
+	<!-- 用户信息查询，展示1级菜单(所有) -->
+	<select id="getUserRoleByModule1LevlAllApp" 
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm
+		WHERE
+			bm.module_level = 1
+		ORDER BY
+			bm.module_sort
+	</select>
+
+	<!-- 用户信息查询，展示二级或三级菜单 -->
+	<select id="getUserRoleByModule2Levl" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men bm,
+			sys_bas_men_rol bmr
+		WHERE
+			bm.id = bmr.module_id
+			AND bmr.rol_id = #{rol_id}
+			AND bm.module_father = #{pos_id} 
+		ORDER BY
+			bm.module_sort
+
+	</select>
+	
+	<!-- 用户信息查询，展示二级或三级菜单(App) -->
+	<select id="getUserRoleByModule2LevlApp" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm,
+			sys_bas_men_rol_app bmr
+		WHERE
+			bm.id = bmr.module_id
+		AND bmr.rol_id = #{rol_id} and
+		bm.module_father = #{pos_id} 
+		ORDER BY
+			bm.module_sort
+
+	</select>
+	<!-- 用户信息查询，展示二级或三级菜单(所有) -->
+	<select id="getUserRoleByModule2LevlAll" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men bm
+		WHERE
+			bm.module_father = #{pos_id} 
+		ORDER BY
+			bm.module_sort
+
+	</select>
+	<!-- 用户信息查询，展示二级或三级菜单(所有) -->
+	<select id="getUserRoleByModule2LevlAllApp" parameterType="com.qinergy.dto.system.UserDto"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			bm.id,
+			bm.module_name,
+			bm.module_code,
+			bm.module_father,
+			bm.module_level,
+			bm.module_url,
+			bm.is_button,
+			bm.description
+		FROM
+			sys_bas_men_app bm
+		WHERE
+			bm.module_father = #{pos_id} 
+		ORDER BY
+			bm.module_sort
+
+	</select>
+
+	<!-- 更新用户密码 -->
+	<update id="updateUserPassWd" parameterType="java.util.LinkedHashMap">
+
+		UPDATE use_use
+		SET use_pas = #{md5NewPasswd} 
+		WHERE
+			acc_num = #{loginName}
+
+	</update>
+	
+	<!-- 查询单位层级信息（上属单位，下属单位等）    -->
+	<select id="getBasComLev" parameterType="com.qinergy.dto.system.UserDto" resultType="java.util.LinkedHashMap">
+	  
+	   	SELECT
+			bc.id,
+			bc.com_nam
+		FROM
+			sys_bas_com bc
+		WHERE
+			bc.com_fat_id = #{fat_id} 
+		AND del_flag = 0
+	     
+	</select>
+	
+	<!-- 根据用户id查询所属公司id-->
+	<select id="getComFat" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	   SELECT
+			bc.id,
+			bc.com_fat_id,
+			bc.com_lev
+		FROM
+			sys_bas_com bc,
+			use_use u
+		WHERE
+			bc.id = u.com_id
+		AND u.del_flag = '0'
+		and bc.del_flag = '0'
+		AND u.id = #{id}
+	     
+	</select>
+	
+	
+	<!-- id查询组织机构详情信息    -->
+	<select id="getBasComInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	   
+		SELECT
+			bc.com_nam,
+			bc.com_ide,
+			bc.com_sta,
+			bc.com_con,
+			bc.com_tel,
+			bc.remark,
+			(
+				SELECT
+					bct.com_typ
+				FROM
+					sys_bas_com_typ bct
+				WHERE
+					bc.com_typ_id = bct.id
+			) com_typ,
+			bc.com_fat_id,
+			bc.com_lep,
+			bc.com_lep_cod,
+			bc.com_lon,
+			bc.com_lat,
+			bc.com_sor,
+			bc.com_cen_lon,
+			bc.com_cen_lat,
+			bc.com_zoo_lev,
+			bc.com_lev,
+			bc.com_rol,
+			bc.pro_id,
+			bc.cit_id,
+			bc.are_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bc.pro_id
+			) pro_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bc.cit_id
+			) cit_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bc.are_id
+			) are_nam,
+			bc.com_add,
+			bc.com_pjt_nam
+		FROM
+			sys_bas_com bc
+		WHERE
+			bc.id = #{id} 
+		AND bc.del_flag='0'
+	     
+	</select>
+	
+	<!-- 查询指定单位类别信息    -->
+	<select id="getBasComTypInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		  SELECT
+			bc.id,
+			bct.com_typ
+		FROM
+			sys_bas_com bc,
+			sys_bas_com_typ bct,
+			sys_bas_com_typ bctc
+		WHERE
+			bc.id = bctc.id
+		AND bct.id = com_typ_id
+		AND bc.id = #{id} 
+ 	     
+	</select>
+	
+	<!-- 查询指定单位类别信息    -->
+	<select id="getBasComTypAllInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	   SELECT
+			bct.id,
+			bct.com_typ
+		FROM
+			sys_bas_com_typ bct
+	     
+	</select>
+	
+	<!-- 查询指定单位的下属单位信息    -->
+	<select id="getBasComSubComInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			bc.id,
+			bc.com_nam,
+			bc.com_con,
+			bc.com_sta,
+			bc.com_sor
+		FROM
+			sys_bas_com bc
+		WHERE
+			bc.com_fat_id = #{id} 
+		ORDER BY
+			bc.com_sor
+		AND bc.del_flag = '0'
+	</select>
+	
+	<!-- 查询指定单位的部门信息    -->
+	<select id="getBasComDepInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	   SELECT
+			bd.id,
+			bd.dep_nam,
+			bd.dep_sta,
+			bd.dep_sor
+		FROM
+			sys_bas_dep bd
+		WHERE
+			bd.com_id = #{id}  
+		ORDER BY
+			bd.dep_sor
+	     AND bd.del_flag = 0
+	</select>
+	
+	<!-- 查询所有本公司的角色信息    -->
+	<select id="getBasRolInfo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	 	SELECT
+			br.id,
+			br.rol_nam,
+			br.rol_ide,
+			br.com_id,
+			(select sbc.com_nam from sys_bas_com sbc where sbc.id = br.com_id) com_nam,
+			br.remark,
+			br.bud_tim,
+			br.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = br.crt_use_id
+			) crt_use_nam,
+			br.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = br.mod_use_id
+			) mod_use_nam,
+			br.mod_tim
+		FROM
+			sys_bas_rol br
+		WHERE
+			1 = 1 and br.del_flag = 0
+		<if test="com_id != null and com_id != ''">
+			AND br.com_id = #{com_id}
+	    </if>
+	   	<if test="role_name != null and role_name != ''">
+
+			AND br.rol_nam Like concat('%',#{role_name},'%') 
+		</if>
+		ORDER BY
+			br.id
+		LIMIT #{start},#{evertPage}
+	</select>
+	
+	<!-- 查询所有本公司的角色信息    -->
+	<select id="getBasRolInfoCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	   SELECT
+			count(br.id) count
+		FROM
+			sys_bas_rol br
+		WHERE
+			1 = 1
+		AND br.com_id = #{com_id}
+		AND br.del_flag=0
+	   
+	   <if test="role_name != null and role_name != ''">
+
+			AND br.rol_nam Like concat('%',#{role_name},'%') 
+		</if>
+	</select>
+
+	<!-- 修改公司信息 -->
+	<update id="updateComInfo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_com
+		SET com_nam = #{com_nam},
+		com_sta = #{com_sta},
+		com_ide = #{com_ide},
+		com_add = #{com_add},
+		pro_id = #{pro_id},
+		cit_id = #{cit_id},
+		are_id = #{are_id},
+		com_con = #{com_con},
+		com_tel = #{com_tel},
+		com_typ_id = #{com_typ_id},
+		com_fat_id = #{com_fat_id},
+		com_lep = #{com_lep},
+		com_lep_cod = #{com_lep_cod},
+		com_lon = #{com_lon},
+		com_lat = #{com_lat},
+		com_sor = #{com_sor},
+		com_cen_lon = #{com_cen_lon},
+		com_cen_lat = #{com_cen_lat},
+		com_zoo_lev = #{com_zoo_lev},
+		com_rol = #{com_rol},
+		com_lev = #{com_lev},
+		remark = #{remark},
+		mod_use_id = #{use_id},
+		mod_tim = #{tim}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 添加公司信息 -->
+	<insert id="insertComInfo" parameterType="java.util.LinkedHashMap">
+	
+		INSERT INTO sys_bas_com 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="com_nam != null"> com_nam, </if>
+			<if test="com_ide != null"> com_ide, </if>
+			<if test="com_add != null"> com_add, </if>
+			<if test="com_sta != null"> com_sta, </if>
+			<if test="com_con != null"> com_con, </if>
+			<if test="com_tel != null"> com_tel, </if>
+			<if test="com_typ_id != null"> com_typ_id, </if>
+			<if test="com_fat_id != null"> com_fat_id, </if>
+			<if test="com_lep != null"> com_lep, </if>
+			<if test="com_lep_cod != null"> com_lep_cod, </if>
+			<if test="com_lon != null"> com_lon, </if>
+			<if test="com_lat != null"> com_lat, </if>
+			<if test="com_sor != null"> com_sor, </if>
+			<if test="com_cen_lon != null"> com_cen_lon, </if>
+			<if test="com_cen_lat != null"> com_cen_lat, </if>
+			<if test="com_zoo_lev != null"> com_zoo_lev, </if>
+			<if test="pro_id != null"> pro_id, </if>
+			<if test="cit_id != null"> cit_id, </if>
+			<if test="are_id != null"> are_id, </if>
+			<if test="com_lev != null"> com_lev, </if>
+			<if test="com_rol != null"> com_rol, </if>
+			<if test="remark != null"> remark, </if>
+			<if test="use_id != null"> crt_use_id, </if>
+			<if test="tim != null"> crt_tim, </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="com_nam != null"> #{com_nam}, </if>
+			<if test="com_ide != null"> #{com_ide}, </if>
+			<if test="com_add != null"> #{com_add}, </if>
+			<if test="com_sta != null"> #{com_sta}, </if>
+			<if test="com_con != null"> #{com_con}, </if>
+			<if test="com_tel != null"> #{com_tel}, </if>
+			<if test="com_typ_id != null"> #{com_typ_id}, </if>
+			<if test="com_fat_id != null"> #{com_fat_id}, </if>
+			<if test="com_lep != null"> #{com_lep}, </if>
+			<if test="com_lep_cod != null"> #{com_lep_cod}, </if>
+			<if test="com_lon != null"> #{com_lon}, </if>
+			<if test="com_lat != null"> #{com_lat}, </if>
+			<if test="com_sor != null"> #{com_sor}, </if>
+			<if test="com_cen_lon != null"> #{com_cen_lon}, </if>
+			<if test="com_cen_lat != null"> #{com_cen_lat}, </if>
+			<if test="com_zoo_lev != null"> #{com_zoo_lev}, </if>
+			<if test="pro_id != null"> #{pro_id}, </if>
+			<if test="cit_id != null"> #{cit_id}, </if>
+			<if test="are_id != null"> #{are_id}, </if>
+			<if test="com_lev != null"> #{com_lev}, </if>
+			<if test="com_rol != null"> #{com_rol}, </if>
+			<if test="remark != null"> #{remark}, </if>
+			<if test="use_id != null"> #{use_id}, </if>
+			<if test="tim != null"> #{tim}, </if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 删除公司信息 -->
+	<update id="deComLev" parameterType="java.util.LinkedHashMap">
+		UPDATE sys_bas_com
+		SET del_flag = '1'
+		WHERE
+			id = #{id}
+		
+
+	</update>
+	
+	<!-- 删除公司信息 -->
+	<delete id="deleteComInfo" parameterType="java.util.LinkedHashMap">
+
+		delete from sys_bas_com where id = #{id}
+
+	</delete>
+	
+	<!-- 查询上级单位名称，传的id为点击单位的com_fat_id  -->
+	<select id="getBasHigComNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		select bc.id,bc.com_nam from sys_bas_com bc where bc.id = #{id}
+	     
+	</select>
+
+	<!-- 查询所有一级单位信息  -->
+	<select id="getBasCom1Lev" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		select bc.id,bc.com_nam from sys_bas_com bc where bc.id = #{id} and bc.del_flag='0'
+	     
+	</select>
+	
+	<!-- 查询三级地区列表,一级（省级）   -->
+	<select id="getBasRegLst1Lev" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			br.id,
+			br.reg_nam,
+			br.reg_fat_id,
+			br.reg_lev,
+			br.fir_let
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_lev = #{reg_adm_lev} 
+		GROUP BY
+			br.reg_nam
+		ORDER BY
+			br.fir_let
+		LIMIT #{start},#{evertPage}
+		
+	</select>
+	<!-- 查询三级地区列表,一级（省级）(所有)   -->
+	<select id="getBasRegLst1LevAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			br.id,
+			br.reg_nam,
+			br.reg_fat_id,
+			br.reg_lev,
+			br.fir_let
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_lev = #{reg_adm_lev} 
+		GROUP BY
+			br.reg_nam
+		ORDER BY
+			br.fir_let
+	</select>
+	
+	<!-- 查询三级地区列表,一级（省级）   -->
+	<select id="getBasRegLst1LevCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			count(br.id) count
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_lev = #{reg_adm_lev} 
+		
+	</select>
+	
+	<!-- 查询地区信息使用ID  -->
+	<select id="getBasRegInfById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			br.id,
+			br.reg_nam,
+			br.reg_fat_id,
+			br.reg_lev,
+			br.fir_let
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.id = #{id}
+	     
+	</select>
+	<!-- 查询地区信息使用父地址ID  -->
+	<select id="getBasRegInfByFatId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			br.id,
+			br.reg_nam,
+			(
+				SELECT
+					bro.reg_nam
+				FROM
+					sys_bas_reg bro
+				WHERE
+					bro.id = br.reg_fat_id
+			) reg_fat_id,
+			br.reg_lev,
+			br.fir_let
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_fat_id = #{reg_fat_id}
+		ORDER BY
+			br.id
+		LIMIT #{start},#{evertPage}	     
+	</select>
+	<!-- 查询地区信息使用父地址ID(不分页)  -->
+	<select id="getBasRegInfByFatIdNotPage" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			br.id,
+			br.reg_nam,
+			br.reg_fat_id,
+			br.reg_lev,
+			br.fir_let
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_fat_id = #{reg_fat_id}
+		ORDER BY
+			br.id
+		
+	</select>
+	
+	<!-- 查询地区信息使用父地址ID  -->
+	<select id="getBasRegInfByFatIdCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			count(br.id) count
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_fat_id = #{reg_fat_id}
+	</select>
+	
+	<!-- 查询所有单位信息  -->
+	<select id="getBasComAllLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+		SELECT
+			bc.id,
+			bc.com_nam
+		FROM
+			sys_bas_com bc
+	     
+	</select>
+	
+	<!-- 查询地区列表,以区域标识为条件   -->
+	<select id="getBasRegInfByIde" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	  
+	    SELECT
+			br.reg_are,
+			br.reg_ide,
+			br.reg_adm_lev,
+			br.reg_sup_ide
+		FROM
+			sys_bas_reg br
+		WHERE
+			br.reg_ide = #{reg_ide} 
+		AND br.reg_adm_lev = #{reg_adm_lev} 
+		GROUP BY
+			br.reg_are
+		ORDER BY
+			br.reg_ide,br.id
+	
+	</select>
+	
+	<!-- 获取所有设施 -->
+	<select id="getBasApp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ba.id,
+			ba.app_typ_id,
+			(
+				SELECT
+					bat.typ_nam
+				FROM
+					sys_bas_app_typ bat
+				WHERE
+					bat.id = ba.app_typ_id
+			) app_typ,
+			ba.app_mod,
+			ba.man_id,
+			(
+				SELECT
+					bm.man_nam
+				FROM
+					sys_bas_man bm
+				WHERE
+					bm.id = ba.man_id
+			) man_nam,
+			ba.com_id,
+			(
+				SELECT
+					bc.com_nam
+				FROM
+					sys_bas_com bc
+				WHERE
+					bc.id = ba.com_id
+			) com_nam,
+			ba.crt_use_id,
+			(
+				SELECT
+					u.use_nam
+				FROM
+					use_use u
+				WHERE
+					u.id = ba.crt_use_id
+			) use_nam,
+			ba.crt_tim,
+			ba.rtd_elc,
+			ba.rtd_vol,
+			ba.rtd_pow,
+			ba.app_size size,
+			ba.app_weight weight,
+			ba.app_altitude altitude,
+			ba.work_temp,
+			ba.prtc_grade,
+			ba.com_typ,
+			ba.com_pro
+		FROM
+			sys_bas_app ba
+		WHERE
+			del_flag = 0
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			AND ba.app_mod Like concat('%',#{app_mod},'%')  
+			
+		</if>
+		
+		<if test="man_id != null and man_id != ''">
+		
+			AND ba.man_id = #{man_id} 
+			
+		</if>
+		
+		<if test="app_id != null and app_id != ''">
+		
+			AND ba.id = #{app_id} 
+			
+		</if>
+		
+		<if test="app_typ_id != null and app_typ_id != ''">
+		
+			AND ba.app_typ_id = #{app_typ_id} 
+			
+		</if>
+		
+		ORDER BY
+			ba.id
+		LIMIT #{start},#{evertPage}
+	</select>
+	
+	<!--  使用AppID获取所有设施 -->
+	<select id="getBasAppById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ba.id,
+			ba.app_typ_id,
+			(
+				SELECT
+					bat.typ_nam
+				FROM
+					sys_bas_app_typ bat
+				WHERE
+					bat.id = ba.app_typ_id
+			) app_typ,
+			ba.app_mod,
+			ba.man_id,
+			(
+				SELECT
+					bm.man_nam
+				FROM
+					sys_bas_man bm
+				WHERE
+					bm.id = ba.man_id
+			) man_nam,
+			ba.com_id,
+			(
+				SELECT
+					bc.com_nam
+				FROM
+					sys_bas_com bc
+				WHERE
+					bc.id = ba.com_id
+			) com_nam,
+			ba.crt_use_id,
+			(
+				SELECT
+					u.use_nam
+				FROM
+					use_use u
+				WHERE
+					u.id = ba.crt_use_id
+			) use_nam,
+			ba.crt_tim,
+			ba.rtd_elc,
+			ba.rtd_vol,
+			ba.rtd_pow,
+			ba.app_size size,
+			ba.app_weight weight,
+			ba.app_altitude altitude,
+			ba.work_temp,
+			ba.prtc_grade,
+			ba.com_typ,
+			ba.com_pro
+		FROM
+			sys_bas_app ba
+		WHERE
+			del_flag = 0
+		
+		<if test="app_id != null and app_id != ''">
+		
+			AND ba.id = #{app_id} 
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取所有设施 -->
+	<select id="getBasAppCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ba.id) count
+		FROM
+			sys_bas_app ba
+		WHERE
+			del_flag = 0
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			AND ba.app_mod Like concat('%',#{app_mod},'%')  
+			
+		</if>
+		
+		<if test="man_id != null and man_id != ''">
+		
+			AND ba.man_id = #{man_id} 
+			
+		</if>
+		
+		<if test="app_id != null and app_id != ''">
+		
+			AND ba.id = #{app_id} 
+			
+		</if>
+		<if test="app_typ_id != null and app_typ_id != ''">
+		
+			AND ba.app_typ_id = #{app_typ_id} 
+			
+		</if>
+	</select>
+	
+	<!-- 修改设备型号信息 -->
+	<update id="updAppInf" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_app
+		SET app_typ_id = #{app_typ_id},
+		app_mod = #{app_mod},
+		man_id = #{man_id},
+		com_id = #{com_id},
+		rtd_elc = #{rtd_elc},
+		rtd_vol = #{rtd_vol},
+		rtd_pow = #{rtd_pow},
+		app_size = #{app_size},
+		app_weight = #{app_weight},
+		app_altitude = #{app_altitude},
+		work_temp = #{work_temp},
+		prtc_grade = #{prtc_grade},
+		com_typ = #{com_typ},
+		com_pro = #{com_pro},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		WHERE
+			id = #{app_id}
+
+	</update>
+	
+	<!-- 删除设备信息 -->
+	<update id="delAppInf" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_app
+		SET del_flag = 1
+		WHERE
+			id = #{app_id}
+
+	</update>
+	
+	<!-- 修改设备类型信息 -->
+	<update id="updAppTyp" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_app_typ
+		SET typ_nam = #{typ_nam},
+		typ_ide = #{typ_ide},
+		remark = #{remark},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		WHERE
+			id = #{app_typ_id}
+
+	</update>
+	
+	<!-- 删除设备类型信息 -->
+	<update id="delAppTyp" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_app_typ
+		SET del_flag = 1
+		WHERE
+			id = #{app_typ_id}
+
+	</update>
+	
+	<!-- 添加设备类型信息 -->
+	<insert id="insAppTyp" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_bas_app_typ (
+			typ_nam,
+			typ_ide,
+			remark,
+			crt_use_id,
+			crt_tim
+		)
+		VALUES
+			(
+				#{typ_nam},
+				#{typ_ide},
+				#{remark},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 获取所有厂家类型 -->
+	<select id="getBasManTypAll" resultType="java.util.LinkedHashMap">
+		SELECT
+			bmt.id,
+			bmt.typ_nam
+		FROM
+			sys_bas_man_typ bmt
+
+	</select>
+	
+	<!-- 获取所有设施类型 -->
+	<select id="getBasAppTypAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			bat.id,
+			bat.typ_nam,
+			bat.typ_ide,
+			bat.remark
+		FROM
+			sys_bas_app_typ bat
+		WHERE
+			bat.del_flag = 0 
+		<if test="typ_nam != null and typ_nam != ''">
+			AND bat.typ_nam  Like concat('%',#{typ_nam},'%')   
+		</if>
+		
+		<if test="id != null and id != ''">
+			AND bat.id = #{id}   
+		</if>
+
+	</select>
+	
+	<!-- 获取所有公司类型信息 -->
+	<select id="getAllComTyp" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			*
+		FROM
+			sys_bas_com_typ
+	
+	</select>
+	
+	<!-- 获取所有公司信息中的公司名称 -->
+	<select id="getAllComNam" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bc.id,
+			bc.com_nam
+		FROM
+			sys_bas_com bc
+		where bc.del_flag = 0
+	
+	</select>
+	
+	<!-- 获取所有运维公司信息中的公司名称 -->
+	<select id="getAllOptComNam" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bc.id,
+			bc.com_nam
+		FROM
+			sys_bas_com bc
+		where bc.del_flag = 0
+		AND (bc.com_rol = 0 OR bc.com_rol = 2)
+	
+	</select>
+	
+	<!-- 获取所有业主公司信息中的公司名称 -->
+	<select id="getAllOwnComNam" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bc.id,
+			bc.com_nam
+		FROM
+			sys_bas_com bc
+		where bc.del_flag = 0
+		AND bc.com_rol = 1
+	
+	</select>
+	<!-- 获取厂家信息/下拉框/全部-->
+	<select id="getManInfAll" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bm.id,
+			bm.man_nam,
+			bm.man_cot,
+			bm.man_mob,
+			bm.man_spa,
+			bm.man_typ_id,
+			(
+				SELECT
+					bmt.typ_nam
+				FROM
+					sys_bas_man_typ bmt
+				WHERE
+					bmt.id = bm.man_typ_id
+			) typ_nam,
+			bm.man_add,
+			bm.remark,
+			bm.man_sta,
+			bm.sta_lon,
+			bm.sta_lat,
+			bm.crt_use_id,
+			bm.crt_tim,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = bm.crt_use_id
+			) use_nam,
+			bm.pro_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.pro_id
+			) pro_nam,
+			bm.cit_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.cit_id
+			) cit_nam,
+			bm.are_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.are_id
+			) are_nam
+		FROM
+			sys_bas_man bm
+		WHERE
+			bm.del_flag = 0
+		AND bm.man_sta = 1
+		
+		ORDER BY
+			bm.id
+	</select>
+	<!-- 获取厂家信息/列表 -->
+	<select id="getManInf" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bm.id,
+			bm.man_nam,
+			bm.man_cot,
+			bm.man_mob,
+			bm.man_spa,
+			bm.man_typ_id,
+			(
+				SELECT
+					bmt.typ_nam
+				FROM
+					sys_bas_man_typ bmt
+				WHERE
+					bmt.id = bm.man_typ_id
+			) typ_nam,
+			bm.man_add,
+			bm.remark,
+			bm.man_sta,
+			bm.sta_lon,
+			bm.sta_lat,
+			bm.crt_use_id,
+			bm.crt_tim,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = bm.crt_use_id
+			) use_nam,
+			bm.pro_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.pro_id
+			) pro_nam,
+			bm.cit_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.cit_id
+			) cit_nam,
+			bm.are_id,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = bm.are_id
+			) are_nam
+		FROM
+			sys_bas_man bm
+		WHERE
+			bm.del_flag = 0
+		
+		<if test="man_id != null and man_id != ''">
+		
+			AND bm.id = #{man_id}
+		</if>
+		
+		<if test="man_nam != null and man_nam != ''">
+		
+			AND bm.man_nam  Like concat('%',#{man_nam},'%')  
+		</if>
+		
+		<if test="man_typ_id != null and man_typ_id != ''">
+		
+			AND bm.man_typ_id = #{man_typ_id}
+		</if>
+		
+		<if test="man_sta != null and man_sta != ''">
+		
+			AND bm.man_sta = #{man_sta}
+		</if>
+		
+		ORDER BY
+			bm.id
+		LIMIT #{start},#{evertPage}
+	</select>
+	
+	<!-- 获取厂家信息/列表 -->
+	<select id="getManInfCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			count(bm.id) count
+		FROM
+			sys_bas_man bm
+		WHERE
+			bm.del_flag = 0  
+		
+		<if test="man_id != null and man_id != ''">
+		
+			AND bm.id = #{man_id}
+		</if>
+		
+		<if test="man_nam != null and man_nam != ''">
+		
+			AND bm.man_nam  Like concat('%',#{man_nam},'%')  
+		</if>
+		
+		<if test="man_typ_id != null and man_typ_id != ''">
+		
+			AND bm.man_typ_id = #{man_typ_id}
+		</if>
+		
+		<if test="man_sta != null and man_sta != ''">
+		
+			AND bm.man_sta = #{man_sta}
+		</if>
+	</select>
+	
+	<!-- 获取所有厂家类型列表 -->
+	<select id="getAllManTyp" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			bmt.id,
+			bmt.typ_nam
+		FROM
+			sys_bas_man_typ bmt
+		WHERE
+			bmt.del_flag = 0
+	
+	</select>
+	
+	<!-- 根据id获取厂家类型-->
+	<select id="getAllManTypById" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+	
+		SELECT
+			*
+		FROM
+			sys_bas_man_typ bmt
+		WHERE
+			bmt.del_flag = 0
+			and bmt.id = #{id}
+	
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- 新建厂家类型信息 -->
+	<insert id="insManTyp" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_bas_man_typ (
+			typ_ide,
+			typ_nam,
+			remark,
+			crt_use_id,
+			crt_tim
+		)
+		VALUES
+			(
+				#{typ_ide},
+				#{typ_nam},
+				#{remark},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 修改厂家类型信息 -->
+	<update id="updManTyp" parameterType="java.util.LinkedHashMap">
+	
+        UPDATE sys_bas_man_typ
+		SET typ_ide = #{typ_ide},
+		typ_nam = #{typ_nam},
+		remark = #{remark},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		WHERE
+			id = #{man_typ_id}
+          
+    </update>
+    
+    <!-- 删除厂家类型信息 -->
+	<delete id="delManTyp" parameterType="java.util.LinkedHashMap">
+
+		DELETE
+		FROM
+			sys_bas_man_typ
+		WHERE
+			id = #{man_typ_id}
+
+	</delete>
+	
+	<!-- 新建厂家信息 -->
+	<insert id="insMan" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_bas_man (
+			man_nam,
+			man_cot,
+			man_mob,
+			man_spa,
+			man_typ_id,
+			man_add,
+			remark,
+			man_sta,
+			sta_lon,
+			sta_lat,
+			pro_id,
+			cit_id,
+			are_id,
+			crt_use_id,
+			crt_tim
+		)
+		VALUES
+			(
+				#{man_nam},
+				#{man_cot},
+				#{man_mob},
+				#{man_spa},
+				#{man_typ_id},
+				#{man_add},
+				#{remark},
+				#{man_sta},
+				#{sta_lon},
+				#{sta_lat},
+				#{pro_id},
+				#{cit_id},
+				#{are_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 修改厂家信息 -->
+	<update id="updMan" parameterType="java.util.LinkedHashMap">
+	
+        UPDATE sys_bas_man
+		SET man_nam = #{man_nam},
+		man_cot = #{man_cot},
+		man_mob = #{man_mob},
+		man_spa = #{man_spa},
+		man_typ_id = #{man_typ_id},
+		man_add = #{man_add},
+		remark = #{remark},
+		man_sta = #{man_sta},
+		sta_lon = #{sta_lon},
+		sta_lat = #{sta_lat},
+		pro_id = #{pro_id},
+		cit_id = #{cit_id},
+		are_id = #{are_id},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		WHERE
+			id = #{man_id}
+          
+    </update>
+    
+    <!-- 删除厂家信息 -->
+	<update id="delMan" parameterType="java.util.LinkedHashMap">
+	
+        UPDATE sys_bas_man
+		SET del_flag = 1
+		WHERE
+			id = #{man_id}
+          
+    </update>
+	
+	
+	<!-- 获取角色信息 -->
+	<select id="getAllRolInf" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select 
+		
+		br.id,
+		br.rol_nam,
+		br.rol_ide,
+		br.com_id,
+		(select bc.com_nam from sys_bas_com bc where bc.id = br.com_id) com_nam,
+		br.remark,
+		br.bud_tim 
+		
+		from sys_bas_rol br 
+		
+		where 1=1 
+		and del_flag=0
+		<if test="com_id != null and com_id != ''">
+		
+			AND br.com_id = #{com_id}
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取职位信息 -->
+	<select id="getPosInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		select 
+		
+		bp.id,
+		bp.pos_nam,
+		bp.pos_ide,
+		bp.dep_id,
+		(select bd.dep_nam from sys_bas_dep bd where bd.id = bp.dep_id) dep_nam,
+		bp.remark 
+		
+		from sys_bas_pos bp 
+		
+		where bp.dep_id = #{dep_id}
+		
+	</select>
+	
+	<!-- 获取部门信息 -->
+	<select id="getDepInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select 
+		
+		bd.id,
+		bd.dep_nam,
+		bd.dep_ide,
+		bd.com_id,
+		(select bc.com_nam from sys_bas_com bc where bc.id = bd.com_id) com_nam,
+		bd.remark,
+		bd.dep_sta,
+		bd.dep_sor 
+		 
+		from sys_bas_dep bd 
+		
+		where bd.com_id = #{com_id}
+		and bd.del_flag = 0
+		
+	</select>
+	
+	<!-- 获取学历信息 -->
+	<select id="getEduInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		select 
+		
+		be.id,
+		be.edu_nam,
+		be.edu_ide,
+		be.remark
+		 
+		from sys_bas_edu be where be.del_flag = 0
+		
+	</select>
+	
+	<!-- 新建地区信息 -->
+	<insert id="insReg" parameterType="java.util.LinkedHashMap">
+	
+		insert into sys_bas_reg 
+			(reg_nam,
+			reg_fat_id,
+			reg_lev,
+			fir_let,
+			crt_use_id,
+			crt_tim)
+		values
+			(#{reg_nam},
+			#{reg_fat_id},
+			#{reg_lev},
+			#{fir_let},
+			#{crt_use_id},
+			#{crt_tim})
+			
+	</insert>
+	
+	<!-- 修改地区信息 -->
+	<update id="updReg" parameterType="java.util.LinkedHashMap">
+		UPDATE sys_bas_reg
+		SET reg_nam = #{reg_nam},
+		reg_fat_id = #{reg_fat_id},
+		reg_lev = #{reg_lev},
+		fir_let = #{fir_let},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		WHERE
+			id = #{reg_id}
+		
+
+	</update>
+	
+    <!-- 删除地区信息 -->
+	<delete id="delReg" parameterType="java.util.LinkedHashMap">
+
+		delete from sys_bas_reg where id = #{reg_id}
+
+	</delete>
+	
+	<!-- 使用当前地区ID,获取其下级地区信息    -->
+	<select id="getFatRegByRegId" parameterType="java.util.LinkedHashMap" resultType="Integer">
+	
+		select 
+			count(id)
+		from sys_bas_reg sbr 
+		where sbr.reg_fat_id = #{reg_id}
+		
+	</select>
+	
+	<!-- 为使用公司ID获取业主公司信息接口  业主公司-->
+	<select id="getComInfByComIdRol" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.id = #{id} 
+			and sbc.com_rol = '1'
+			and sbc.del_flag = '0'
+
+	</select>
+	
+	
+	<!-- 本接口为使用公司ID获取其下所有子公司信息接口  业主公司-->
+	<select id="getFatComInfByComIdRol" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.remark
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			and sbc.com_rol = '1'
+			and sbc.del_flag = '0'
+
+	</select>
+	
+	<!-- id查询业主详情信息    -->
+	<select id="getBasComInfoRol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	   
+		select bc.com_nam,bc.com_ide,bc.com_sta,bc.com_con,bc.com_tel,
+		(select bct.com_typ from sys_bas_com_typ bct where bc.com_typ_id = bct.id) com_typ,
+		bc.com_fat_id,bc.com_lep,bc.com_lep_cod,bc.com_lon,bc.com_lat,bc.com_sor,bc.com_cen_lon,
+		bc.com_cen_lat,bc.com_zoo_lev,bc.com_lev,bc.com_rol,bc.pro_id,bc.cit_id,bc.are_id,
+					(select br.reg_nam from sys_bas_reg br where br.id = bc.pro_id) pro_nam,
+					(select br.reg_nam from sys_bas_reg br where br.id = bc.cit_id) cit_nam,
+					(select br.reg_nam from sys_bas_reg br where br.id = bc.are_id) are_nam,
+					bc.com_add ,bc.remark
+		from sys_bas_com bc where bc.id = #{id} and bc.del_flag = 0
+	     
+	</select>
+	
+	<!-- 修改业主公司信息 -->
+	<update id="updateComInfoRol" parameterType="java.util.LinkedHashMap">
+
+		update sys_bas_com set
+			com_nam=#{com_nam},
+			com_sta=#{com_sta},
+			com_add=#{com_add},
+			pro_id=#{pro_id},
+			cit_id=#{cit_id},
+			are_id=#{are_id},
+			com_con=#{com_con},
+			com_tel=#{com_tel},
+			com_typ_id=#{com_typ_id},
+			com_fat_id=#{com_fat_id},
+			com_lep=#{com_lep},
+			com_lep_cod=#{com_lep_cod},
+			com_lon=#{com_lon},
+			com_lat=#{com_lat},
+			com_sor=#{com_sor},
+			com_cen_lon=#{com_cen_lon},
+			com_cen_lat=#{com_cen_lat},
+			com_zoo_lev=#{com_zoo_lev},
+			com_rol=#{com_rol},
+			com_lev=#{com_lev},
+			remark=#{remark},
+			mod_use_id=#{use_id},
+			mod_tim=#{tim}
+		WHERE id=#{id}
+
+	</update>
+	
+	
+	
+	
+	<!-- 添加业主 公司信息 -->
+	<insert id="insertComInfoRol" parameterType="java.util.LinkedHashMap">
+		insert into sys_bas_com
+			(com_nam,
+			com_ide,
+			com_add,
+			com_sta,
+			com_con,
+			com_tel,
+			com_typ_id,
+			com_fat_id,
+			com_lep,
+			com_lep_cod,
+			com_lon,
+			com_lat,
+			com_sor,
+			com_cen_lon,
+			com_cen_lat,
+			com_zoo_lev,
+			pro_id,
+			cit_id,
+			are_id,
+			com_lev,
+			com_rol,
+			remark,
+			crt_use_id,
+			crt_tim)
+			values
+			(#{com_nam},#{com_ide},#{com_add},#{com_sta},
+			#{com_con},#{com_tel},#{com_typ_id},#{com_fat_id},#{com_lep},
+			#{com_lep_cod},#{com_lon},#{com_lat},#{com_sor},
+			#{com_cen_lon},#{com_cen_lat},#{com_zoo_lev},#{pro_id},
+			#{cit_id},#{are_id},#{com_lev},'1',#{remark},#{use_id},#{tim})
+					
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	<!-- 为使用公司ID获取合作公司信息接口 合作伙伴 -->
+	<select id="getComInfByComIdRol2" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.id = #{id} 
+			and sbc.com_rol = 2
+			and sbc.del_flag = 0
+
+	</select>
+	
+	
+	<!-- 本接口为使用公司ID获取其下所有子公司信息接口  合作伙伴-->
+	<select id="getFatComInfByComIdRol2" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.remark
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			and sbc.com_rol = 2
+			and sbc.del_flag = 0
+
+	</select>
+	
+		<!-- 修改合作伙伴信息 -->
+	<update id="updateComInfoRol2" parameterType="java.util.LinkedHashMap">
+
+		update sys_bas_com set
+			com_nam=#{com_nam},
+			com_ide=#{com_ide},
+			com_sta=#{com_sta},
+			com_add=#{com_add},
+			pro_id=#{pro_id},
+			cit_id=#{cit_id},
+			are_id=#{are_id},
+			com_con=#{com_con},
+			com_tel=#{com_tel},
+			com_typ_id=#{com_typ_id},
+			com_fat_id=#{com_fat_id},
+			com_lep=#{com_lep},
+			com_lep_cod=#{com_lep_cod},
+			com_lon=#{com_lon},
+			com_lat=#{com_lat},
+			com_sor=#{com_sor},
+			com_cen_lon=#{com_cen_lon},
+			com_cen_lat=#{com_cen_lat},
+			com_zoo_lev=#{com_zoo_lev},
+			com_rol=#{com_rol},
+			com_lev=#{com_lev},
+			remark=#{remark},
+			mod_use_id=#{use_id},
+			mod_tim=#{tim}
+		WHERE id=#{id}
+
+	</update>
+	
+	
+	<!-- 添加合作伙伴信息 -->
+	<insert id="insertComInfoRol2" parameterType="java.util.LinkedHashMap">
+		insert into sys_bas_com
+			(com_nam,
+			com_ide,
+			com_add,
+			com_sta,
+			com_con,
+			com_tel,
+			com_typ_id,
+			com_fat_id,
+			com_lep,
+			com_lep_cod,
+			com_lon,
+			com_lat,
+			com_sor,
+			com_cen_lon,
+			com_cen_lat,
+			com_zoo_lev,
+			pro_id,
+			cit_id,
+			are_id,
+			com_lev,
+			com_rol,
+			remark,
+			crt_use_id,
+			crt_tim)
+			values
+			(#{com_nam},#{com_ide},#{com_add},#{com_sta},
+			#{com_con},#{com_tel},#{com_typ_id},#{com_fat_id},#{com_lep},
+			#{com_lep_cod},#{com_lon},#{com_lat},#{com_sor},
+			#{com_cen_lon},#{com_cen_lat},#{com_zoo_lev},#{pro_id},
+			#{cit_id},#{are_id},#{com_lev},'2',#{remark},#{use_id},#{tim})
+					
+	</insert>
+	
+	<!-- 数据字典管理 start -->	
+	<insert id="insDataDic" parameterType="java.util.LinkedHashMap" >
+		INSERT INTO sys_bas_dic
+			(par_ide, 
+			par_nam, 
+			par_val,
+			sor_num, 
+			dic_typ_id, 
+			crt_tim ,
+			del_flag, 
+			crt_use_id)
+		VALUES 
+			(#{par_ide}, #{par_nam}, #{par_val}, #{sor_num}, #{dic_typ_id}, #{crt_tim}, #{del_flag}, #{crt_use_id})
+	</insert>
+	
+	<update id="updDataDic" parameterType="java.util.LinkedHashMap">
+		UPDATE sys_bas_dic SET
+			par_ide = #{par_ide}, 
+			par_nam = #{par_nam}, 
+			par_val = #{par_val},
+			sor_num = #{sor_num}, 
+			dic_typ_id = #{dic_typ_id}, 
+			mod_tim = #{mod_tim}, 
+			mod_use_id = #{mod_use_id}
+		WHERE id = #{id} and del_flag = #{del_flag}
+	</update>
+	
+	<update id="delDataDic" parameterType="java.util.LinkedHashMap">
+		update sys_bas_dic set del_flag = #{del_flag} where id = #{id}
+	</update>
+	
+	<select id="getDataDicFlag"  parameterType="java.util.LinkedHashMap" resultType="java.lang.Integer">
+		SELECT del_flag FROM sys_bas_dic where id = #{id}
+	</select>
+	
+	<select id="getDataDicById" parameterType="java.util.LinkedHashMap" resultType="com.qinergy.dto.system.DataDicDto" >
+		SELECT 
+			id,
+			par_nam,
+			par_val,
+			par_ide,
+			sor_num,
+			dic_typ_id
+		FROM sys_bas_dic 
+		WHERE id = #{id}  
+			AND del_flag = #{del_flag}
+	</select>
+	
+	<select id="getDataDicListByTypAndNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+		SELECT 
+			dic.id,
+			dic.par_nam,
+			dic.par_val,
+			dic.par_ide,
+			dic.dic_typ_id,
+			typ.dic_typ_nam
+		FROM 
+			sys_bas_dic dic, 
+			sys_bas_dic_typ typ
+		WHERE 
+			dic.dic_typ_id = typ.id 
+			AND dic.del_flag = #{del_flag}
+			<if test="dic_typ_id != 0">
+				AND dic.dic_typ_id = #{dic_typ_id}
+			</if>
+			<if test="par_nam != null">
+				AND dic.par_nam Like concat('%',#{par_nam},'%')
+			</if>
+	 		ORDER BY dic.sor_num,dic.id
+		LIMIT #{start}, #{everyPage}
+	</select>
+	
+	<select id="getDicListCount" parameterType="java.util.LinkedHashMap" resultType="Integer" >
+		SELECT 
+			count(1) count
+		FROM 
+			sys_bas_dic dic, 
+			sys_bas_dic_typ typ 
+		WHERE 
+			dic.dic_typ_id = typ.id 
+			AND dic.del_flag = #{del_flag}
+			<if test="dic_typ_id != null">
+				AND dic.dic_typ_id = #{dic_typ_id}
+			</if>
+			<if test="par_nam != null">
+				AND dic.par_nam Like concat('%',#{par_nam},'%')
+			</if>
+	</select>
+	
+	
+	<!-- 数据字典类型 -->	
+	<insert id="insDataDicTyp"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_dic_typ
+			(
+				dic_typ_ide, 
+				dic_typ_nam, 
+				remark, 
+				sor_num, 
+				del_flag,
+				crt_use_id, 
+				crt_tim
+			)
+		VALUES
+			( 
+				#{dic_typ_ide}, 
+				#{dic_typ_nam}, 
+				#{remark}, 
+				#{sor_num}, 
+				0, 
+				#{crt_use_id}, 
+				#{crt_tim}
+			)
+	</insert>
+	
+	<select id="getDataDicTypByName"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT * FROM sys_bas_dic_typ where dic_typ_nam = #{dic_typ_nam} and del_flag = 0;
+	</select>
+	
+	
+	<update  id="updDataDicTyp"  parameterType="java.util.LinkedHashMap">
+		update 
+			sys_bas_dic_typ 
+		set
+			dic_typ_ide = #{dic_typ_ide}, 
+			dic_typ_nam = #{dic_typ_nam}, 
+			remark = #{remark}, 
+			sor_num = #{sor_num}, 
+			mod_use_id = #{mod_use_id}, 
+			mod_tim = #{mod_tim}
+		where id = #{id}
+	</update>
+	
+	<update id="delDataDicTyp" parameterType="java.util.LinkedHashMap">
+		update sys_bas_dic_typ set del_flag = 1 where id = #{id}
+	</update>
+	
+	<select id="getDataDicTypId" resultType="Integer">
+		select count(id)
+		from sys_bas_dic where dic_typ_id= #{id} and
+		del_flag=0
+	</select>
+	
+	<select id="getComByFatId" resultType="Integer">
+		select count(id)
+		from sys_bas_com where com_fat_id= #{id} and
+		del_flag=0
+	</select>
+	
+	<select id="getDataDicTypFlag"  parameterType="java.util.LinkedHashMap" resultType="java.lang.Integer">
+		SELECT del_flag FROM sys_bas_dic_typ where id = #{id}
+	</select>
+	
+	<select id="getDataDicTypById" parameterType="java.util.LinkedHashMap" resultType="com.qinergy.dto.system.DataDicTypeDto" >
+		SELECT 
+			id,
+			dic_typ_ide, 
+			dic_typ_nam, 
+			remark, 
+			sor_num, 
+			crt_use_id, 
+			crt_tim
+		FROM sys_bas_dic_typ 
+		WHERE id = #{id}  
+		AND del_flag = #{del_flag}
+	</select>
+	
+	<select id="getDataDicTypList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select 
+			id,
+			dic_typ_ide, 
+			dic_typ_nam, 
+			remark, 
+			sor_num, 
+			crt_use_id, 
+			crt_tim
+		from 
+			sys_bas_dic_typ 
+		where 
+			del_flag = #{del_flag}
+			<if test="dic_typ_nam != null">
+				AND dic_typ_nam LIKE '%#{dic_typ_nam}%'
+			</if>
+		ORDER BY sor_num,id
+	</select>
+	<select id="getDataDicTypCount" parameterType="java.util.LinkedHashMap"  resultType="Integer">
+		select 
+			count(1) count
+		from sys_bas_dic_typ 
+		where del_flag = #{del_flag}
+	</select>
+	<!-- 数据字典管理 end -->	
+	
+	<!-- **********************************告警类型和告警码管理部分********************************** -->
+	<insert id="addAlaCode">
+		INSERT INTO sys_bas_ala_cod (
+		
+
+			app_typ_id,
+			idx_pst,
+			flt_lev,
+			ala_info,
+			remark,
+			crt_use_id,
+			crt_tim,
+			del_flag
+				)
+		VALUES
+		(
+			
+			#{app_typ_id},
+			#{idx_pst},
+			#{flt_lev},
+			#{ala_info},
+			#{remark},
+			#{crt_use_id},
+			#{crt_tim},
+			0
+		);
+
+	<!-- 删除一个告警码 -->
+	</insert>
+	
+	<update id="removeAlaCode">
+		UPDATE sys_bas_ala_cod
+			SET del_flag = 1 
+		where id=#{id}
+	</update>
+	
+	<update id="updateAlaCode">
+		UPDATE sys_bas_ala_cod
+			SET 
+			app_typ_id = #{app_typ_id},
+			idx_pst = #{idx_pst},
+			flt_lev = #{flt_lev},
+			ala_info = #{ala_info},
+			remark = #{remark},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE
+			id = #{id}
+			AND del_flag = 0
+	</update>
+	
+	<insert id="insertAlaType" >
+	INSERT INTO sys_bas_ala_typ
+		SET ala_nam = #{ala_nam},
+		app_typ_id=#{app_typ_id},
+		crt_use_id=#{crt_use_id},
+		crt_tim=#{crt_tim},
+		remark=#{remark},
+		del_flag=0
+	</insert>
+	
+
+	
+	<update id="removeAlaType" parameterType="java.lang.Integer" >
+	update sys_bas_ala_typ set del_flag=1 where id=#{id}
+	</update>
+	
+	<select id="getAlaCodeCountByType" resultType="Integer">
+	SELECT
+	COUNT(id)
+		FROM
+			sys_bas_ala_cod
+		WHERE
+			ala_typ_id = #{id}
+		AND del_flag = 0
+	</select>
+	
+	<select id="getAlaType" resultType="java.util.Map">
+	SELECT
+		t.id,
+		t.crt_use_id,
+		u.use_nam,
+		t.ala_nam,
+		t.app_typ_id,
+	 	sbat.typ_nam,
+		t.crt_tim,
+		t.remark
+	FROM
+		sys_bas_ala_typ t
+	LEFT JOIN sys_bas_app_typ sbat on sbat.id = t.app_typ_id and sbat.del_flag = 0
+	LEFT JOIN use_use u ON u.id = t.crt_use_id and u.del_flag = 0
+	WHERE
+		t.del_flag = 0
+	<if test="id!=null">
+	AND t.id = #{id}
+	</if>
+	</select>
+	
+	<select id="getAlaCodeInfo" resultType="java.util.Map">
+		SELECT
+			t.id,
+			(select sbat.ala_nam from sys_bas_ala_typ sbat where sbat.id = t.ala_typ_id) ala_nam,
+			sb.typ_nam AS app_typ_nam,
+			t.idx_pst,
+			t.flt_lev,
+			t.ala_info,
+			t.remark,
+			(select uu.use_nam from use_use uu where uu.id = t.crt_use_id) use_nam,
+			t.crt_tim
+		FROM
+			sys_bas_ala_cod t,
+			sys_bas_app_typ sb
+		WHERE t.del_flag=0
+		and sb.id = t.app_typ_id
+		
+		<if test="id!=null">
+		
+			And t.id=#{id}
+		</if>
+		
+		<if test="typeId!=null">
+		
+			AND sb.typ_ide=#{typeId}
+		</if>
+		
+		<if test="search!=null">
+ 		 	AND t.flt_lev like '%${search}%'
+		</if>
+		ORDER BY t.idx_pst,t.id
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<select id="getAlaCodeInfoCou" resultType="java.util.Map">
+		SELECT
+			COUNT(t.id) cou
+		FROM
+			sys_bas_ala_cod t,
+			sys_bas_app_typ sb
+		WHERE t.del_flag=0
+		and sb.id = t.app_typ_id
+		
+		<if test="id!=null">
+		
+			And t.id=#{id}
+		</if>
+		
+		<if test="typeId!=null">
+		
+			AND sb.typ_ide=#{typeId}
+		</if>
+		
+		<if test="search!=null">
+ 		 	AND t.flt_lev like '%${search}%'
+		</if>
+	</select>
+	
+	<select id="getAppTypeInfoById" resultType="java.util.Map">
+		SELECT
+			id,
+			typ_nam,
+			typ_ide,
+			remark,
+			crt_use_id,
+			crt_tim,
+			mod_use_id,
+			mod_tim
+		FROM
+			sys_bas_app_typ
+		
+		WHERE
+			del_flag=0
+		<if test="id!=null">
+			AND id = #{id}
+		</if>
+	</select>
+	<!-- 修改一个告警类型 -->
+	<update id="updateAlaType" >
+		UPDATE sys_bas_ala_typ
+			SET ala_nam = #{ala_nam},
+			 app_typ_id = #{app_typ_id},
+			 mod_use_id =#{mod_use_id},
+			 mod_tim = #{mod_tim},
+			 remark = #{remark}
+			WHERE
+				del_flag = 0
+			AND id = #{id}
+	</update>
+	<!-- 告警类型和告警码管理end -->
+    	
+    
+    <!-- 设备信息 -->
+    <!-- 查询设备信息，以电站ID为条件 -->
+	<select id="getEquInfByPws" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_mod_id,
+			(
+				SELECT
+					sba.app_mod
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) app_mod,
+			sbe.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sbe.pws_id
+			) pws_nam,
+			(
+				SELECT
+					sbp.pws_num
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sbe.pws_id
+			) pws_num,
+			sbe.ins_add,
+			sbe.equ_lon,
+			sbe.equ_lat,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.remark,
+			sbe.equ_sta,
+			sbe.equ_num,
+			sbe.cur_sta,
+			sbe.equ_sor,
+			sbe.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.crt_use_id
+			) crt_use_nam,
+			sbe.crt_tim,
+			sbe.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.crt_use_id
+			) crt_use_nam,
+			sbe.mod_tim,
+			sbe.del_flag,
+			sbe.pur_tim,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou,
+			sba.app_size size,
+			sba.app_weight weight,
+			sba.app_altitude altitude,
+			sba.work_temp,
+			sba.prtc_grade,
+			sba.com_typ,
+			sba.com_pro,
+			sba.rtd_elc,
+			sba.rtd_vol,
+			sba.rtd_pow,
+			sbat.typ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+			
+		AND sba.app_typ_id = sbat.id
+		
+		<if test="id != null and id != ''">
+			
+			AND sbe.id = #{id}
+			
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="equ_mod_id != null and equ_mod_id != ''">
+			
+			AND sbe.equ_mod_id = #{equ_mod_id}
+			
+		</if>
+		
+		<if test="equ_sta != null and equ_sta != ''">
+			
+			AND sbe.equ_sta = #{equ_sta}
+
+		</if>
+		
+		<if test="typ_ide != null and typ_ide != ''">
+			
+			AND sbat.typ_ide = #{typ_ide}
+
+		</if>
+		
+		ORDER BY
+			sbe.equ_sor,sbe.id
+	</select>
+	
+	<!-- 获取某个站内所有制定设备类型的设备的信息 -->
+	<select id="getEquInfLstByPwsIdAppTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_num
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0	
+		<if test="typ_ide != null and typ_ide != ''">
+		
+			and sbat.typ_ide = #{typ_ide}
+			
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		ORDER BY sbe.equ_sor,sbe.id
+		
+	</select>
+	
+	<!-- 获取某个站内充电桩的设备的信息 -->
+	<select id="getChpInfLstByPwsIdAppTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_num
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+			
+		and sbat.typ_ide in('ZLCDZ','JLCDZ')
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+				
+		ORDER BY sbat.typ_ide desc,sbe.equ_sor,sbe.id 
+		
+	</select>
+	
+    <!-- 获取站点名称使用ID -->
+	<select id="getPwsNamByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.pws_nam
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1 
+			
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbp.id = #{pws_id}
+
+		</if>
+	</select>
+	
+		
+    <!-- 获取站点信息，使用ID -->
+	<select id="getPwsInfLstByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.org_nam
+			) opt_com_nam,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.org_nam
+			) opt_com_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1 
+			AND sbp.del_flag=0
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbp.id = #{pws_id}
+
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+			
+			AND sbp.com_id = #{com_id}
+
+		</if>
+	</select>
+		
+    <!-- 获取所有电表类型列表 -->
+	<select id="getMeterTypLstAll" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbd.id,
+			sbd.par_ide,
+			sbd.par_nam
+		FROM
+			sys_bas_meter_typ sbd
+		WHERE
+		sbd.del_flag = 0
+		ORDER BY
+			sbd.sor_num,sbd.id
+			
+	</select>
+	
+	<!-- 获取站点列表信息 -->
+	<select id="getPwsInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1
+		
+		AND sbp.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbp.id = #{pws_id}
+
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+			
+			AND sbp.com_id = #{com_id}
+
+		</if>
+		
+		ORDER BY sbp.id
+		
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取站点列表信息(二级公司查询) -->
+	<select id="getPwsInfLstBy2LevCom" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1
+		
+		AND sbp.del_flag = 0 
+		
+		AND sbp.com_id IN (
+			SELECT
+				sbc.id
+			FROM
+				sys_bas_com sbc
+			WHERE
+				sbc.com_fat_id = #{com_id}
+		)
+		
+		ORDER BY sbp.id
+		
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取站点列表信息(一级公司查询) -->
+	<select id="getPwsInfLstBy1LevCom" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1
+		
+		AND sbp.del_flag = 0 
+		
+		AND sbp.com_id IN (
+			SELECT
+				sbc.id
+			FROM
+				sys_bas_com sbc
+			WHERE
+				sbc.com_fat_id IN (
+					SELECT
+						sbc.id
+					FROM
+						sys_bas_com sbc
+					WHERE
+						sbc.com_fat_id = #{com_id}
+				)
+		)
+		
+		ORDER BY sbp.id
+		
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取站点列表信息(分页) -->
+	<select id="getPwsInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			count(sbp.id) count
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1 
+		
+		AND sbp.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbp.id = #{pws_id}
+
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+			
+			AND sbp.com_id = #{com_id}
+
+		</if>
+	</select>
+	
+	<!-- 获取站点列表信息(分页)(二级公司查询) -->
+	<select id="getPwsInfLstBy2LevComCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			count(sbp.id) count
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1 
+		
+		AND sbp.del_flag = 0 
+		
+		AND sbp.com_id IN (
+			SELECT
+				sbc.id
+			FROM
+				sys_bas_com sbc
+			WHERE
+				sbc.com_fat_id = #{com_id}
+		)
+	</select>
+	
+	<!-- 获取站点列表信息(分页)(一级公司查询) -->
+	<select id="getPwsInfLstBy1LevComCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			count(sbp.id) count
+		FROM
+			sys_bas_pws sbp
+		WHERE 1=1 
+		
+		AND sbp.del_flag = 0 
+		
+		AND sbp.com_id IN (
+			SELECT
+				sbc.id
+			FROM
+				sys_bas_com sbc
+			WHERE
+				sbc.com_fat_id IN (
+					SELECT
+						sbc.id
+					FROM
+						sys_bas_com sbc
+					WHERE
+						sbc.com_fat_id = #{com_id}
+				)
+		)
+	</select>
+	
+	<!-- 修改某电站详细信息 -->
+	<update id="updatePwsInfo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_pws
+		SET pws_nam = #{pws_nam},
+		pws_typ = #{pws_typ},
+		ope_typ = #{ope_typ},
+		cur_sta = #{cur_sta},
+		dev_add_num = #{dev_add_num},
+		pro_id = #{pro_id},
+		cit_id = #{cit_id},
+		are_id = #{are_id},
+		con_nam = #{con_nam},
+		con_mob = #{con_mob},
+		org_nam = #{org_nam},
+		ope_tim = #{ope_tim},
+		are_cov = #{are_cov},
+		pws_add = #{pws_add},
+		pws_lon = #{pws_lon},
+		pws_lat = #{pws_lat},
+		own_nam = #{own_nam},
+		rem = #{rem},
+		com_id = #{com_id},
+		pws_sor = #{pws_sor},
+		pws_num = #{pws_num},
+		rat_vol = #{rat_vol},
+		rat_cur = #{rat_cur},
+		rat_pow = #{rat_pow},
+		mod_tim = #{mod_tim},
+		mod_use_id = #{mod_use_id},
+		pv_rtd_pow = #{pv_rtd_pow},
+		pc_rtd_pow = #{pc_rtd_pow},
+		pc_cap = #{pc_cap},
+		chp_rtd_pow = #{chp_rtd_pow}
+		WHERE
+			id = #{pws_id}
+
+	</update>
+	<!-- 新增设备详细信息-->	
+	<insert id="insertPwsInfo"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_pws
+			(
+				pws_nam, 
+				pws_typ, 
+				ope_typ, 
+				cur_sta, 
+				dev_add_num,
+				pro_id, 
+				cit_id, 
+				are_id,
+				con_nam, 
+				con_mob, 
+				org_nam,
+				ope_tim, 
+				are_cov, 
+				pws_add,
+				pws_lon,
+				pws_lat,
+				own_nam,
+				rem,
+				com_id,
+				pws_sor,
+				pws_num,
+				rat_vol,
+				rat_cur,
+				rat_pow,
+				crt_tim,
+				crt_use_id,
+				pv_rtd_pow,
+				pc_rtd_pow,
+				pc_cap,
+				chp_rtd_pow
+			)
+		VALUES
+			( 
+				#{pws_nam}, 
+				#{pws_typ}, 
+				#{ope_typ}, 
+				#{cur_sta}, 
+				#{dev_add_num},
+				#{pro_id}, 
+				#{cit_id}, 
+				#{are_id},
+				#{con_nam}, 
+				#{con_mob}, 
+				#{org_nam},
+				#{ope_tim}, 
+				#{are_cov}, 
+				#{pws_add},
+				#{pws_lon},
+				#{pws_lat},
+				#{own_nam},
+				#{rem},
+				#{com_id},
+				#{pws_sor},
+				#{pws_num},
+				#{rat_vol},
+				#{rat_cur},
+				#{rat_pow},
+				#{crt_tim},
+				#{crt_use_id},
+				#{pv_rtd_pow},
+				#{pc_rtd_pow},
+				#{pc_cap},
+				#{chp_rtd_pow}
+				
+			)
+	</insert>
+	
+	<!-- 逻辑删除某 电站详细信息 -->
+	<update id="delectPwsInfo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_pws
+		SET del_flag = 1
+		WHERE
+			id = #{pws_id}
+
+	</update>
+	
+	
+	
+	
+	
+	
+	
+    <!-- 使用用户ID获取公司信息以及用户信息 -->
+	<select id="getComInfAndUseInfByUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_lev,
+			uu.use_typ,
+			uu.use_nam,
+			sbc.com_rol
+		FROM
+			sys_bas_com sbc,
+			use_use uu
+		WHERE
+			uu.com_id = sbc.id
+		AND sbc.del_flag = 0
+			
+		<if test="use_id != null and use_id != ''">
+			
+			AND uu.id = #{use_id}
+
+		</if>
+	</select>
+	
+	
+    <!-- 获取设备列表信息 -->
+	<select id="getEquInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_mod_id,
+			sba.app_mod,
+			sbe.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sbe.pws_id
+			) pws_nam,
+			sbe.ins_add,
+			sbe.equ_lon,
+			sbe.equ_lat,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.pur_tim,
+			sbe.equ_sta,
+			sbe.equ_num,
+			sbe.equ_cod,
+			sbe.cur_sta,
+			sbe.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.crt_use_id
+			) crt_use_nam,
+			sbe.crt_tim,
+			sbe.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.mod_use_id
+			) mod_use_nam,
+			sbe.mod_tim,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou,
+			sbe.remark,
+			sbe.equ_sor
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0
+		AND sba.del_flag = 0
+		AND sbat.del_flag = 0
+		<![CDATA[ AND sbat.typ_ide <> 'KZQ' ]]>
+		<if test="app_typ_ide != null and app_typ_ide != ''">
+			
+			AND sbat.typ_ide = #{app_typ_ide}
+
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbe.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="app_id != null and app_id != ''">
+			
+			AND sba.id = #{app_id}
+
+		</if>
+		
+		ORDER BY sbe.equ_sor,sbe.id
+		
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+    <!-- 获取控制器设备列表信息 -->
+	<select id="getCtlEquInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_mod_id,
+			sba.app_mod,
+			sbe.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sbe.pws_id
+			) pws_nam,
+			sbe.ins_add,
+			sbe.equ_lon,
+			sbe.equ_lat,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.pur_tim,
+			sbe.equ_sta,
+			sbe.equ_num,
+			sbe.equ_cod,
+			sbe.cur_sta,
+			sbe.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.crt_use_id
+			) crt_use_nam,
+			sbe.crt_tim,
+			sbe.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.mod_use_id
+			) mod_use_nam,
+			sbe.mod_tim,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou,
+			sbe.remark,
+			sbe.equ_sor
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0
+		AND sba.del_flag = 0
+		AND sbat.del_flag = 0
+			
+		AND sbat.typ_ide = 'KZQ' 
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbe.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="app_id != null and app_id != ''">
+			
+			AND CONCAT(
+				IFNULL(sbe.equ_nam,''),
+				IFNULL(sbe.equ_num,''),
+				IFNULL(sba.app_mod,'')
+			) 
+			LIKE CONCAT('%',#{app_id},'%')
+
+		</if>
+		<if test="words != null and words != ''">
+			</if>
+		ORDER BY sbe.equ_sor,sbe.id
+		
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	
+    <!-- 统计设备列表信息中数据的数量，做分页时用 -->
+	<select id="getEquInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			count(sbe.id) count
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0
+		AND sba.del_flag = 0
+		AND sbat.del_flag = 0
+		<![CDATA[ AND sbat.typ_ide <> 'KZQ' ]]>
+		<if test="app_typ_ide != null and app_typ_ide != ''">
+			
+			AND sbat.typ_ide = #{app_typ_ide}
+
+		</if>
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbe.pws_id = #{pws_id}
+
+		</if>
+		<if test="app_id != null and app_id != ''">
+			
+			AND sba.id = #{app_id}
+
+		</if>
+	</select>
+	
+    <!-- 统计控制器设备列表信息中数据的数量，做分页时用 -->
+	<select id="getCtlEquInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			count(sbe.id) count
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0
+		AND sba.del_flag = 0
+		AND sbat.del_flag = 0
+			
+		AND sbat.typ_ide = 'KZQ' 
+
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbe.pws_id = #{pws_id}
+
+		</if>
+		<if test="app_id != null and app_id != ''">
+			
+			AND sba.id = #{app_id}
+
+		</if>
+	</select>
+	
+	<!-- 获取某设备详细信息 -->
+	<select id="getEquInfByEquId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbe.id,
+			sbe.equ_nam,
+			sbe.equ_mod_id,
+			(select sbat.id
+			from sys_bas_app sba,
+			sys_bas_app_typ sbat 
+			where sbe.equ_mod_id = sba.id
+			and sba.app_typ_id = sbat.id) sbatId,
+			(select
+			sbat.typ_nam 
+			from sys_bas_app sba,
+			sys_bas_app_typ sbat 
+			where sbe.equ_mod_id = sba.id
+			and sba.app_typ_id = sbat.id) sbatTypeName,
+			(select
+			sbat.typ_ide
+			from sys_bas_app sba,
+			sys_bas_app_typ sbat 
+			where sbe.equ_mod_id = sba.id
+			and sba.app_typ_id = sbat.id) sbatTypeIde,
+			(
+				SELECT
+					sba.app_mod
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) app_mod,
+			sbe.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sbe.pws_id
+			) pws_nam,
+			sbe.ins_add,
+			sbe.equ_lon,
+			sbe.equ_lat,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.pur_tim,
+			sbe.equ_sta,
+			sbe.equ_num,
+			sbe.equ_cod,
+			sbe.cur_sta,
+			sbe.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.crt_use_id
+			) crt_use_nam,
+			sbe.crt_tim,
+			sbe.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbe.mod_use_id
+			) mod_use_nam,
+			sbe.mod_tim,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou,
+			sbe.meter_typ,
+			sbe.equ_sor,
+			sbe.remark
+		FROM
+			sys_bas_equ sbe 
+			
+		where 1=1 
+			
+		<if test="equ_id != null and equ_id != ''">
+			
+			AND sbe.id = #{equ_id}
+
+		</if>
+	</select>
+	
+	<!-- 修改某设备详细信息 -->
+	<update id="updateEquInfo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_equ
+		SET equ_nam = #{equ_nam},
+		equ_mod_id = #{equ_mod_id},
+		pws_id = #{pws_id},
+		ins_add = #{ins_add},
+		equ_lon = #{equ_lon},
+		equ_lat = #{equ_lat},
+		pro_tim = #{pro_tim},
+		ope_tim = #{ope_tim},
+		pur_tim = #{pur_tim},
+		equ_sta = #{equ_sta},
+		equ_num = #{equ_num},
+		equ_cod = #{equ_cod},
+		cur_sta = #{cur_sta},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim},
+		equ_sor = #{equ_sor},
+		meter_typ = #{meter_typ},
+		remark = #{remark}
+		WHERE
+			id = #{equ_id}
+
+	</update>
+	<!-- 新增设备详细信息-->	
+	<insert id="insertEquInfo"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_equ
+			(
+				equ_nam, 
+				equ_mod_id, 
+				pws_id, 
+				ins_add, 
+				equ_lon,
+				equ_lat, 
+				pro_tim, 
+				ope_tim,
+				pur_tim, 
+				equ_sta, 
+				equ_num,
+				equ_cod,
+				cur_sta, 
+				crt_use_id, 
+				crt_tim,
+				remark,
+				meter_typ,
+				equ_sor
+			)
+		VALUES
+			( 
+				#{equ_nam}, 
+				#{equ_mod_id}, 
+				#{pws_id}, 
+				#{ins_add}, 
+				#{equ_lon}, 
+				#{equ_lat}, 
+				#{pro_tim}, 
+				#{ope_tim}, 
+				#{pur_tim}, 
+				#{equ_sta}, 
+				#{equ_num}, 
+				#{equ_cod}, 
+				#{cur_sta}, 
+				#{crt_use_id}, 
+				#{crt_tim}, 
+				#{remark}, 
+				#{meter_typ}, 
+				#{equ_sor}
+				
+			)
+	</insert>
+	
+	<!-- 逻辑删除某设备详细信息 -->
+	<update id="delectEquInfo" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_equ
+		SET del_flag = 1
+		WHERE
+			id = #{equ_id}
+
+	</update>
+	
+	
+	<!-- 新增Mqtt详细信息-->	
+	<insert id="insertMqtt"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_mqtt
+			(
+				equ_num, 
+				mqtt_login_name, 
+				mqtt_login_password, 
+				mqtt_port, 
+				client_type
+			)
+		VALUES
+			( 
+				#{equ_num}, 
+				#{mqtt_login_name}, 
+				#{mqtt_login_password}, 
+				#{mqtt_port}, 
+				#{client_type}
+			)
+	</insert>
+	<!-- 修改Mqtt详细信息-->
+	<update id="updateMqtt" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sys_bas_mqtt SET
+		mqtt_login_name = #{mqtt_login_name},
+		mqtt_login_password = #{mqtt_login_password},
+		mqtt_port = #{mqtt_port},
+		client_type = #{client_type}
+		WHERE
+			equ_num = #{equ_num}
+
+	</update>
+		
+	<!-- 使用设备编号获取某Mqtt详细信息 -->
+	<select id="getMqttInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			*
+		FROM
+			sys_bas_mqtt sbm
+		WHERE 1=1
+		<if test="equ_num != null and equ_num != ''">
+			
+			AND sbm.equ_num = #{equ_num}
+
+		</if>
+	</select>
+<!-- **************************  --> 
+	<!-- 业主、合作伙伴列表显示 -->
+	<select id="getComRolOneAndTwo" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				sbc.*, (
+					SELECT
+						sbct.com_typ
+					FROM
+						sys_bas_com_typ sbct
+					WHERE
+						sbct.id = sbc.com_typ_id
+				) com_typ_nam,
+				(
+					SELECT
+						sb.com_nam
+					FROM
+						sys_bas_com sb
+					WHERE
+						sb.id = sbc.com_fat_id
+				) com_fat_nam,
+				(
+					SELECT
+						br.reg_nam
+					FROM
+						sys_bas_reg br
+					WHERE
+						br.id = sbc.pro_id
+				) pro_nam,
+				(
+					SELECT
+						br.reg_nam
+					FROM
+						sys_bas_reg br
+					WHERE
+						br.id = sbc.cit_id
+				) cit_nam,
+				(
+					SELECT
+						br.reg_nam
+					FROM
+						sys_bas_reg br
+					WHERE
+						br.id = sbc.are_id
+				) are_nam,
+				(
+					SELECT
+						u.use_nam
+					FROM
+						use_use u
+					WHERE
+						u.id = sbc.crt_use_id
+				) crt_use_nam,
+				(
+					SELECT
+						u.use_nam
+					FROM
+						use_use u
+					WHERE
+						u.id = sbc.mod_use_id
+				) mod_use_nam
+			FROM
+				sys_bas_com sbc
+			WHERE
+				sbc.com_rol = #{comRol} and sbc.del_flag = 0
+			ORDER BY
+				sbc.com_lev ASC,
+				sbc.com_sor ASC,sbc.id
+	</select>
+	<!-- **************************  --> 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+<!-- 人员任务  转移 -->
+	 <!-- 巡视 
+	 (不转派历史数据，只转派未执行完的任务)
+	 所以 任务状态（1未指派 2未开始 3进行中  4完成待审核 5审核通过  6审核驳回）
+	  排除 5 
+	 -->
+	 <!-- 巡视任务  关于我创建的用户-->
+	<select id="selAppointTourTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM tour_task WHERE del_flag = 0 and task_sta !=5 and appoint_id = #{appoint_id} 
+	</select>
+	 <!-- 巡视任务  关于我执行的用户-->
+	<select id="selExecuteTourTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM tour_task WHERE del_flag = 0 and task_sta !=5 and task_execute_id = #{task_execute_id}
+
+	</select>
+	 <!-- 巡视任务  关于我审核的用户-->
+	<select id="selCheckTourTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM tour_task WHERE del_flag = 0 and task_sta !=5 and  task_check_id = #{task_check_id}
+
+	</select>
+	
+	
+	<!-- 巡视任务  发布人 修改 -->
+	<update id="updTourTaskByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET appoint_id = #{appoint_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	<!-- 巡视任务  执行人  修改 -->
+	<update id="updTourTaskExecuteByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET task_execute_id = #{task_execute_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 巡视任务  执行人  修改 -->
+	<update id="updTourTaskCheckByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE tour_task
+		SET task_check_id = #{task_check_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+<!-- 检修 
+任务状态（1未指派 2未开始 3进行中  4完成待审核 5审核通过  6审核驳回）
+排除 5
+-->
+	 <!-- 检修任务  关于我创建的用户-->
+	<select id="selAppointOverhaulTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM overhaul_task WHERE del_flag = 0 and task_sta !=5 and appoint_id = #{appoint_id}
+	</select>
+	 <!-- 检修任务  关于我执行的用户-->
+	<select id="selExecuteOverhaulTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM overhaul_task WHERE del_flag = 0 and task_sta !=5 and task_execute_id = #{task_execute_id}
+
+	</select>
+	 <!-- 检修任务  关于我审核的用户-->
+	<select id="selCheckOverhaulTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM overhaul_task WHERE del_flag = 0 and task_sta !=5 and task_check_id = #{task_check_id}
+
+	</select>
+	
+	
+	<!-- 检修任务  发布人 修改 -->
+	<update id="updOverhaulTaskByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET appoint_id = #{appoint_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	<!-- 检修任务  执行人  修改 -->
+	<update id="updOverhaulTaskExecuteByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET task_execute_id = #{task_execute_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 检修任务  执行人  修改 -->
+	<update id="updOverhaulTaskCheckByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE overhaul_task
+		SET task_check_id = #{task_check_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	
+	
+<!-- 报修 
+审核状态 （1未指派 2未开始 3进行中  4完成待审核 5审核通过  6审核驳回）
+排除 5
+-->
+	 <!-- 报修任务  关于我创建的用户-->
+	<select id="selCrtUseRepairTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * 
+		
+		
+		FROM t_repair WHERE del_flag = 0 and check_sta !=5 and crt_use_id = #{crt_use_id}
+	</select>
+	 <!-- 报修任务  关于我维修的用户-->
+	<select id="selRepairUserRepairTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM t_repair WHERE del_flag = 0 and check_sta !=5 and repair_use_id = #{repair_use_id}
+
+	</select>
+	 <!-- 报修任务  关于我审核的用户-->
+	<select id="selCheckRepairTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM t_repair WHERE del_flag = 0 and check_sta !=5 and check_use_id = #{check_use_id}
+
+	</select>
+	
+	
+	<!-- 报修任务  创建人 修改 -->
+	<update id="updRepairTaskCrtUseByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair
+		SET crt_use_id = #{crt_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	<!-- 报修任务  维修人  修改 -->
+	<update id="updRepairTaskRepairUserByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair
+		SET repair_use_id = #{repair_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 报修任务  审核人  修改 -->
+	<update id="updRepairTaskCheckByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_repair
+		SET check_use_id = #{check_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+<!-- 报废 
+审核状态（0 未开始  1开始未审核 2第一审核通过 3第一审核驳回 4第二次审核通过 5第二次审核驳回
+排除 4
+-->
+	 <!-- 报废任务  关于我创建的用户-->
+	<select id="selCrtUseScrapTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM t_scrap WHERE del_flag = 0 and check_sta !=4 and crt_use_id = #{crt_use_id}
+	</select>
+	 <!-- 报废任务  关于我第一次审核的用户-->
+	<select id="selOneCheckScrapTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM t_scrap WHERE del_flag = 0 and check_sta !=4 and one_check_use_id = #{one_check_use_id}
+
+	</select>
+	 <!-- 报废任务  关于我第二次审核的用户-->
+	<select id="selTwoCheckScrapTaskByUserId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT * FROM t_scrap WHERE del_flag = 0 and check_sta !=4 and two_chcek_use_id = #{two_chcek_use_id}
+
+	</select>
+	
+	
+	<!-- 报废任务  创建人 修改 -->
+	<update id="updScrapTaskCrtUseByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET crt_use_id = #{crt_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	<!-- 报修任务  第一次审核  修改 -->
+	<update id="updScrapTaskOneCheckByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET one_check_use_id = #{one_check_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 报修任务  第二次审核  修改 -->
+	<update id="updScrapTaskTwoCheckByUserId" parameterType="java.util.LinkedHashMap">
+
+		UPDATE t_scrap
+		SET two_chcek_use_id = #{two_chcek_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	
+	
+	
+	
+	
+	<!-- 建立用户与站间的关联  --> 
+	<!-- 用户与站间的关联表的信息添加 -->
+	<insert id="insertUseAndPwsInf" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+		INSERT INTO sys_dat_use_pws (
+			use_id, 
+			pws_id
+		)
+		VALUES
+		(
+			#{use_id},
+			#{pws_id}
+		)
+	</insert>
+	
+	<!-- 用户与站间的关联表的信息删除 -->
+	<delete id="deleteUseAndPwsInfByUseId" parameterType="com.qinergy.dto.system.UserRoleModuleDto">
+
+		DELETE
+		FROM
+			sys_dat_use_pws
+		WHERE
+			use_id = #{use_id}
+
+	</delete>
+	
+	<!-- 使用用户ID获取用户与站关联表中的站点信息 -->
+	<select id="getUseAndPwsInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sdup.id,
+			sdup.use_id,
+			sdup.pws_id
+		FROM
+			sys_dat_use_pws sdup 
+			
+		where 1=1 
+			
+		<if test="use_id != null and use_id != ''">
+			
+			AND sdup.use_id = #{use_id}
+
+		</if>
+	</select>
+	
+	
+	
+	<!-- 公司信息 添加图片 logo -->
+	<update id="insertComLogoImg" parameterType="java.util.LinkedHashMap">
+		
+		UPDATE sys_bas_com sbc
+			SET sbc.com_pic_url = #{comPicUrl},
+			 	sbc.com_pjt_nam = #{comPjtNam},			 	
+			 	sbc.com_pic_thum = #{comPicThum},			 	
+			 	sbc.mod_use_id = #{use_id},			 	
+			 	sbc.mod_tim = #{mod_tim}			 	
+		WHERE
+			sbc.id = #{id}
+
+	</update>
+	
+	
+	<!-- 使用公司id 获取公司所有信息 包括公司logo及缩略图地址-->
+	<select id="getComLogoImgById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbc.*
+		FROM
+			sys_bas_com sbc 
+			
+		where 1=1 and sbc.del_flag = 0
+			
+		<if test="id != null and id != ''">
+			
+			AND sbc.id = #{id}
+
+		</if>
+	</select>
+	
+	
+	<!-- 上传电站图片  -->
+	<insert id="insertPwsPic" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_bas_pws_pic (
+			pic_nam, 
+			pic_url,
+			pws_id,
+			crt_use_id,
+			crt_tim,
+			remark
+		)
+		VALUES
+		(
+			#{pic_nam},
+			#{pic_url},
+			#{pws_id},
+			#{crt_use_id},
+			#{crt_tim},
+			#{remark}
+		)
+	</insert>
+	
+	
+	
+	<!-- 使用电站id 查询该电站图片总数量   不可以超过2张图片-->
+	<select id="getPwsPicByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				count(sbpp.id) cou
+			FROM
+				sys_bas_pws_pic sbpp
+			WHERE
+				sbpp.pws_id = #{pws_id}
+			GROUP BY
+				sbpp.pws_id
+	</select>
+	
+	
+	
+	<!-- 使用电站id 查询该电站最先添加的图片的信息 -->
+	<select id="getPwsOldPicByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT sbpp.*
+		FROM
+			sys_bas_pws_pic sbpp
+		WHERE
+			sbpp.pws_id = #{pws_id}
+		ORDER BY
+			sbpp.crt_tim ASC
+		limit 1
+	</select>
+	
+	  
+    <!-- 删除 电站图片   -->
+    <delete id="deletePwsPic" parameterType="java.util.LinkedHashMap" >
+	 
+	 	DELETE
+		FROM
+			sys_bas_pws_pic
+		WHERE
+			id = #{id}
+	 
+	</delete>
+	
+	
+	
+	<!-- 使用 设备编号  查询 设备名称 -->
+	<select id="getEquNameByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT sbe.equ_nam
+		FROM
+			sys_bas_equ sbe
+		WHERE
+			sbe.equ_num = #{equ_num}
+	</select>
+	
+	
+<!-- 意见反馈    -->
+	
+	<!-- 意见反馈  列表展示 -->
+	<select id="selFeedBackAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					sd.*
+				FROM
+					(
+					SELECT
+					sdf.id,
+					sdf.feedback_use_id,
+					sdf.feedback_tim,
+					sdf.feedback_desc,
+					sdf.reply_use_id,
+					sdf.reply_tim,
+					sdf.reply_desc,
+					sdf.del_flag,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.feedback_use_id) feedback_use_nam,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.reply_use_id) reply_use_nam
+				FROM
+					sys_dat_feedback sdf
+				WHERE 1=1 and sdf.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+			
+					<![CDATA[ and sdf.feedback_tim >= #{sta_tim} ]]>
+
+				</if>
+					
+				<if test="end_tim != null and end_tim != ''">
+					
+					<![CDATA[ and sdf.feedback_tim < #{end_tim} ]]>
+						
+				</if>
+					
+			) sd
+			where 1=1 and sd.del_flag = 0
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sd.feedback_desc,''),
+					IFNULL(sd.feedback_use_nam,''),
+					IFNULL(sd.reply_desc,''),
+					IFNULL(sd.reply_use_nam,'')
+					) 
+					LIKE CONCAT('%',#{words},'%')
+			</if>		
+		ORDER BY
+			sd.feedback_tim DESC
+		LIMIT #{start},#{everyPage}
+	</select>
+	
+	<!-- 意见反馈  列表展示使用用户ID -->
+	<select id="selFeedBackByUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					sd.*
+				FROM
+					(
+					SELECT
+					sdf.id,
+					sdf.feedback_use_id,
+					sdf.feedback_tim,
+					sdf.feedback_desc,
+					sdf.reply_use_id,
+					sdf.reply_tim,
+					sdf.reply_desc,
+					sdf.del_flag,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.feedback_use_id) feedback_use_nam,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.reply_use_id) reply_use_nam
+				FROM
+					sys_dat_feedback sdf
+				WHERE 1=1 and sdf.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+			
+					<![CDATA[ and sdf.feedback_tim >= #{sta_tim} ]]>
+
+				</if>
+					
+				<if test="end_tim != null and end_tim != ''">
+					
+					<![CDATA[ and sdf.feedback_tim < #{end_tim} ]]>
+						
+				</if>
+				<if test="use_id != null and use_id != ''">
+					
+					and sdf.feedback_use_id = #{use_id}
+						
+				</if>
+					
+			) sd
+			where 1=1 and sd.del_flag = 0
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sd.feedback_desc,''),
+					IFNULL(sd.feedback_use_nam,''),
+					IFNULL(sd.reply_desc,''),
+					IFNULL(sd.reply_use_nam,'')
+					) 
+					LIKE CONCAT('%',#{words},'%')
+			</if>		
+		ORDER BY
+			sd.feedback_tim DESC
+	</select>
+	
+	<!-- 意见反馈  列表展示  分页-->
+	<select id="selFeedBackAllCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					sd.*,count(sd.id) cou
+				FROM
+					(
+					SELECT
+					sdf.id,
+					sdf.feedback_use_id,
+					sdf.feedback_tim,
+					sdf.feedback_desc,
+					sdf.reply_use_id,
+					sdf.reply_tim,
+					sdf.reply_desc,
+					sdf.del_flag,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.feedback_use_id) feedback_use_nam,
+					(SELECT uu.use_nam FROM use_use uu WHERE uu.id = sdf.reply_use_id) reply_use_nam
+				FROM
+					sys_dat_feedback sdf
+				WHERE 1=1 and sdf.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+					<![CDATA[ and sdf.feedback_tim >= #{sta_tim} ]]>
+				</if>
+				<if test="end_tim != null and end_tim != ''">
+					<![CDATA[ and sdf.feedback_tim < #{end_tim} ]]>
+				</if>
+			) sd
+			where 1=1 and sd.del_flag = 0
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sd.feedback_desc,''),
+					IFNULL(sd.feedback_use_nam,''),
+					IFNULL(sd.reply_desc,''),
+					IFNULL(sd.reply_use_nam,'')
+					) 
+					LIKE CONCAT('%',#{words},'%')
+			</if>		
+	</select>
+	
+		
+	<!-- 新增 意见反馈  -->
+	<insert id="insertFeedBack" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_dat_feedback (
+			feedback_use_id, 
+			feedback_tim,
+			feedback_desc
+		)
+		VALUES
+		(
+			#{feedback_use_id},
+			#{feedback_tim},
+			#{feedback_desc}
+		)
+	</insert>
+	
+		
+	<!--  意见反馈 删除 -->
+	<update id="delFeedBackById" parameterType="java.util.LinkedHashMap">
+		
+		UPDATE sys_dat_feedback sdf
+			SET sdf.del_flag = 1
+		WHERE
+			sdf.id = #{id}
+
+	</update>
+	
+	
+	<!--  意见反馈   回复 -->
+	<update id="updReplyById" parameterType="java.util.LinkedHashMap">
+		
+		UPDATE sys_dat_feedback sdf
+			SET sdf.reply_use_id = #{reply_use_id},
+				sdf.reply_tim = #{reply_tim},
+				sdf.reply_desc = #{reply_desc} 
+		WHERE
+			sdf.id = #{id}
+
+	</update>
+	
+	
+	
+	
+	<!--  用户头像 添加 -->
+	<update id="insertUserImg" parameterType="java.util.LinkedHashMap">
+		
+		UPDATE use_use us
+			SET 
+				us.pic_nam = #{pic_nam},
+				us.pic_new_nam = #{pic_new_nam},
+				us.pic_url = #{pic_url} 
+		WHERE
+			us.id = #{id}
+
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

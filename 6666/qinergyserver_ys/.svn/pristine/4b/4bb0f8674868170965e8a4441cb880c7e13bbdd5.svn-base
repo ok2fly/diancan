@@ -1,0 +1,113 @@
+
+
+/*************
+ *  表格
+ *************/
+.wauto .table-list {
+	margin-top: 0px;
+	border: 1px solid #E5E5E5;
+}
+.wauto th, .wauto td {
+	width: auto;
+	color: #666;
+}
+.wauto a {
+	color: #666;
+}
+.wauto a:hover {
+	color: #ed1c24;
+}
+
+.table-list th {
+	background: #f2f2f2;
+	height: 30px;
+	line-height: 30px;
+	border: 1px solid #E5E5E5;
+	position: relative;
+}
+.table-list th select { border:none; background:#f2f2f2; color:#333; font-weight:bold;}
+ 
+.table-list td {
+	height: 28px;
+	border: 1px solid #E5E5E5;
+	text-align: center;
+}
+
+/*********
+ * 查询区域
+ *********/
+.query span {
+    display: inline-block;
+    line-height: 30px;
+    color: #666;
+}
+
+.quinput{
+    width: 193px;
+    height: 30px!important;
+    line-height: 30px;
+    border: solid 1px #d6d6d6!important;
+    color: #666;
+    background: #fff;
+    display: inline;
+    border-radius: 5px;
+     padding-left:5px;
+}
+.quinput.Wdate{
+    width: 185px!important;
+}
+.querybut {
+	color: #FFFFFF;
+    width: 90px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #00b8b7;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+.queryicon{
+	color: #666;
+	width: 80px;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 10px;
+	border: none;
+	float: left;
+	display: inline-block;
+	text-align: right;
+	cursor: pointer;
+	position: relative;
+}
+.queryicon i{
+	display: inline-block;
+    line-height: 25px;
+    width: 25px;
+    height: 25px;
+    left: 20px;
+    top: 2px;
+    position: absolute;
+}
+
+.queryicon i.add{
+	margin-left:-33%;
+	background: url(../images/add.png) no-repeat;
+	background-size:100% ;
+}
+
+.queryicon i.edit{
+	background: url(../images/edit.png) no-repeat;
+	background-size:100% ;
+}
+
+.queryicon i.del{
+	background: url(../images/del.png) no-repeat;
+  	background-size:89% ;
+}
+
+.queryicon i.exp{
+	background: url(../images/exp.png) no-repeat;
+	background-size:100% ;
+}

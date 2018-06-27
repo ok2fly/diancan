@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="systemDep">
+<!-- 部门信息维护 start -->
+	<!--  
+	<resultMap type="departmentDto" id="com.qinergy.dto.system.DepartmentDto">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+	    <result column="DEP_NAM" property="dep_nam" jdbcType="VARCHAR" />
+	    <result column="DEP_IDE" property="dep_ide" jdbcType="VARCHAR" />
+	    <result column="COM_ID" property="com_id" jdbcType="INTEGER" />
+	    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="DEP_STA" property="dep_sta" jdbcType="INTEGER" />
+	    <result column="DEP_SOR" property="dep_sor" jdbcType="INTEGER" />
+	</resultMap>
+	-->
+  
+  
+	<!-- 修改部门信息 -->
+	<update id="updDep" parameterType="java.util.LinkedHashMap">
+		update sys_bas_dep set 
+			dep_nam = #{dep_nam}, 
+			dep_ide = #{dep_ide},
+			com_id = #{com_id},
+			remark = #{remark},
+			dep_sta = #{dep_sta},
+			dep_sor = #{dep_sor}, 
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		where id = #{id}
+    </update>
+    
+    <!-- 逻辑删除部门信息 -->
+    <update id="delDep" parameterType="java.util.LinkedHashMap">
+		update sys_bas_dep set del_flag = #{del_flag} where id = #{id}
+	</update>
+	
+    
+	<!-- 新建部门信息 -->
+	<insert id="insDep" parameterType="java.util.LinkedHashMap">
+		insert into sys_bas_dep
+			(dep_nam,
+			dep_ide,
+			com_id,
+			remark,
+			dep_sta,
+			dep_sor,
+			del_flag,
+			crt_tim,
+			crt_use_id
+			)
+		values
+			(#{dep_nam},
+			#{dep_ide},
+			#{com_id},
+			#{remark},
+			#{dep_sta},
+			#{dep_sor},
+			#{del_flag},
+			#{crt_tim},
+			#{crt_use_id})
+	</insert>
+
+	
+	<!-- 获取部门信息 -->
+	<select id="getDepInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select 
+			dep.id,
+			dep.dep_nam,
+			dep.dep_ide,
+			dep.com_id,
+			dep.remark,
+			dep.dep_sta,
+			(select com.com_nam from sys_bas_com com where com.id = dep.com_id) com_nam,
+			dep.dep_sor 
+		from sys_bas_dep dep 
+		where dep.com_id = #{com_id}
+		and dep.del_flag = 0
+		ORDER BY dep_sor,crt_tim
+	</select>
+	
+	<!-- 根据id获取指定部门信息 -->
+	<select id="getDepInfById" parameterType="java.util.LinkedHashMap" resultType="com.qinergy.dto.system.DepartmentDto">
+	
+		select 
+			dep.id,
+			dep.dep_nam,
+			dep.dep_ide,
+			dep.com_id,
+			dep.remark,
+			dep.dep_sta,
+			(select com.com_nam from sys_bas_com com where com.id = dep.com_id) com_nam,
+			dep.dep_sor 
+		from sys_bas_dep dep 
+		where dep.com_id = #{com_id}
+		AND dep.id = #{id}
+	</select>
+	
+ <!-- 部门信息维护 end -->  	
+ 
+ <!-- 职位信息维护 start -->  	
+  
+	<select id="getPosInfAll" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbp.id,
+			sbp.pos_ide,
+			sbp.pos_nam
+		FROM
+			sys_bas_pos sbp
+	</select>
+  
+ <!-- 职位信息维护 end -->  
+</mapper>

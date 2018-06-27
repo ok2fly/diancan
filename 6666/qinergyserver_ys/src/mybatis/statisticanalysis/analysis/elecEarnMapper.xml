@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="elecEarnMapper">
+
+
+	<!-- 理论上网电量和收益  一年一条-->
+	<select id="getFeaElecAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT 
+			
+			SUM(spfp.fsb_power) fsb_power,
+			
+			SUM(spfp.fsb_amo) fsb_amo,
+			
+			spfp.fsb_tim	
+			
+		FROM 
+			
+			sa_pv_fsb_power spfp
+			
+		WHERE 
+			
+			spfp.pws_id = #{pws_id}
+			
+		<if test="staTim != null and staTim != ''">
+			
+			<![CDATA[ and spfp.fsb_tim >= #{staTim} ]]>
+
+		</if>
+			
+		<if test="endTim != null and endTim != ''">
+			
+			<![CDATA[ and spfp.fsb_tim < #{endTim} ]]>
+				
+		</if>
+		
+		ORDER BY spfp.fsb_tim DESC
+		
+		LIMIT 1 
+	</select>
+	
+	<!-- 
+		实际上网电量 和收益一月一条
+	 -->
+	<select id="getPracElecAndEarnAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			spms.tol_tim,
+			SUM(spms.int_cha) int_cha,           
+			SUM(spms.int_amo) int_amo 
+		FROM 
+			sa_pws_mon_sta_eff spms
+		WHERE 
+		
+			spms.pws_id = #{pws_id}
+			
+		<if test="staTim != null and staTim != ''">
+			
+			<![CDATA[ and spms.tol_tim >= #{staTim} ]]>
+
+		</if>
+			
+		<if test="endTim != null and endTim != ''">
+			
+			<![CDATA[ and spms.tol_tim < #{endTim} ]]>
+				
+		</if>
+		
+		ORDER BY spms.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!--预测数据  按年统计
+		数据类型（1：预测上网电量，2：预测上网收益，3：预测辐射量，4：预测上网电量（依据辐射量）） 
+	-->
+	<select id="getForeElecAndEarnAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT 
+			spfms.tol_tim,                     
+			SUM(spfms.sum_fct_value) sum_fct_value
+		FROM 
+		
+			sa_pws_fct_mon_sta spfms
+			
+		WHERE 
+		
+			spfms.pws_id = #{pws_id}
+			
+			AND spfms.type = #{type}
+			
+			<if test="staTim != null and staTim != ''">
+			
+				<![CDATA[ and spfms.tol_tim >= #{staTim} ]]>
+
+			</if>
+			
+			<if test="endTim != null and endTim != ''">
+				
+				<![CDATA[ and spfms.tol_tim < #{endTim} ]]>
+					
+			</if>
+		
+		ORDER BY spfms.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	<!--  获取1:预测上网电量  4:预测上网电量 （根据辐射量）  -->
+	 <select id="getForeElecAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	 	SELECT 
+			tol_tim,
+			crt_tim,
+			fct_value1,
+			fct_value2,
+			fct_value3,
+			fct_value4,
+			fct_value5,
+			fct_value6,
+			fct_value7,
+			fct_value8,
+			fct_value9,
+			fct_value10,
+			fct_value11,
+			fct_value12,
+			sum_fct_value,
+			fst_tol_tim 
+		FROM
+			sa_pws_fct_mon_sta
+		WHERE
+			pws_id = #{pws_id}
+			AND type = #{type}
+			AND val_sta = #{val_sta}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND tol_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY 
+			tol_tim DESC
+		LIMIT 1		
+	 </select>
+	 
+	
+	
+	<!-- 获取计划上网电量   一月一条 -->
+	<select id="getPlanElecAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			plan_tim,
+			plan_power
+		FROM 
+			sa_pv_plan_power
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND plan_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND plan_tim < #{endTim} ]]>
+			</if>
+		ORDER BY 
+			plan_tim DESC
+		LIMIT 1
+	</select>
+ 
+</mapper>

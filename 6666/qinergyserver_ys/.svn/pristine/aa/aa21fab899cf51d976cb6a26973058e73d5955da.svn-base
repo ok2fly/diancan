@@ -1,0 +1,2215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="others">
+
+	<!-- 通过电站ID获取考核管理页面中除了12个月考核评分外的所有数据 -->
+	<select id="getPwsAssMagInfByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+
+		sdam.*
+
+		FROM
+		sys_dat_ass_mag sdam
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND sdam.pws_id = #{pws_id}
+
+		</if>
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdam.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdam.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY sdam.tol_tim DESC LIMIT 1
+	</select>
+
+	<!-- 通过电站ID获取考核管理页面中12个月考核评分的所有数据 -->
+	<select id="getPwsAssMagLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+
+		sdam.ass_score
+
+		FROM
+		sys_dat_ass_mag sdam
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND sdam.pws_id = #{pws_id}
+
+		</if>
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdam.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdam.tol_tim < #{end_tim} ]]>
+
+		</if>
+	</select>
+
+
+
+	<!-- 删除交流充电桩充电流程信息数据表 -->
+	<delete id="delIscsEquAcChpOrd" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_ac_chp_ord
+
+	</delete>
+
+	<!-- 删除交流充电桩充电中实时数据表 -->
+	<delete id="delIscsEquAcChpRel" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_ac_chp_rel
+
+	</delete>
+
+	<!-- 删除交流充电桩待机数据表 -->
+	<delete id="delIscsEquAcChpStd" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_ac_chp_std
+
+	</delete>
+
+	<!-- 删除交流配电柜数据表 -->
+	<delete id="delIscsEquAcDb" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_ac_db
+
+	</delete>
+
+	<!-- 删除储能电池实时数据信息表 -->
+	<delete id="delIscsEquBms" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_bms
+
+	</delete>
+
+	<!-- 删除汇流箱实时数据信息表 -->
+	<delete id="delIscsEquBox" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_box
+
+	</delete>
+
+	<!-- 删除电动汽车充电过程信息数据表 -->
+	<delete id="delIscsEquChpCarOrd" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_chp_car_ord
+
+	</delete>
+
+	<!-- 删除电动汽车充电信息实时数据表 -->
+	<delete id="delIscsEquChpCarSta" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_chp_car_sta
+
+	</delete>
+
+	<!-- 删除控制器信息实时数据表 -->
+	<delete id="delIscsEquCtl" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_ctl
+
+	</delete>
+
+	<!-- 删除直流充电桩充电流程信息数据表 -->
+	<delete id="delIscsEquDcChpOrd" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dc_chp_ord
+
+	</delete>
+
+	<!-- 删除直流充电桩充电中实时数据表 -->
+	<delete id="delIscsEquDcChpRel" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dc_chp_rel
+
+	</delete>
+
+	<!-- 删除直流充电桩待机状态信息数据表 -->
+	<delete id="delIscsEquDcChpStd" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dc_chp_std
+
+	</delete>
+
+	<!-- 删除直流配电柜信息数据表 -->
+	<delete id="delIscsEquDcDb" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dc_db
+
+	</delete>
+
+	<!-- 删除DC/DC(直流转直流电源)信息数据表 -->
+	<delete id="delIscsEquDcdc" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dcdc
+
+	</delete>
+
+	<!-- 删除解列装置实时数据表 -->
+	<delete id="delIscsEquDctDev" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_dct_dev
+
+	</delete>
+
+	<!-- 删除环境监测仪实时数据表 -->
+	<delete id="delIscsEquEnv" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_env
+
+	</delete>
+
+	<!-- 删除线路保护实时数据表 -->
+	<delete id="delIscsEquLnePtt" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_lne_ptt
+
+	</delete>
+
+	<!-- 删除电表实时数据表 -->
+	<delete id="delIscsEquMeter" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_meter
+
+	</delete>
+
+	<!-- 删除微网系统实时数据表 -->
+	<delete id="delIscsEquMicSys" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_mic_sys
+
+	</delete>
+
+	<!-- 删除储能逆变器实时数据表 -->
+	<delete id="delIscsEquPcs" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_pcs
+
+	</delete>
+
+	<!-- 删除电能质量监测装置实时数据表 -->
+	<delete id="delIscsEquPqsms" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_pqsms
+
+	</delete>
+
+	<!-- 删除光伏逆变器实时数据表 -->
+	<delete id="delIscsEquPvs" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_pvs
+
+	</delete>
+
+	<!-- 删除变压器实时数据表 -->
+	<delete id="delIscsEquTransf" parameterType="java.util.LinkedHashMap">
+
+		delete from
+		iscs_equ_transf
+
+	</delete>
+
+
+
+	<!-- 获取最后检修日期 -->
+	<select id="getLastOverhaulDate" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		ovre.end_time
+		FROM
+		sys_bas_equ sbe,
+		overhaul_route ovrt,
+		overhaul_record ovre
+		WHERE
+		sbe.pws_id = ovrt.pws_id
+		AND ovrt.id = ovre.tour_route_id
+		AND sbe.equ_num =
+		#{equ_num}
+		ORDER BY
+		ovre.end_time DESC
+		LIMIT 1
+	</select>
+
+	<!-- 获取最后维修日期 -->
+	<select id="getLasMaintenanceDate" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		trn.end_time
+		FROM
+		t_repair tr,
+		t_repair_node trn
+		WHERE
+		tr.id = trn.repair_id
+		AND trn.sta = 3
+		AND tr.equ_num = #{equ_num}
+		ORDER BY
+		trn.end_time DESC
+		LIMIT 1
+	</select>
+
+	<!-- 获取下次检修日期 -->
+	<select id="getNextOverhaulDate" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		ovpl.next_time
+		FROM
+		sys_bas_equ sbe,
+		overhaul_route ovrt,
+		overhaul_plan ovpl
+		WHERE
+		sbe.pws_id = ovrt.pws_id
+		AND ovrt.id = ovpl.tour_route_id
+		AND sbe.equ_num =
+		#{equ_num}
+		ORDER BY
+		ovpl.next_time DESC
+		LIMIT 1
+
+	</select>
+
+	<!-- 获取告警状态信息 -->
+	<select id="getAlaStaInf" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		sys_dat_fau sdf
+		WHERE
+		sdf.PID = #{equ_num}
+		AND sdf.flag = 1
+		ORDER BY sdf.time desc
+		LIMIT 1
+	</select>
+
+	<!-- 获取累计维修次数 -->
+	<select id="getTolMaintenanceCount" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(trp.id) cou
+		FROM
+		t_repair trp
+		WHERE
+		trp.check_sta >= 3
+		AND trp.equ_num = #{equ_num}
+	</select>
+
+	<!-- 获取历史告警记录 -->
+	<select id="getAlaHistoryLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sdf.id,
+			sdf.equ_num PID,
+			sdf.fau_level `level`,
+			sdf.fau_num num,
+			(select sdff.`index` from sys_dat_fau sdff where sdff.id = sdf.fau_id) `index`,
+			sdf.fau_info `info`,
+			sdf.fau_flag `flag`,
+			sdf.fau_time time
+		FROM
+			sys_dat_alarm sdf
+		WHERE
+			sdf.equ_num = #{equ_num}
+		<if test="fau_inf != null and fau_inf != ''">
+
+			AND sdf.fau_info Like concat('%',#{fau_inf},'%')
+
+		</if>
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time <= #{end_tim} ]]>
+
+		</if>
+		ORDER BY sdf.fau_time
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取历史告警记录(分页) -->
+	<select id="getAlaHistoryLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			COUNT(sdf.id) cou
+		FROM
+			sys_dat_alarm sdf
+		WHERE
+			sdf.equ_num = #{equ_num}
+		<if test="fau_inf != null and fau_inf != ''">
+
+			AND sdf.fau_info Like concat('%',#{fau_inf},'%')
+
+		</if>
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time <= #{end_tim} ]]>
+
+		</if>
+	</select>
+
+	<!-- 获取设备维修记录 -->
+	<select id="getMaintenanceLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		tr.repair_reason,
+		tr.repair_use_id,
+		(select uu.use_nam from use_use uu where uu.id = tr.repair_use_id)
+		repair_use_nam,
+		tr.upd_tim,
+		tr.remark
+		FROM
+		t_repair tr
+		WHERE
+		tr.check_sta >= 3
+		AND tr.equ_num = #{equ_num}
+		<if test="repair_reason != null and repair_reason != ''">
+
+			AND tr.repair_reason Like concat('%',#{repair_reason},'%')
+
+		</if>
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND tr.upd_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND tr.upd_tim <= #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		tr.upd_tim
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取设备维修记录(分页) -->
+	<select id="getMaintenanceLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(tr.id) cou
+		FROM
+		t_repair tr
+		WHERE
+		tr.check_sta >= 3
+		AND tr.equ_num = #{equ_num}
+		<if test="repair_reason != null and repair_reason != ''">
+
+			AND tr.repair_reason Like concat('%',#{repair_reason},'%')
+
+		</if>
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND tr.upd_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND tr.upd_tim <= #{end_tim} ]]>
+
+		</if>
+	</select>
+
+
+	<!-- 获取设备检修（保养）记录 -->
+	<select id="getOverhaulLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+		ovre.*, (
+		SELECT
+		uu.use_nam
+		FROM
+		use_use uu
+		WHERE
+		uu.id = ovre.tour_people_id
+		) use_nam
+		FROM
+		sys_bas_equ sbe,
+		overhaul_route ovrt,
+		overhaul_record ovre
+		WHERE
+		sbe.pws_id = ovrt.pws_id
+		AND ovrt.id = ovre.tour_route_id
+		AND sbe.equ_num =
+		#{equ_num}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ovre.end_time >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ovre.end_time <= #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		ovre.end_time
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取设备检修（保养）记录(分页) -->
+	<select id="getOverhaulLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		DISTINCT COUNT(ovre.id) cou
+		FROM
+		sys_bas_equ sbe,
+		overhaul_route ovrt,
+		overhaul_record ovre
+		WHERE
+		sbe.pws_id = ovrt.pws_id
+		AND ovrt.id = ovre.tour_route_id
+		AND sbe.equ_num =
+		#{equ_num}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ovre.end_time >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ovre.end_time <= #{end_tim} ]]>
+
+		</if>
+	</select>
+
+	<!-- 以下为通知中所用到的所有接口 -->
+	<!-- 获取系统中所有正在发生的告警信息，获取：设备类型唯一标识、设备编号、设备ID、电站ID、设备类型ID -->
+	<select id="getSysAllGenAlaInf" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdf.id,
+		sdf.`level`,
+		num,
+		info,
+		time,
+		sbe.equ_num,
+		(
+		SELECT
+		sbat.typ_ide
+		FROM
+		sys_bas_app sba,
+		sys_bas_app_typ sbat
+		WHERE
+		sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		) typ_ide,
+		(
+		SELECT
+		sba.app_typ_id
+		FROM
+		sys_bas_app sba
+		WHERE
+		sbe.equ_mod_id = sba.id
+		) app_typ_id,
+		sbe.pws_id,
+		sbe.id equ_id
+		FROM
+		sys_dat_fau sdf,
+		sys_bas_equ sbe
+		WHERE
+		sdf.PID = sbe.equ_num
+		AND sdf.flag = 1
+
+	</select>
+
+	<!-- 使用正在发生的告警ID,获取与其有关的人员信息列表，is_def_sta = 1 -->
+	<select id="getUseIdLstByGenAlaId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdf.id,
+		sdf.`level`,
+		num,
+		info,
+		time,
+		sbe.equ_num,
+		(
+		SELECT
+		sbat.typ_ide
+		FROM
+		sys_bas_app sba,
+		sys_bas_app_typ sbat
+		WHERE
+		sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		) typ_ide,
+		(
+		SELECT
+		sba.app_typ_id
+		FROM
+		sys_bas_app sba
+		WHERE
+		sbe.equ_mod_id = sba.id
+		) app_typ_id,
+		sbe.pws_id,
+		sbe.id equ_id
+		FROM
+		sys_dat_fau sdf,
+		sys_bas_equ sbe,
+		sys_bas_pws sbp,
+		sys_dat_use_pws sdup
+		WHERE
+		sdup.pws_id = sbp.id
+		AND sbp.id = sbe.pws_id
+		AND sdf.PID = sbe.equ_num
+		AND sdf.flag
+		= 1
+		AND sdup.use_id = #{use_id}
+		AND sdf.id not in(SELECT
+		sdn.fau_id
+		FROM
+		sys_dat_notice sdn
+		WHERE
+
+		sdn.state = 0
+
+		AND sdn.use_id = #{use_id})
+	</select>
+
+	<!-- 获取系统中以当前时间为准1分钟以内的所有发生的告警 -->
+	<select id="getEquNumByFau" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sdf.*, sbe.id equ_id,
+			sbe.equ_num,
+			sbe.pws_id,
+			(
+				SELECT
+					sbat.typ_ide
+				FROM
+					sys_bas_app sba,
+					sys_bas_app_typ sbat
+				WHERE
+					sbe.equ_mod_id = sba.id
+				AND sba.app_typ_id = sbat.id
+			) typ_ide,
+			(
+				SELECT
+					sba.app_typ_id
+				FROM
+					sys_bas_app sba
+				WHERE
+					sbe.equ_mod_id = sba.id
+			) app_typ_id
+		FROM
+			sys_dat_fau sdf,
+			sys_bas_equ sbe,
+			sys_bas_pws sbp
+		WHERE
+		sbp.id = sbe.pws_id
+		AND sbe.equ_num = sdf.PID
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdf.time > #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdf.time <= #{end_tim} ]]>
+
+		</if>
+		ORDER BY sdf.time
+	</select>
+	
+	<!-- 更新阅读状态（是否已阅读） -->
+	<update id="updNoticeStateByEquNumFauTim" parameterType="java.util.LinkedHashMap">
+
+		update sys_dat_alarm
+		set
+		fau_flag=0
+		WHERE equ_num=#{equ_num}
+		AND fau_info = #{info}
+	</update>
+
+	<!-- 使用用户ID获取通知信息列表 -->
+	<select id="getNoticeInfByUseId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdn.id,
+		sdn.fau_id,
+		sdn.fau_level,
+		sdn.fau_num,
+		sdn.fau_info,
+		sdn.fau_time,
+		sdn.equ_id,
+		sdn.equ_num,
+		(
+		SELECT
+		sbe.equ_nam
+		FROM
+		sys_bas_equ sbe
+		WHERE
+		sbe.equ_num = sdn.equ_num
+		) equ_nam,
+		sdn.app_typ_ide,
+		sdn.app_typ_id,
+		(
+		SELECT
+		sbat.typ_nam
+		FROM
+		sys_bas_app_typ sbat
+		WHERE
+		sbat.id = sdn.app_typ_id
+		) app_typ_nam,
+		sdn.pws_id,
+		(
+		SELECT
+		sbp.pws_nam
+		FROM
+		sys_bas_pws sbp
+		WHERE
+		sbp.id = sdn.pws_id
+		) pws_nam,
+		sdn.use_id,
+		sdn.crt_tim,
+		sdn.state,
+		sdn.reve_tim
+		FROM
+		sys_dat_notice sdn
+		WHERE
+		sdn.state = 0
+
+		<if test="fau_id != null and fau_id != ''">
+
+			AND sdn.fau_id = #{fau_id}
+
+		</if>
+
+		<if test="use_id != null and use_id != ''">
+
+			AND sdn.use_id = #{use_id}
+
+		</if>
+	</select>
+
+	<!-- 使用用户ID获取通知信息列表 -->
+	<select id="getUserInfByIsDefSta" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		use_use uu
+		WHERE
+		uu.is_def_sta = 1
+	</select>
+
+	<!-- 添加通知信息 -->
+	<insert id="insNoticeInf" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO
+		sys_dat_alarm (
+		fau_id,
+		fau_level,
+		fau_num,
+		fau_info,
+		fau_time,
+		equ_id,
+		equ_num,
+		app_typ_ide,
+		app_typ_id,
+		pws_id,
+		fau_flag
+		)
+		VALUES
+		(
+		#{fau_id},
+		#{fau_level},
+		#{fau_num},
+		#{fau_info},
+		#{fau_time},
+		#{equ_id},
+		#{equ_num},
+		#{app_typ_ide},
+		#{app_typ_id},
+		#{pws_id},
+		1)
+
+	</insert>
+	
+	<!-- 添加通知信息 -->
+	<insert id="insNoticeRead" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO
+		sys_dat_notice_read (
+		fau_id,
+		use_id,
+		crt_tim,
+		state,
+		reve_tim
+		)
+		VALUES
+		(
+		#{fau_id},
+		#{use_id},
+		NOW(),
+		2,
+		NOW())
+
+	</insert>
+
+	<!-- 更新阅读状态（是否已阅读） -->
+	<update id="updNoticeState" parameterType="java.util.LinkedHashMap">
+
+		update sys_dat_notice
+		set
+		state=2 ,
+		reve_tim=#{reve_tim}
+		WHERE id=#{not_id}
+	</update>
+
+	<!-- 添加系统通知信息 -->
+	<insert id="insSysNoticeInf" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO
+		sys_dat_sys_notice (
+		notice_con,
+		use_id,
+		crt_tim
+		)
+		VALUES
+		(
+		#{notice_con},
+		#{use_id},
+		#{crt_tim}
+		)
+
+	</insert>
+
+	<!-- 更新阅读状态（是否已阅读） -->
+	<update id="updSysNoticeState" parameterType="java.util.LinkedHashMap">
+
+		update
+		sys_dat_sys_notice set
+		state=2 ,
+		reve_tim=#{reve_tim}
+		WHERE id=#{not_id}
+	</update>
+
+
+	<!-- 使用用户ID获取通知信息列表 -->
+	<select id="getSysNoticeInfByUseId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdsn.*
+		FROM
+		sys_dat_sys_notice sdsn
+		WHERE
+
+		sdsn.state = 0
+
+		<if test="use_id != null and use_id != ''">
+
+			AND sdsn.use_id = #{use_id}
+
+		</if>
+		ORDER BY sdsn.crt_tim  DESC
+	</select>
+
+	<!-- 使用用户ID获取告警列表信息，改列表中，不包含已关闭的通知信息(即，为用户展示的告警通知信息) -->
+	<select id="getSysAlarmByUseId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					*, (
+						SELECT
+							sbe.equ_nam
+						FROM
+							sys_bas_equ sbe
+						WHERE
+							sbe.equ_num = sda2.equ_num
+					) equ_nam,
+					(
+						SELECT
+							sbat.typ_nam
+						FROM
+							sys_bas_app_typ sbat
+						WHERE
+							sbat.id = sda2.app_typ_id
+					) app_typ_nam,
+					(
+						SELECT
+							sbp.pws_nam
+						FROM
+							sys_bas_pws sbp
+						WHERE
+							sbp.id = sda2.pws_id
+					) pws_nam,
+					sda2.fau_time crt_tim
+				FROM
+					sys_dat_alarm sda2
+				WHERE
+					sda2.id NOT IN (
+						SELECT
+							sda.id
+						FROM
+							sys_dat_alarm sda,
+							(
+								SELECT
+									sdnr.*
+								FROM
+									sys_dat_notice_read sdnr
+								WHERE
+									sdnr.use_id = #{use_id}
+							) sdnr
+						WHERE
+							sda.id = sdnr.fau_id
+					)
+				ORDER BY
+					sda2.fau_time DESC
+			) sdfa,
+			sys_dat_use_pws sdup
+		WHERE
+			sdfa.pws_id = sdup.pws_id
+		AND sdup.use_id = #{use_id}
+		AND sdfa.fau_flag = 1
+	</select>
+	
+	
+
+	<!-- 添加公告信息 -->
+	<insert id="insAnnInf" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO sys_dat_sys_ann
+		(
+		ann_cont,
+		ann_typ,
+		ann_sort,
+		crt_use_id,
+		crt_tim,
+		remark
+		)
+		VALUES
+		(
+		#{ann_cont},
+		#{ann_typ},
+		#{ann_sort},
+		#{crt_use_id},
+		#{crt_tim},
+		#{remark})
+
+	</insert>
+
+	<!-- 更新阅读状态（是否已阅读） -->
+	<update id="updAnnInf" parameterType="java.util.LinkedHashMap">
+
+		update sys_dat_sys_ann set
+		ann_cont=#{ann_cont} ,
+		ann_typ=#{ann_typ},
+		ann_sort=#{ann_sort},
+		remark=#{remark},
+		mod_use_id=#{mod_use_id},
+		mod_tim=#{mod_tim}
+		WHERE id=#{ann_id}
+	</update>
+
+	<!-- 使用公告ID获取公告信息 -->
+	<select id="getAnnInfById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdsa.id,
+		sdsa.ann_cont,
+		sdsa.ann_typ,
+		sdsa.ann_sort,
+		sdsa.remark
+		FROM
+		sys_dat_sys_ann sdsa
+		WHERE
+
+		sdsa.id = #{ann_id}
+
+	</select>
+
+
+	<!-- 获取公告信息列表 -->
+	<select id="getAnnInfLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdsa.id,
+		sdsa.ann_cont,
+		sdsa.ann_typ,
+		sdsa.ann_sort,
+		sdsa.remark,
+		sdsa.crt_tim,
+		sdsa.crt_use_id,
+		(select uu.use_nam from use_use uu where uu.id = sdsa.crt_use_id)
+		crt_use_nam,
+		sdsa.mod_tim,
+		sdsa.mod_use_id,
+		(select uu.use_nam from use_use uu where uu.id = sdsa.mod_use_id) mod_use_nam
+		FROM
+		sys_dat_sys_ann sdsa
+		WHERE 1=1
+
+		<if test="ann_cont != null and ann_cont != ''">
+
+			AND sdsa.ann_cont Like concat('%',#{ann_cont},'%')
+
+		</if>
+		<if test="ann_typ != null and ann_typ != ''">
+
+			AND sdsa.ann_typ = #{ann_typ}
+
+		</if>
+		ORDER BY
+		sdsa.ann_sort,sdsa.id 
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取公告信息列表(分页) -->
+	<select id="getAnnInfLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(sdsa.id) cou
+		FROM
+		sys_dat_sys_ann sdsa
+		WHERE 1=1
+
+		<if test="ann_cont != null and ann_cont != ''">
+
+			AND sdsa.ann_cont Like concat('%',#{ann_cont},'%')
+
+		</if>
+		<if test="ann_typ != null and ann_typ != ''">
+
+			AND sdsa.ann_typ = #{ann_typ}
+
+		</if>
+	</select>
+
+	<!-- 删除公告信息 -->
+	<delete id="delAnnInf" parameterType="java.util.LinkedHashMap">
+
+		DELETE
+		FROM
+		sys_dat_sys_ann
+		WHERE
+		id = #{ann_id}
+	</delete>
+
+
+	<!-- 获取首页中运维信息数据 -->
+	<select id="getFstPagOptInf" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(trp.id) defCou
+		FROM
+		use_use uu,
+		sys_dat_use_pws sdup,
+		sys_bas_equ sbe,
+		t_repair trp
+		WHERE
+		uu.id = sdup.use_id
+		AND sdup.pws_id = sbe.pws_id
+		AND sbe.equ_num =
+		trp.equ_num
+		<!-- AND uu.id = 88 -->
+
+		<if test="use_id != null and use_id != ''">
+
+			AND uu.id = #{use_id}
+
+		</if>
+
+		<if test="check_sta != null and check_sta != ''">
+
+			AND trp.check_sta = #{check_sta}
+
+		</if>
+
+	</select>
+
+
+	<!-- 以下为计划充放电量信息维护 -->
+	<!-- 添加计划充放电量 -->
+	<insert id="insPlanPhiPhe" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO
+		sa_pc_plan_phi_phe (
+		pws_id,
+		plan_phi,
+		plan_phe,
+		plan_tim,
+		crt_tim
+		)
+		VALUES
+		(
+		#{pws_id},
+		#{plan_phi},
+		#{plan_phe},
+		#{plan_tim},
+		#{crt_tim})
+
+	</insert>
+
+	<!-- 修改计划充放电量 -->
+	<update id="updPlanPhiPhe" parameterType="java.util.LinkedHashMap">
+
+		update
+		sa_pc_plan_phi_phe set
+		pws_id=#{pws_id} ,
+		plan_phi=#{plan_phi},
+		plan_phe=#{plan_phe},
+		plan_tim=#{plan_tim}
+		WHERE id=#{ppp_id}
+	</update>
+
+	<!-- 使用计划充放电量ID获取计划充放电量信息 -->
+	<select id="getPlanPhiPheInfById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spppp.id,
+		spppp.pws_id,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id=spppp.pws_id ) pws_nam,
+		spppp.plan_phi,
+		spppp.plan_phe,
+		spppp.plan_tim
+		FROM
+		sa_pc_plan_phi_phe spppp
+		
+		WHERE
+		spppp.id = #{ppp_id}
+
+	</select>
+
+	<!-- 获取计划充放电量信息列表 -->
+	<select id="getPlanPhiPheLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spppp.id,
+		spppp.pws_id,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = spppp.pws_id)
+		pws_nam,
+		spppp.plan_phi,
+		spppp.plan_phe,
+		spppp.plan_tim
+		FROM
+		sa_pc_plan_phi_phe spppp
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spppp.pws_id = #{pws_id}
+
+		</if>
+		ORDER BY
+		spppp.plan_tim
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取计划充放电量信息列表(分页) -->
+	<select id="getPlanPhiPheLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(spppp.id) cou
+		FROM
+		sa_pc_plan_phi_phe spppp
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spppp.pws_id = #{pws_id}
+
+		</if>
+	</select>
+
+	<!-- 删除计划充放电量信息 -->
+	<delete id="delPlanPhiPheInf" parameterType="java.util.LinkedHashMap">
+
+		DELETE
+		FROM
+		sa_pc_plan_phi_phe
+		WHERE
+		id = #{ppp_id}
+	</delete>
+
+
+
+	<!-- //////////////////////////////////电量计划//////////////////////////////// -->
+
+	<!-- 电量计划 光伏计划发电量表 列表显示 -->
+	<select id="selPvPlanPower" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spp.*, sbp.id sbpId,
+		sbp.pws_nam,
+		(select u.use_nam from use_use u where u.id = spp.crt_use_id) crt_nam,
+		(select u.use_nam from use_use u where u.id = spp.mod_use_id) mod_nam
+		FROM
+		sa_pv_plan_power spp,
+		sys_bas_pws sbp
+		WHERE
+		spp.pws_id = sbp.id
+		AND sbp.del_flag = 0
+
+		<if test="sbpId != null and sbpId != ''">
+
+			AND sbp.id = #{sbpId}
+		</if>
+		order by spp.crt_tim
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 电量计划 光伏计划发电量表 列表显示 分页 -->
+	<select id="selPvPlanPowerCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT count(spp.id) cou,
+		spp.*, sbp.id sbpId,
+		sbp.pws_nam,
+		(select u.use_nam from use_use u where u.id = spp.crt_use_id) crt_nam,
+		(select u.use_nam from use_use u where u.id = spp.mod_use_id) mod_nam
+		FROM
+		sa_pv_plan_power spp,
+		sys_bas_pws sbp
+		WHERE
+		spp.pws_id = sbp.id
+		AND sbp.del_flag = 0
+
+		<if test="sbpId != null and sbpId != ''">
+
+			AND sbp.id = #{sbpId}
+		</if>
+
+	</select>
+
+
+
+
+
+	<!-- 电量计划 光伏计划发电量表 增加 -->
+	<insert id="insPvPlanPower" parameterType="java.util.LinkedHashMap">
+		INSERT INTO sa_pv_plan_power (
+		pws_id,
+		plan_power,
+		plan_tim,
+		crt_tim,
+		crt_use_id
+		)
+		VALUES
+		(
+		#{pws_id},
+		#{plan_power},
+		#{plan_tim},
+		#{crt_tim},
+		#{crt_use_id}
+		)
+
+	</insert>
+
+
+
+
+	<!--电量计划 光伏计划发电量表 修改 -->
+	<update id="updPvPlanPower" parameterType="java.util.LinkedHashMap">
+
+		update sa_pv_plan_power
+		set pws_id = #{pws_id},
+		plan_power = #{plan_power},
+		plan_tim = #{plan_tim},
+		mod_tim = #{mod_tim},
+		mod_use_id = #{mod_use_id}
+		where id = #{id}
+	</update>
+
+
+	<!-- 电量计划 光伏计划发电量表 数据回显 -->
+	<select id="selPvPlanPowerById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spp.*, sbp.id sbpId,
+		sbp.pws_nam,
+		(select u.use_nam from use_use u where u.id = spp.crt_use_id) crt_nam,
+		(select u.use_nam from use_use u where u.id = spp.mod_use_id) mod_nam
+		FROM
+		sa_pv_plan_power spp,
+		sys_bas_pws sbp
+		WHERE
+		spp.pws_id = sbp.id
+		AND sbp.del_flag = 0
+		AND spp.id = #{id}
+
+	</select>
+
+
+	<!-- 电量计划 光伏计划发电量表 删除 -->
+	<delete id="delPvPlanPowerById" parameterType="java.util.LinkedHashMap">
+
+		delete from sa_pv_plan_power where id = #{id}
+
+	</delete>
+
+
+
+
+	<!-- 以下为理论发电量信息维护 -->
+	<!-- 添加理论发电量 -->
+	<insert id="insFsbPower" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO
+		sa_pv_fsb_power (
+		pws_id,
+		fsb_power,
+		fsb_amo,
+		fsb_tim,
+		crt_tim,
+		crt_use_id
+		)
+		VALUES
+		(
+		#{pws_id},
+		#{fsb_power},
+		#{fsb_amo},
+		#{fsb_tim},
+		#{crt_tim},
+		#{crt_use_id})
+
+	</insert>
+
+	<!-- 修改理论发电量 -->
+	<update id="updFsbPower" parameterType="java.util.LinkedHashMap">
+
+		update sa_pv_fsb_power
+		set
+		pws_id=#{pws_id} ,
+		fsb_power=#{fsb_power},
+		fsb_amo=#{fsb_amo},
+		fsb_tim=#{fsb_tim},
+		mod_tim=#{mod_tim},
+		mod_use_id=#{mod_use_id}
+		WHERE id=#{pfp_id}
+	</update>
+
+	<!-- 使用理论发电量ID获取理论发电量信息 -->
+	<select id="getFsbPowerInfById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spfp.id,
+		spfp.pws_id,
+		spfp.fsb_power,
+		spfp.fsb_amo,
+		spfp.fsb_tim,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = spfp.pws_id) pws_nam
+
+		FROM
+		sa_pv_fsb_power spfp
+		WHERE
+
+		spfp.id = #{pfp_id}
+
+	</select>
+
+	<!-- 获取理论发电量信息列表 -->
+	<select id="getFsbPowerLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spfp.id,
+		spfp.pws_id,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = spfp.pws_id) pws_nam,
+		spfp.fsb_power,
+		spfp.fsb_amo,
+		spfp.fsb_tim
+		FROM
+		sa_pv_fsb_power spfp
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spfp.pws_id = #{pws_id}
+
+		</if>
+		ORDER BY
+		spfp.fsb_tim
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取理论发电量信息列表(分页) -->
+	<select id="getFsbPowerLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(spfp.id) cou
+		FROM
+		sa_pv_fsb_power spfp
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spfp.pws_id = #{pws_id}
+
+		</if>
+	</select>
+
+	<!-- 删除理论发电量信息 -->
+	<delete id="delFsbPowerInf" parameterType="java.util.LinkedHashMap">
+
+		DELETE
+		FROM
+		sa_pv_fsb_power
+		WHERE
+		id = #{pfp_id}
+	</delete>
+
+	<!-- 以下为理论辐射量信息维护 -->
+	<!-- 添加理论辐射量 -->
+	<insert id="insFsbHv" parameterType="java.util.LinkedHashMap">
+
+		INSERT INTO sa_pv_fsb_hv (
+		pws_id,
+		fsb_hv,
+		month,
+		crt_tim,
+		crt_use_id
+		)
+		VALUES
+		(
+		#{pws_id},
+		#{fsb_hv},
+		#{month},
+		#{crt_tim},
+		#{crt_use_id})
+
+	</insert>
+
+	<!-- 修改理论辐射量 -->
+	<update id="updFsbHv" parameterType="java.util.LinkedHashMap">
+
+		update sa_pv_fsb_hv set
+		pws_id=#{pws_id} ,
+		fsb_hv=#{fsb_hv},
+		month=#{month},
+		mod_tim=#{mod_tim},
+		mod_use_id=#{mod_use_id}
+		WHERE id=#{pfh_id}
+	</update>
+
+	<!-- 使用理论辐射量ID获取理论辐射量信息 -->
+	<select id="getFsbHvInfById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spfh.id,
+		spfh.pws_id,
+		(select sbp.pws_nam from sys_bas_pws sbp where spfh.pws_id = sbp.id) pws_nam,
+		spfh.fsb_hv,
+		spfh.month
+		FROM
+		sa_pv_fsb_hv spfh
+		WHERE
+
+		spfh.id = #{pfh_id}
+
+	</select>
+
+	<!-- 获取理论辐射量信息列表 -->
+	<select id="getFsbHvLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		spfh.id,
+		spfh.pws_id,
+		(select sbp.pws_nam from sys_bas_pws sbp where sbp.id = spfh.pws_id) pws_nam,
+		spfh.fsb_hv,
+		spfh.month
+		FROM
+		sa_pv_fsb_hv spfh
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spfh.pws_id = #{pws_id}
+
+		</if>
+		ORDER BY
+		spfh.month,spfh.id 
+		LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 获取理论辐射量信息列表(分页) -->
+	<select id="getFsbHvLstCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(spfh.id) cou
+		FROM
+		sa_pv_fsb_hv spfh
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spfh.pws_id = #{pws_id}
+
+		</if>
+	</select>
+
+	<!-- 删除理论辐射量信息 -->
+	<delete id="delFsbHvInf" parameterType="java.util.LinkedHashMap">
+
+		DELETE
+		FROM
+		sa_pv_fsb_hv
+		WHERE
+		id = #{pfh_id}
+	</delete>
+
+	<!-- 获取某设备实时的告警信息 -->
+	<select id="getRelFauLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sdf.*, (
+				SELECT
+					sfa.`index`
+				FROM
+					sys_dat_fau sfa
+				WHERE
+					sfa.id = sdf.fau_id
+			) idx_pst
+		FROM
+			sys_dat_alarm sdf
+		WHERE
+			sdf.fau_flag = 1
+
+		<if test="equ_num != null and equ_num != ''">
+
+			AND sdf.equ_num = #{equ_num}
+
+		</if>
+				
+	</select>
+
+	<!-- 获取某设备类型所关联的告警码 -->
+	<select id="getAlaCodByAppTypId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sbac.*
+		FROM
+		sys_bas_ala_cod sbac,
+		sys_bas_app_typ sbat,
+		sys_bas_app sba,
+		sys_bas_equ sbe
+		WHERE
+		sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbat.id = sbac.app_typ_id
+		AND
+		sbac.del_flag = 0
+
+		<if test="equ_num != null and equ_num != ''">
+
+			AND sbe.equ_num = #{equ_num}
+
+		</if>
+
+		ORDER BY sbac.idx_pst,sbac.id 
+	</select>
+
+	<!-- 设备健康评分曲线 -->
+	<select id="getEquHealthCurve" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sdehs.equ_num,
+		sdehs.health_scor,
+		sdehs.tol_tim
+		FROM
+		sys_dat_equ_health_scor sdehs
+		WHERE
+
+		sdehs.equ_num = #{equ_num}
+
+		<if test="sta_tim != null and sta_tim != ''">
+	
+			<![CDATA[ AND sdehs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdehs.tol_tim < #{end_tim} ]]>
+
+		</if>
+
+		ORDER BY
+		sdehs.tol_tim
+	</select>
+
+	<!-- 获取设备健康评分(最新那条) -->
+	<select id="getEquHealthScorTop" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		sys_dat_equ_health_scor sdehs
+		WHERE
+		sdehs.equ_num = #{equ_num}
+		ORDER BY
+		sdehs.tol_tim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 使用公司类型获取所有指定公司类型的数量 -->
+	<select id="getAllComCountByComTyp" resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(sbc.id) cou
+		FROM
+		sys_bas_com sbc
+		WHERE
+		sbc.com_lev = 2
+		<if test="com_rol != null and com_rol != ''">
+
+			AND sbc.com_rol = #{com_rol}
+
+		</if>
+	</select>
+
+	<!-- 获取所有运维人员数量 -->
+	<select id="getAllOptUseCou" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		COUNT(uu.id) cou
+		FROM
+		use_use uu
+		WHERE
+		uu.use_typ = 1 and uu.use_sta = 1
+	</select>
+
+
+	<!-- 通过电站ID获取月消缺率信息以及月总故障数以及电站效益提升率 -->
+	<select id="getRidNumFauNumAscRateInf" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+
+		spmse.rid_num,
+		spmse.tol_fau_num,
+		spmse.pws_eff_asc_rate
+
+		FROM
+		sa_pws_mon_sta_eff spmse
+		WHERE 1=1
+
+		<if test="pws_id != null and pws_id != ''">
+
+			AND spmse.pws_id = #{pws_id}
+
+		</if>
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spmse.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spmse.tol_tim < #{end_tim} ]]>
+
+		</if>
+	</select>
+
+
+
+	<!-- 设备详情 数据 -->
+
+	<!-- 综合监控 交流充电桩 -->
+
+	<!-- 交流充电桩-详情,待机数据 （获取最新那条数据） -->
+	<select id="getIscsAcchpStdInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_ac_chp_std iep
+		WHERE iep.pileNo = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+	<!-- 交流充电桩-详情,充电中实时数据 （获取最新那条数据） -->
+	<select id="getIscsAcchpRelInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_ac_chp_rel iep
+		WHERE iep.pileNo = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+
+
+	<!-- 获取 交流配电柜 设备的最新实时数据 -->
+	<select id="getAcdbInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		*
+		FROM
+		iscs_equ_ac_db
+		WHERE
+		equ_num = #{equ_num}
+		ORDER BY
+		crtTim DESC
+		LIMIT 1
+
+	</select>
+
+
+
+	<!--查询储能电池 最新实时数据 根据编号 -->
+	<select id="getBmsInfoByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		*
+		FROM
+		iscs_equ_bms
+		where equ_num = #{equ_num}
+		order by crtTim desc
+		limit 1
+	</select>
+
+
+	<!-- 汇流箱-详情 （获取最新那条数据，包含支路电流数据） -->
+	<select id="getIscsBoxInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_box iep
+		WHERE iep.equ_num = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+
+	<!-- 直流充电桩-详情,待机数据 （获取最新那条数据） -->
+	<select id="getIscsDcchpStdInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		iscs_equ_dc_chp_std iep
+		WHERE iep.pileNo = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+	<!-- 直流充电桩-详情,实时数据 （获取最新那条数据） -->
+	<select id="getIscsDcchpRelInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		iscs_equ_dc_chp_rel iep
+		WHERE iep.pileNo = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+	<!-- 变压器-详情,实时数据 （获取最新那条数据） -->
+	<select id="getIscsTranfRelInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		*
+		FROM
+		iscs_equ_transf iep
+		WHERE iep.equ_num = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+
+
+	<!-- 获取 直流配电柜 设备的最新实时数据 -->
+	<select id="getDcdbInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		*
+		FROM
+		iscs_equ_dc_db
+		WHERE
+		equ_num = #{equ_num}
+		ORDER BY
+		crtTim DESC
+		LIMIT 1
+
+	</select>
+
+	<!-- 获取电站天统计数据表（每天统计一次（建议凌晨0点到0点5分之间进行统计））(光伏逆变器) -->
+	<select id="getPwsStaPV" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.*
+		FROM
+		sa_pws_sta_pvs spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+		LIMIT 1
+	</select>
+
+	<!-- 获取电站天统计数据表（每天统计一次（建议凌晨0点到0点5分之间进行统计））(光伏逆变器) -->
+	<select id="getPwsStaMonPV" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.*
+		FROM
+		sa_pws_mon_sta_pvs spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+		LIMIT 1
+	</select>
+	<!-- 获取 环境检测仪 设备的最新实时数据 -->
+	<select id="getEnvInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		env.*
+		FROM
+		iscs_equ_env env
+		WHERE
+		env.equ_num = #{equ_num}
+		ORDER BY
+		env.crtTim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 获取PCS设备的最新实时数据 -->
+	<select id="getPcsInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_pcs iep
+		WHERE
+		iep.equ_num = #{equ_num}
+		ORDER BY
+		iep.crtTim DESC
+		limit 1
+	</select>
+
+
+	<!-- 获取电站天统计数据表（每天统计一次（建议凌晨0点到0点5分之间进行统计））(光伏逆变器) -->
+	<select id="getPwsStaDayPV" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.*
+		FROM
+		sa_pws_sta_pvs spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+		LIMIT 1
+	</select>
+
+
+
+	<!-- 获取 电能质量监测 设备的最新实时数据 -->
+	<select id="getPqsmsInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_pqsms iep
+		WHERE
+		iep.equ_num = #{equ_num}
+
+		ORDER BY
+		iep.crtTim DESC
+		LIMIT 1
+	</select>
+
+
+	<!-- 获取 光伏逆变器 设备的最新实时数据 -->
+	<select id="getPvsInfByEquNumNew" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		iep.*
+		FROM
+		iscs_equ_pvs iep
+		WHERE
+		iep.equ_num = #{equ_num}
+
+		ORDER BY
+		iep.crtTim DESC
+		LIMIT 1
+	</select>
+
+
+
+
+	<!-- 获取电站天统计数据表（每天统计一次（建议凌晨0点到0点5分之间进行统计））(光伏逆变器) -->
+	<select id="getPwsSta15MinPV" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.pv_power,
+		spsp.tol_tim crtTim
+		FROM
+		sa_pws_sta_rel spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+
+	</select>
+
+	<!-- 获取月综合效率数据 -->
+	<select id="getComEffLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.com_eff
+		FROM
+		sa_pws_mon_sta_eff spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+		LIMIT 1
+
+	</select>
+
+	<!-- 获取月充放电量数据 -->
+	<select id="getPwsStaPCSLst" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		spsp.phi,
+		spsp.phe
+		FROM
+		sa_pws_sta_pcs spsp
+		WHERE
+		spsp.pws_id = #{pws_id}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND spsp.tol_tim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		spsp.tol_tim
+		LIMIT 1
+
+	</select>
+
+	<!-- 使用用户ID获取依照地区排序后的充电容量排行 -->
+	<select id="getChpRtdPowRankByRegByUse" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		lst.pro_id,
+		(
+		SELECT
+		sbr.reg_nam
+		FROM
+		sys_bas_reg sbr
+		WHERE
+		sbr.id = lst.pro_id
+		) pro_nam,
+		lst.chp_rtd_pow
+		FROM
+		(
+		SELECT
+		SUM(sbp.chp_rtd_pow) chp_rtd_pow,
+		sbp.pro_id
+		FROM
+		sys_bas_pws sbp,
+		sys_dat_use_pws sdup
+		WHERE
+		sbp.id = sdup.pws_id
+		AND sdup.use_id = #{use_id}
+		GROUP BY
+		sbp.pro_id
+		) lst
+		ORDER BY
+		lst.chp_rtd_pow DESC LIMIT 4
+
+	</select>
+
+	<!-- 使用用户ID获取与该用户有关的所有设备（传入设备类型） -->
+	<select id="getEquLstByUseIdByAppTypIde" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		sbe.*
+		FROM
+		sys_bas_pws sbp,
+		sys_dat_use_pws sdup,
+		sys_bas_equ sbe,
+		sys_bas_app sba,
+		sys_bas_app_typ sbat
+		WHERE
+		sbp.id = sdup.pws_id
+		AND sbp.id = sbe.pws_id
+		AND sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbat.typ_ide =
+		#{app_typ_ide}
+		AND sdup.use_id = #{use_id}
+
+		<if test="pro_id != null and pro_id != ''">
+
+			AND sbp.pro_id = #{pro_id}
+
+		</if>
+	</select>
+
+	<!-- 使用设备编码，获取交流充电装设备的累计充电小时数、累计充电电量、累计充电次数 -->
+	<select id="getAcChpCumTimPowCntByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		iep.cumTime,
+		iep.cumPower,
+		iep.chpCnt
+		FROM
+		iscs_equ_ac_chp_std_history iep
+		WHERE
+		iep.pileNo = #{equ_num}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		iep.crtTim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 使用设备编码，获取直流流充电装设备的累计充电小时数、累计充电电量、累计充电次数 -->
+	<select id="getDcChpCumTimPowCntByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+		iep.cumTime,
+		iep.cumPower,
+		iep.chpCnt
+		FROM
+		iscs_equ_dc_chp_std_history iep
+		WHERE
+		iep.pileNo = #{equ_num}
+
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+
+		</if>
+		ORDER BY
+		iep.crtTim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 获取某电站中某设备类型的所有设备信息 -->
+	<select id="getEquLstByPwsEquTypIde" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbat.typ_ide = #{app_typ_ide}
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+	</select>
+	<!-- 获取安卓最新版本 -->
+	<select id="getNewAppVarsion" resultType="java.util.LinkedHashMap">
+
+		select * from sys_bas_version sbv ORDER BY sbv.crt_tim LIMIT 1
+	</select>
+
+
+	<!-- 更新用户 站查看状态 -->
+	<update id="updUserSltOptStaByUserId" parameterType="java.util.LinkedHashMap">
+
+		update
+		use_use set
+		slt_opt_sta = #{sltOptSta}
+		WHERE id=#{id}
+	</update>
+
+
+
+	<!-- 更新用户 对告警信息是否可见 -->
+	<update id="updUserIsDefStaByUserId" parameterType="java.util.LinkedHashMap">
+
+		update
+		use_use set
+		is_def_sta = #{isDefSta}
+		WHERE id=#{id}
+	</update>
+
+
+</mapper>

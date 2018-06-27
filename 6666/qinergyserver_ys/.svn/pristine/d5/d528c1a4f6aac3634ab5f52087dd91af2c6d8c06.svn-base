@@ -1,0 +1,144 @@
+.hea-body{
+	width: 100%;
+	float: left;
+}
+.hea-main{
+	height: 100%;
+	width: 100%;
+    padding: 10px 0;
+}
+.top-left{
+	margin-left: 1%;
+	margin-right: 2%;
+	float: left;
+	height: 266px;
+	width:26%;
+	background: #fff;
+	border-radius : 3px;
+	border: 1px solid #ccc;
+	background: #fff!important;
+}
+
+.top-right{
+	float:left ;
+	height: 266px;
+	width: 67%;
+	border: 1px solid #ccc;
+	background: #fff;
+	border-radius : 3px;
+	background: #fff!important;
+}
+.bord{
+	border-bottom: 1px solid #ccc;
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+}
+ 
+.pro p{
+	color: #999;
+    font-size: 14px;
+    margin-top: -20px;
+    text-align: right;
+    margin-right: 5%;
+}
+
+.pro {
+	width: 100%;
+	height: 40px;
+	float: left;
+}
+
+.pro-text {
+	margin-left: 17%;
+	margin-top: -15px;
+}
+
+.matop12  {
+	margin-top :12px;
+}
+.borbot {
+	 border-bottom :1px solid #ccc;
+}
+
+.dian1 {
+	margin-left: 9%;
+	margin-top: 8px;
+	width: 12px;
+	height: 12px;
+	background-color: #0F98DA;
+	border-radius: 50%;
+}  
+.hea-table{
+    float: left;
+    margin-left: 1%;
+    margin-top: 18px;
+    width: 95%;
+    height: 395px;
+	border: solid 1px #CCCCCC;
+	background: #fff;
+    border-radius: 3px;
+}
+
+ 
+.hea-table th {
+	background: #F8F8F8;
+	height:30px;
+	line-height : 30px;
+	border-bottom: solid 1px #CCCCCC;
+	position: relative;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+  
+.hea-table td {
+	padding: 5px 0;
+	height: 15px;
+	line-height: 10px;
+	border-bottom: solid 1px #CCCCCC;
+	border-right: 1px solid #ccc;
+	text-align: center;
+} 
+.hea-table th:last-child {
+	border-right: none;
+} 
+.hea-table td:last-child {
+	border-right: none;
+} 
+.a1{
+	height: 35px;
+}
+.a1 div{
+      padding: 8px 5px;
+      line-height: 35px;
+      height: 35px;
+      width: 385px;
+}
+.a1 .Wdate{
+	width: 108px;
+    margin-right: 1%;
+    padding-left: 5px;
+    margin-bottom: 2px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+}
+.his-btn{
+	color: #FFFFFF;
+    width: 90px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #00b8b7;
+    border: none;
+    margin-left: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.his-tit{
+	margin: 15px 1% 5px;
+    font-size: 18px;
+    color: #7B7B7B;
+    cursor: pointer;
+    border-left: 6px solid #B6E6F4;
+    padding-left: 10px;
+}

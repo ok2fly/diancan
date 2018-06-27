@@ -1,0 +1,140 @@
+/* CSS Document */
+/*
+  寮瑰嚭灞�
+*/
+
+.pt18{
+	padding-top: 10px;
+     height: 350px;
+    width: 100%;
+    overflow-y: auto;
+}
+.poptable td, .poptable th {
+	height: 25px;
+	line-height: 25px;
+	padding: 6px 0;
+	font-weight: normal;
+}
+.poptable th {
+	text-align: left;
+    padding-left: 30px;
+    width: 90px;
+}
+.poptable td {
+	width: 225px;
+}
+.popinput {
+	height: 28px;
+	line-height: 28px;
+	border: solid 1px #d6d6d6;
+	background: #fff;
+	width: 193px;
+	color: #333;	
+	border-radius : 5px;
+	padding-left:5px;
+}
+
+.poptextarea {
+	border: solid 1px #d6d6d6;
+	background: #fff;
+	/* width: 570px; */
+    width: 91%;
+	color: #333;	
+	border-radius : 5px;
+	padding-left:5px;
+}
+select.popinput{
+	width: 200px;
+	color: #333;	
+}
+.popbutbox{
+    height: 30px;
+    padding-top: 0;
+    padding-bottom: 15px;
+    bottom: 0px;
+    position: fixed;
+    width: 100%;
+}
+ 
+
+.popbut {
+	/* float:left;
+	height: 40px;
+	border: 1px solid #B6E6F4;
+	line-height: 40px;
+	background: #B6E6F4;
+	width: 35%;
+	text-align: center;
+	cursor: pointer;
+	display: inline-block;
+	color: #fff;
+	margin-left:5%;
+	margin-right:10%; */
+	color: #FFFFFF;
+    width: 90px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #00b8b7;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+        text-align: center;
+}
+.popbut.cancle{
+	/* border: 1px solid #d6d6d6;
+	background: #fff;
+	color: #333; */
+}  
+.poptable .Wdate {
+	border-radius : 5px;
+	padding-left:5px;
+    border: solid 1px #d6d6d6;
+    height: 30px;
+    line-height: 30px;
+    background: #fff url(../images/datenew.png) no-repeat right;
+}
+
+.popbutbox2{
+	height: 30px;
+    padding-top: 5px;
+    padding-bottom: 15px;
+    bottom: 0px;
+    width: 100%;
+}
+.w162{
+	width:162px;
+}
+
+/* */
+.editBut {
+  padding: 20px 0 20px 5%;
+  height:140px;
+}  
+.editBut li{
+	width:33%;
+	float:left;
+	line-height:30px;
+	height:30px;
+}
+.inputCheck{
+	margin-right: 10px;
+}
+.inp{
+	width:58px;
+    height: 30px;
+    line-height: 30px;
+    border: solid 1px #d6d6d6;
+    background: #fff;
+    color: #333;
+    border-radius: 5px;
+}
+
+.cz{
+	margin-top: 19px;
+    margin-left: -33px;
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid #3F51B5;
+    color: #3F51B5;
+}

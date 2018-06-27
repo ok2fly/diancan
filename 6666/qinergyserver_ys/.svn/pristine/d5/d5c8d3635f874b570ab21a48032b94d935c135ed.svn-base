@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="integratMonitor">
+
+	<!-- 综合监控 start -->
+
+	<!-- 查询信息，使用上级公司ID -->
+	<select id="getComInfByFatId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		select 
+		bc.id,
+		bc.com_nam,
+		bc.com_add,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.pro_id) pro_nam,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.cit_id) cit_nam,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.are_id) are_nam
+		 from sys_bas_com bc
+		where bc.com_fat_id = #{com_fat_id}
+		
+	</select>
+	
+	<!-- 查询信息，使用公司ID -->
+	<select id="getComInfById" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		select 
+		bc.id,
+		bc.com_nam,
+		bc.com_add,
+		bc.com_ide,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.pro_id) pro_nam,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.cit_id) cit_nam,
+		(select br.reg_nam from sys_bas_reg br where br.id = bc.are_id) are_nam,
+		(select br.reg_lev from sys_bas_reg br where br.id = bc.pro_id) pro_lev,
+		(select br.reg_lev from sys_bas_reg br where br.id = bc.cit_id) cit_lev,
+		(select br.reg_lev from sys_bas_reg br where br.id = bc.are_id) are_lev,
+		bc.pro_id,
+		bc.cit_id,
+		bc.are_id
+		 from sys_bas_com bc
+		where bc.id = #{com_id}
+		
+	</select>
+	
+	<!-- 删除公司信息 -->
+	<delete id="delComInf" parameterType="java.util.LinkedHashMap">
+
+		delete from sys_bas_com where id=#{com_id} 
+
+	</delete>
+	
+	<!-- 删除部门信息 -->
+	<delete id="delDepInf" parameterType="java.util.LinkedHashMap">
+
+		delete from sys_bas_dep where id=#{dep_id} 
+
+	</delete>
+
+	<!-- 获取所有厂家的ID与厂家名称 -->
+	<select id="getAllManInf" resultType="java.util.LinkedHashMap">
+
+		select bm.id,bm.man_nam from sys_bas_man bm
+
+	</select>
+
+	<!-- 获取所有指定设备类型的设备型号 -->
+	<select id="getAllAppModInf" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			ba.id,
+			ba.app_mod
+		FROM
+			sys_bas_app ba,
+			sys_bas_app_typ bat
+		WHERE
+			ba.app_typ_id = bat.id
+		<if test="typ_ide != null and typ_ide != '' ">
+
+			and bat.typ_ide = #{typ_ide}
+
+		</if>
+		
+		<if test="app_typ_id != null and app_typ_id != '' ">
+
+			and ba.app_typ_id = #{pws_nam}
+
+		</if>
+
+	</select>
+
+	<!-- 获取所有省的ID及名字 -->
+	<select id="getAllProNam" resultType="java.util.LinkedHashMap">
+
+		select br.id,br.reg_nam from sys_bas_reg br where br.reg_lev = 1
+
+	</select>
+
+	<!-- 获取所有市或区的ID及名字 -->
+	<select id="getAllCitOrAreNam" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		select br.id,br.reg_nam from sys_bas_reg br where br.reg_fat_id = #{reg_fat_id}
+
+	</select>
+	
+	<!-- 获取地区信息，使用地区ID -->
+	<select id="getRegInf" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		select * from sys_bas_reg br where br.id = #{reg_id}
+
+	</select>
+
+	<!-- 综合监控中与站有关的接口 -->
+	<!-- 使用电站ID:pws_id,获取该电站中所有的设备类型，返回值中：equ_count设备数量、equ_typ_nam设备类型名称、app_typ_id设备类型ID -->
+	<select id="getPwsAllAppTypByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+
+		SELECT
+			COUNT(sbe.id) equ_count,
+			(
+				SELECT
+					sbat.typ_nam
+				FROM
+					sys_bas_app_typ sbat
+				WHERE
+					sbat.id = sba.app_typ_id
+			) equ_typ_nam,
+			sba.app_typ_id,
+			(
+				SELECT
+					sbat.typ_ide
+				FROM
+					sys_bas_app_typ sbat
+				WHERE
+					sbat.id = sba.app_typ_id
+			) typ_ide
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		and sbe.del_flag = 0
+		AND sbe.pws_id = #{pws_id}
+		GROUP BY
+			sba.app_typ_id
+
+	</select>
+
+	<!-- 获取某电站中  某种设备 所有设备编号 ： -->
+	<select id="getEquNumLstByPwsEquTyp" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{typ_id}
+		AND sbe.pws_id = #{pws_id}
+
+	</select>
+
+
+	<!-- 通过电站ID获取电站详情页面中的电站基本信息 -->
+	<select id="getPwsInfByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			sbp.pws_nam,
+			sbp.cur_sta,
+			sbp.con_nam,
+			sbp.con_mob,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_add,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) typ_nam,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.org_nam
+			) opt_com_nam,
+			sbp.sec_ope,
+			sbp.rat_pow,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.dev_add_num,
+			sbp.are_cov
+		FROM
+			sys_bas_pws sbp
+		WHERE
+			sbp.id = #{pws_id}
+
+	</select>
+
+	<!-- 通过电站ID获取电站详情页面中的电站图片信息 -->
+	<select id="getPwsPicLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sbpp.pic_nam,
+			sbpp.pic_url
+		FROM
+			sys_bas_pws_pic sbpp
+		WHERE
+			sbpp.pws_id = #{pws_id}
+		ORDER BY
+			sbpp.crt_tim
+		LIMIT 2
+	</select>
+	
+	<!-- 通过电站ID获取电站详情页面中的光、储、充、负荷、馈网功率信息 -->
+	<select id="getPvPcChaLoadLineInfLstByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			spsr.pv_power,
+			spsr.chp_power,
+			spsr.load_power,
+			spsr.pc_power,
+			spsr.line_power,
+			spsr.tol_tim crtTim,
+			spsr.tol_tim
+		FROM
+			sa_pws_sta_rel spsr
+		WHERE
+			spsr.pws_id = #{pws_id}
+		<![CDATA[ AND spsr.tol_tim >= DATE(SYSDATE()) ]]>
+		<![CDATA[ AND spsr.tol_tim < SYSDATE() ]]>
+
+	</select>
+
+	<!-- 通过电站ID获取电站详情页面中的光、储、充、负荷、馈网功率信息最新一条 -->
+	<select id="getPvPcChaLoadLineInfByPwsIdTop1" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			spsr.pv_power,
+			spsr.chp_power,
+			spsr.load_power,
+			spsr.pc_power,
+			spsr.line_power,
+			spsr.tol_tim
+		FROM
+			sa_pws_sta_rel spsr
+		WHERE
+			spsr.pws_id = #{pws_id}
+		<![CDATA[ AND spsr.tol_tim >= DATE(SYSDATE()) ]]>
+		<![CDATA[ AND spsr.tol_tim < SYSDATE() ]]>
+		ORDER BY
+			spsr.tol_tim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 通过电站ID获取光伏月发电量柱状图 -->
+	<select id="getMonPowerLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sps.power
+		FROM
+			sa_pws_sta_pvs sps
+		WHERE
+			sps.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	<!-- 通过电站ID获取月充放电量柱状图 -->
+	<select id="getMonPcsLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sps.phi,
+			sps.phe
+		FROM
+			sa_pws_sta_pcs sps
+		WHERE
+			sps.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 通过电站ID获取月馈网电量柱状图 -->
+	<select id="getMonNetPowerLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sps.feed_net_power,
+			sps.ipt_power
+		FROM
+			sa_pws_sta_network sps
+		WHERE
+			sps.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+
+	<!-- 通过电站ID获取充电桩充电量柱状图 -->
+	<select id="getMonChaLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sps.cha_vol
+		FROM
+			sa_pws_sta_chp sps
+		WHERE
+			sps.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 通过电站ID获取负荷用电量柱状图 -->
+	<select id="getMonEleConLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			sps.ele_con
+		FROM
+			sa_pws_sta_load sps
+		WHERE
+			sps.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+
+	<!-- 通过电站ID获取光伏预测功率曲线 -->
+	<select id="getPvFctPowerCurvesLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			sa_pws_fct_sta_rel spfsr
+		WHERE
+			spfsr.pws_id = #{pws_id}
+		AND spfsr.type = 1
+		<![CDATA[ AND spfsr.tol_tim >= DATE(SYSDATE())]]>
+		<![CDATA[ AND spfsr.tol_tim < SYSDATE()]]>
+	</select>
+
+	<!-- 通过电站ID获取光伏预测功率曲线 -->
+	<select id="getSchPowerCurvesLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			sa_pws_fct_sta_rel spfsr
+		WHERE
+			spfsr.pws_id = #{pws_id}
+		AND spfsr.type = 3
+		<![CDATA[ AND spfsr.tol_tim >= DATE(SYSDATE())]]>
+		<![CDATA[ AND spfsr.tol_tim < SYSDATE()]]>
+	</select>
+
+	<!-- 通过电站ID获取瞬时辐射和实际光伏功率曲线 -->
+	<select id="getHvRealPowerCurvesLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			spsr.hv,
+			spsr.pv_power,
+			spsr.tol_tim crtTim,
+			spsr.tol_tim
+		FROM
+			sa_pws_sta_rel spsr
+		WHERE
+			spsr.pws_id = #{pws_id}
+		<![CDATA[ AND spsr.tol_tim >= DATE(SYSDATE())]]>
+		<![CDATA[ AND spsr.tol_tim < SYSDATE()]]>
+	</select>
+
+	<!-- 通过电站ID获取电站详情页面中的所有详细当前统计数据信息(馈网) -->
+	<select id="getPwsInfTolTop1LstByPwsIdNewWork" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+		
+			sps.tol_feed_net_power,
+			sps.tol_ipt_power
+		FROM
+			sa_pws_sta_network sps
+		WHERE
+			sps.pws_id = #{pws_id}
+		ORDER BY
+			sps.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 通过电站ID获取电站详情页面中的所有详细当前统计数据信息(光伏) -->
+	<select id="getPwsInfTolTop1LstByPwsIdPVS" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			
+			sps.power,
+			sps.mon_power,
+			sps.year_power,
+			sps.tol_power,
+			sps.year_plan_com_rate
+		FROM
+			sa_pws_sta_pvs sps
+		WHERE
+			sps.pws_id = #{pws_id}
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY
+			sps.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 通过电站ID获取电站详情页面中的所有详细当前统计数据信息(储能逆变器) -->
+	<select id="getPwsInfTolTop1LstByPwsIdPCS" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			
+			sps.tol_phi,
+			sps.tol_phe
+		FROM
+			sa_pws_sta_pcs sps
+		WHERE
+			sps.pws_id = #{pws_id}
+		ORDER BY
+			sps.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 通过电站ID获取电站详情页面中的所有详细当前统计数据信息(充电桩) -->
+	<select id="getPwsInfTolTop1LstByPwsIdChp" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			
+			sps.tol_cha_vol,
+			sps.tol_cha_tim,
+			sps.tol_cha_gen_eff_hours
+		FROM
+			sa_pws_sta_chp sps
+		WHERE
+			sps.pws_id = #{pws_id}
+		ORDER BY
+			sps.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 通过电站ID获取电站详情页面中的所有详细当前统计数据信息(负荷) -->
+	<select id="getPwsInfTolTop1LstByPwsIdLoad" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			
+			sps.tol_ele_con
+		FROM
+			sa_pws_sta_load sps
+		WHERE
+			sps.pws_id = #{pws_id}
+		ORDER BY
+			sps.tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 通过电站ID获取电站详情页面中计划年发电量与计划月发电量 -->
+	<select id="getPwsPlanMonYearPowerLstByPwsId" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+
+			SUM(sppp.plan_power) plan_power
+			
+		FROM
+			sa_pv_plan_power sppp
+		WHERE
+			sppp.pws_id = #{pws_id}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	<!-- 根据设备编号获取 设备静态信息 -->
+	<select id="getEquStaticInfByNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sba.app_mod,
+			sba.rtd_pow,
+			sbm.man_nam,
+			sbe.pur_tim,
+			sbe.equ_num,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou
+		FROM 
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_man sbm
+		WHERE 
+			sbe.equ_mod_id = sba.id
+			AND sba.man_id = sbm.id
+			AND equ_num = #{equ_num}
+	</select>
+	
+	<!-- 根据设备编号获取 设备变位信息 -->
+	<select id="getDeflInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sdm.id,
+			sdm.PID,
+			sdm.name,
+			<!-- sdm.type, -->
+			(select sbat.typ_nam from sys_bas_app_typ sbat where sbat.id = sdm.type) type,
+			sdm.num,
+			sdm.info,
+			sdm.initialStat,
+			sdm.currentStat,
+			sdm.time,
+			sdm.info
+		FROM
+			sys_dat_modifi sdm
+		WHERE
+			sdm.PID = #{equ_num}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdm.time >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdm.time < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY
+			sdm.time
+		LIMIT #{start},#{evertPage}
+	</select>
+	
+	<!-- 根据设备编号获取 设备变位信息（分页） -->
+	<select id="getDeflInfByEquNumCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			count(sdm.id) count
+		FROM
+			sys_dat_modifi sdm
+		WHERE
+			sdm.PID = #{equ_num}
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdm.time >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdm.time < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	
+</mapper>

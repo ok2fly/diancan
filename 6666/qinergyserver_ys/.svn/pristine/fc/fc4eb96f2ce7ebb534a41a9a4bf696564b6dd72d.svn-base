@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="transfMapper">
+
+	<!--2 
+		 根据设备编号 获取最新的 设备状态数据 (数据  + 告警牌) 和设备页面公用的方法-->
+	<select id="getTransfRealByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			 equ_num,
+			 stat,
+			 healthStat,
+			 temp1,
+			 temp2,
+			 branchNum,
+			 uab1,
+			 ia1,
+			 pf1,
+			 freq1,
+			 uab2,
+			 ia2,
+			 pf2,
+			 freq2,
+			 temp3,
+			 uab3,
+			 ia3,
+			 pf3,
+			 freq3
+		FROM 
+			iscs_equ_transf  
+		WHERE 
+			equ_num = #{equ_num} 
+			<if test="stat != null">
+				AND stat = #{stat}
+			</if>
+		ORDER BY crtTim DESC 
+		LIMIT 1
+	</select>
+	<!--  根据设备编号 获取最新的 设备状态数据 全部字段-->
+	<select id="getTransfRealsByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			 *
+		FROM 
+			iscs_equ_transf  
+		WHERE 
+			equ_num = #{equ_num} 
+		ORDER BY crtTim DESC 
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 根据设备编号 获取当天的设备分析数据-->
+	<select id="getTransfRealList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			branchNum,	
+			ua1,
+			ua2,
+			ua3,
+			ia1,
+			ia2,
+			ia3,
+			temp1,
+			temp2,
+			temp3,
+			psum1,
+			psum2,
+			psum3,
+			qsum1,
+			qsum2,
+			qsum3,
+			crtTim,
+			 uab1,
+			 uab2,
+			 uab3
+		FROM 
+			iscs_equ_transf
+		WHERE 
+			equ_num = #{equ_num}  
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim 
+		 
+	</select> 
+	
+	<!-- 根据设备编号获取 设备静态信息 
+	<select id="getTransfEquByNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sba.app_mod,
+			sba.rtd_pow,
+			sbm.man_nam,
+			sbe.pur_tim,
+			sbe.equ_num,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim,
+			sbe.acc_mat_cou
+		FROM 
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_man sbm
+		WHERE 
+			sbe.equ_mod_id = sba.id
+			AND sba.man_id = sbm.id
+			AND equ_num = #{equ_num}
+	</select> -->
+	
+	
+	
+	
+	<!-- 历史分析
+		根据设备编号 获取设备某一天的 数据00：00到23:59 的条数-->
+	<select id="getTransfHistoryCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			 count(1) cou
+		FROM 
+			iscs_equ_transf_history 
+		WHERE 
+			equ_num = #{equ_num} 
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+	</select>	
+
+	<!-- 历史分析根据设备编号 获取设备某一天的 数据00：00到23:59 -->
+	<select id="getTransfHistoryList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			branchNum,	
+			ua1,
+			ua2,
+			ua3,
+			ia1,
+			ia2,
+			ia3,
+			temp1,
+			temp2,
+			temp3,
+			psum1,
+			psum2,
+			psum3,
+			qsum1,
+			qsum2,
+			qsum3,
+			crtTim,
+			 uab1,
+			 uab2,
+			 uab3
+		FROM 
+			iscs_equ_transf_history 
+		WHERE 
+			equ_num = #{equ_num} 
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+		ORDER BY crtTim 
+		LIMIT #{start}, #{everyPage}
+		 
+	</select>
+	
+	<!-- 历史分析根据设备编号 获取设备某一天的 数据00：00到23:59(图表) -->
+	<select id="getTransfHistoryGraph" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			branchNum,	
+			ua1,
+			ua2,
+			ua3,
+			ia1,
+			ia2,
+			ia3,
+			temp1,
+			temp2,
+			temp3,
+			psum1,
+			psum2,
+			psum3,
+			qsum1,
+			qsum2,
+			qsum3,
+			crtTim,
+			 uab1,
+			 uab2,
+			 uab3
+		FROM 
+			iscs_equ_transf_history 
+		WHERE 
+			equ_num = #{equ_num} 
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim 
+		 
+	</select>
+	
+	
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getEquLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+		
+
+	</select>
+	
+	<!-- 获取变压器设备的最新实时数据(列表页中)-->
+	<select id="getTransfInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.id,
+			iep.branchNum,
+			iep.uab1,
+			iep.ia1,
+			iep.pf1,
+			iep.psum1,
+			iep.freq1,
+			iep.temp1,
+			iep.stat,
+			 uab1,
+			 uab2,
+			 uab3
+		FROM
+			iscs_equ_transf iep
+		WHERE
+			iep.equ_num = #{equ_num}
+			
+		ORDER BY
+			iep.crtTim DESC
+		LIMIT 1
+	</select>
+	
+</mapper>

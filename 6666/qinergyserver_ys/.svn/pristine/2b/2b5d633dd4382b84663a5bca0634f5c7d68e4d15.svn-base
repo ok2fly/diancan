@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="energyConsumMapper">
+	
+	<!--  用电量、率统计 按月 -->
+	<select id="getElecStatistics" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			gen_plt_use_ele, 
+			gen_plt_use_ele_rate,
+			plt_pow_con,
+			plt_pow_con_rate,
+			pur_net_ele,
+			pur_net_ele_rate,
+			tol_tim
+		FROM 
+			sa_ana_ene_con
+		WHERE 
+			pws_id = #{pws_id}
+			AND val_sta = #{val_sta}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND tol_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim 
+		LIMIT 1
+	</select>
+	
+	<!--  当年用电量统计 -->
+	<select id="getTotalElecStatistics" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			gen_plt_use_ele_tol,
+			plt_pow_con_tol,
+			pur_net_ele_tol
+		FROM 
+			sa_ana_ene_con
+		WHERE 
+			pws_id = #{pws_id}
+			AND val_sta = #{val_sta}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND tol_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY 
+			tol_tim DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!--  厂用电量分析  (按月累计，取最后一条)  -->
+	<select id="getElecAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			plt_pow_con
+		FROM 
+			sa_ana_ene_con
+		WHERE 
+			pws_id = #{pws_id}
+			AND val_sta = #{val_sta}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND tol_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY 
+			tol_tim DESC
+		LIMIT 1
+	</select>
+	
+ 
+</mapper>

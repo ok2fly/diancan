@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="meterMapper">
+
+
+	<!--  根据设备编号 获取最新的 设备状态数据 (数据 ) -->
+	<select id="getMeterRealByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			equ_num,
+			stat,
+			healthStat,
+			ua,
+			ia,
+			freq,
+			pf,
+			psum,
+			qsum,
+			phi,
+			qhi,
+			phe,
+			qhe,
+			uab
+		FROM
+			iscs_equ_meter
+		WHERE
+			equ_num = #{equ_num}
+			<if test="stat != null">
+				AND stat = #{stat}
+			</if>
+		ORDER BY crtTim DESC
+		LIMIT 1
+	</select>
+	<select id="getMeterRealsByEquNum" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			iscs_equ_meter
+		WHERE
+			equ_num = #{equ_num}
+		ORDER BY crtTim DESC
+		LIMIT 1
+	</select>
+
+	<!-- 根据设备编号 获取当天的设备分析数据 -->
+	<select id="getMeterRealList" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			ua,
+			uab,
+			ia,
+			freq,
+			pf,
+			psum,
+			qsum,
+			phi,
+			qhi,
+			phe,
+			qhe,
+			crtTim
+		FROM
+			iscs_equ_meter
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim
+	</select>
+
+	<!-- 根据设备编号 获取当月正反向电度数据(图表)-->
+	<select id="getMeterRealListMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			phi_power,
+			qhi_power,
+			phe_power,
+			qhe_power,
+			tol_tim
+		FROM
+			sa_meter_sta
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND tol_tim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY tol_tim
+			LIMIT 1	
+	</select>
+
+	<!-- 根据设备编号 获取当月正反向电度数据 -->
+	<select id="getMeterHistoryListMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			phi_power,
+			qhi_power,
+			phe_power,
+			qhe_power,
+			tol_tim
+		FROM
+			sa_meter_sta
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND tol_tim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY tol_tim
+			LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 根据设备编号 获取当月正反向电度数据(分页) -->
+	<select id="getMeterHistoryListMonthCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			count(id) cou
+		FROM
+			sa_meter_sta
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND tol_tim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND tol_tim < #{end_tim} ]]>
+				
+			</if>
+	</select>
+
+
+	<!-- 历史分析 根据设备编号 获取设备某一天的 数据00：00到23:59 的条数 -->
+	<select id="getMeterHistoryCount" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			count(1) cou
+		FROM
+			iscs_equ_meter_history
+		WHERE
+			equ_num = #{equ_num}
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+	</select>
+
+	<!-- 历史分析 根据设备编号 获取设备某一天的 数据00：00到23:59 -->
+	<select id="getMeterHistoryList" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			ua,
+			uab,
+			ia,
+			freq,
+			pf,
+			psum,
+			qsum,
+			phi,
+			qhi,
+			phe,
+			qhe,
+			crtTim
+		FROM
+			iscs_equ_meter_history
+		WHERE
+			equ_num = #{equ_num}
+			AND crtTim &gt; #{startTim}
+			AND crtTim &lt;= #{endTim}
+			ORDER BY crtTim
+			LIMIT #{start},#{everyPage}
+	</select>
+
+	<!-- 历史分析 根据设备编号 获取设备某一天的 数据00：00到23:59 -->
+	<select id="getMeterHistoryGraph" parameterType="java.util.LinkedHashMap"
+		resultType="java.util.LinkedHashMap">
+		SELECT
+			ua,
+			ia,
+			freq,
+			pf,
+			psum,
+			qsum,
+			phi,
+			qhi,
+			phe,
+			qhe,
+			crtTim
+		FROM
+			iscs_equ_meter_history
+		WHERE
+			equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+		
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim
+	</select>
+
+	<!-- 获取Meter(电表)设备的最新实时数据(列表页中)-->
+	<select id="getMeterInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.id,
+			iep.psum,
+			iep.qsum,
+			iep.phi,
+			iep.qhi,
+			iep.phe,
+			iep.qhe,
+			iep.stat
+		FROM
+			iscs_equ_meter iep
+		WHERE
+			iep.equ_num = #{equ_num}
+			
+		ORDER BY
+			iep.crtTim DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getEquLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+		
+
+	</select>
+</mapper>

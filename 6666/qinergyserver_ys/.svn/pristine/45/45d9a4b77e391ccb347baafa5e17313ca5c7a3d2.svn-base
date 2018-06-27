@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="acdb">
+
+	<!-- 综合监控 交流配电柜 -->
+
+	
+	<!-- 获取 交流配电柜  设备的最新实时数据(列表页中)-->
+	<select id="getAcdbInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				equ_num,
+				stat,
+				branchNum,
+				crtTim,
+				healthStat,
+				stat1,
+				stat2,
+				stat3,
+				stat4,
+				stat5,
+				stat6,
+				stat7,
+				stat8,
+				stat9,
+				stat10
+		FROM
+			iscs_equ_ac_db
+		WHERE
+			equ_num = #{equ_num}
+		ORDER BY
+			crtTim DESC
+		LIMIT 1
+		
+	</select>	
+	
+	<!-- 交流配电柜   查询设备和保修概况 -->
+	<select id="getAcdbInfoNewById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				app.rtd_pow,
+				app.app_mod,
+				man.man_nam,
+				equ.pro_tim,
+				equ.equ_num,
+				equ.lst_mat_tim,
+				equ.fnl_mat_tim,
+				equ.nxt_mat_tim
+			FROM
+				iscs_equ_ac_db acdb,
+				sys_bas_equ equ,
+				sys_bas_app app,
+				sys_bas_man man
+			WHERE
+				acdb.equ_num = equ.equ_num
+			AND equ.equ_mod_id = app.id
+			AND app.man_id = man.id
+			AND equ.del_flag = 0
+			AND app.del_flag = 0
+			AND man.del_flag = 0
+			AND acdb.id = #{id}
+	</select>
+	
+	<!-- 交流配电柜   查询设备详细信息 -->
+	<select id="getAcdbById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				equ_num,
+				stat,
+				branchNum,
+				crtTim,
+				healthStat,
+				stat1,
+				stat2,
+				stat3,
+				stat4,
+				stat5,
+				stat6,
+				stat7,
+				stat8,
+				stat9,
+				stat10
+			FROM
+				iscs_equ_ac_db 
+			where equ_num = #{equ_num}
+			<!-- ORDER BY
+			crtTim DESC
+		LIMIT 1 -->
+		
+			AND TO_DAYS(crtTim) =  TO_DAYS(NOW())
+		ORDER BY crtTim DESC LIMIT 1
+		
+
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

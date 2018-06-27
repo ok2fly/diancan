@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pqsms">
+
+	<!-- 综合监控  电能质量检测装置 -->
+
+	<!-- 电能质量检测装置-详情 （获取最新那条数据）-->
+	<select id="getIscsPqsmsInfByEquNumTopOne" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			iep.uab,
+			iep.stat,
+			iep.healthStat,
+			iep.ia,
+			iep.ua,
+			iep.pfa,
+			iep.freq,
+			iep.psum,
+			iep.qsum,
+			iep.phi,
+			iep.phe,
+			iep.qhi,
+			iep.qhe,
+			iep.pf
+		FROM
+			iscs_equ_pqsms iep
+		WHERE iep.equ_num = #{equ_num}
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+	
+	<!-- 电能质量检测装置-详情 （获取电能质量检测装置的电流电压曲线图数据以及有功无功曲线图数据（当天的）） -->
+	<select id="getIscsPqsmsUIPQsumCurves"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.uab,
+			iep.ua,
+			iep.ia,
+			iep.psum,
+			iep.qsum,
+			iep.crtTim
+		FROM
+			iscs_equ_pqsms iep
+		WHERE equ_num = #{equ_num} 
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY iep.crtTim  
+		
+	</select>
+	
+	
+	<!-- 电能质量检测装置-详情 （获取电能质量检测装置的电压、电流2-50次谐波柱状图（当天的最新的那条数据）） -->
+	<select id="getIscsPqsmsThdUIABCHistogram"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.thdua2,
+			iep.thdua3,
+			iep.thdua4,
+			iep.thdua5,
+			iep.thdua6,
+			iep.thdua7,
+			iep.thdua8,
+			iep.thdua9,
+			iep.thdua10,
+			iep.thdua11,
+			iep.thdua12,
+			iep.thdua13,
+			iep.thdua14,
+			iep.thdua15,
+			iep.thdua16,
+			iep.thdua17,
+			iep.thdua18,
+			iep.thdua19,
+			iep.thdua20,
+			iep.thdua21,
+			iep.thdua22,
+			iep.thdua23,
+			iep.thdua24,
+			iep.thdua25,
+			iep.thdua26,
+			iep.thdua27,
+			iep.thdua28,
+			iep.thdua29,
+			iep.thdua30,
+			iep.thdua31,
+			iep.thdua32,
+			iep.thdua33,
+			iep.thdua34,
+			iep.thdua35,
+			iep.thdua36,
+			iep.thdua37,
+			iep.thdua38,
+			iep.thdua39,
+			iep.thdua40,
+			iep.thdua41,
+			iep.thdua42,
+			iep.thdua43,
+			iep.thdua44,
+			iep.thdua45,
+			iep.thdua46,
+			iep.thdua47,
+			iep.thdua48,
+			iep.thdua49,
+			iep.thdua50,
+			iep.thdub2,
+			iep.thdub3,
+			iep.thdub4,
+			iep.thdub5,
+			iep.thdub6,
+			iep.thdub7,
+			iep.thdub8,
+			iep.thdub9,
+			iep.thdub10,
+			iep.thdub11,
+			iep.thdub12,
+			iep.thdub13,
+			iep.thdub14,
+			iep.thdub15,
+			iep.thdub16,
+			iep.thdub17,
+			iep.thdub18,
+			iep.thdub19,
+			iep.thdub20,
+			iep.thdub21,
+			iep.thdub22,
+			iep.thdub23,
+			iep.thdub24,
+			iep.thdub25,
+			iep.thdub26,
+			iep.thdub27,
+			iep.thdub28,
+			iep.thdub29,
+			iep.thdub30,
+			iep.thdub31,
+			iep.thdub32,
+			iep.thdub33,
+			iep.thdub34,
+			iep.thdub35,
+			iep.thdub36,
+			iep.thdub37,
+			iep.thdub38,
+			iep.thdub39,
+			iep.thdub40,
+			iep.thdub41,
+			iep.thdub42,
+			iep.thdub43,
+			iep.thdub44,
+			iep.thdub45,
+			iep.thdub46,
+			iep.thdub47,
+			iep.thdub48,
+			iep.thdub49,
+			iep.thdub50,
+			iep.thduc2,
+			iep.thduc3,
+			iep.thduc4,
+			iep.thduc5,
+			iep.thduc6,
+			iep.thduc7,
+			iep.thduc8,
+			iep.thduc9,
+			iep.thduc10,
+			iep.thduc11,
+			iep.thduc12,
+			iep.thduc13,
+			iep.thduc14,
+			iep.thduc15,
+			iep.thduc16,
+			iep.thduc17,
+			iep.thduc18,
+			iep.thduc19,
+			iep.thduc20,
+			iep.thduc21,
+			iep.thduc22,
+			iep.thduc23,
+			iep.thduc24,
+			iep.thduc25,
+			iep.thduc26,
+			iep.thduc27,
+			iep.thduc28,
+			iep.thduc29,
+			iep.thduc30,
+			iep.thduc31,
+			iep.thduc32,
+			iep.thduc33,
+			iep.thduc34,
+			iep.thduc35,
+			iep.thduc36,
+			iep.thduc37,
+			iep.thduc38,
+			iep.thduc39,
+			iep.thduc40,
+			iep.thduc41,
+			iep.thduc42,
+			iep.thduc43,
+			iep.thduc44,
+			iep.thduc45,
+			iep.thduc46,
+			iep.thduc47,
+			iep.thduc48,
+			iep.thduc49,
+			iep.thduc50,
+			iep.thdia2,
+			iep.thdia3,
+			iep.thdia4,
+			iep.thdia5,
+			iep.thdia6,
+			iep.thdia7,
+			iep.thdia8,
+			iep.thdia9,
+			iep.thdia10,
+			iep.thdia11,
+			iep.thdia12,
+			iep.thdia13,
+			iep.thdia14,
+			iep.thdia15,
+			iep.thdia16,
+			iep.thdia17,
+			iep.thdia18,
+			iep.thdia19,
+			iep.thdia20,
+			iep.thdia21,
+			iep.thdia22,
+			iep.thdia23,
+			iep.thdia24,
+			iep.thdia25,
+			iep.thdia26,
+			iep.thdia27,
+			iep.thdia28,
+			iep.thdia29,
+			iep.thdia30,
+			iep.thdia31,
+			iep.thdia32,
+			iep.thdia33,
+			iep.thdia34,
+			iep.thdia35,
+			iep.thdia36,
+			iep.thdia37,
+			iep.thdia38,
+			iep.thdia39,
+			iep.thdia40,
+			iep.thdia41,
+			iep.thdia42,
+			iep.thdia43,
+			iep.thdia44,
+			iep.thdia45,
+			iep.thdia46,
+			iep.thdia47,
+			iep.thdia48,
+			iep.thdia49,
+			iep.thdia50,
+			iep.thdib2,
+			iep.thdib3,
+			iep.thdib4,
+			iep.thdib5,
+			iep.thdib6,
+			iep.thdib7,
+			iep.thdib8,
+			iep.thdib9,
+			iep.thdib10,
+			iep.thdib11,
+			iep.thdib12,
+			iep.thdib13,
+			iep.thdib14,
+			iep.thdib15,
+			iep.thdib16,
+			iep.thdib17,
+			iep.thdib18,
+			iep.thdib19,
+			iep.thdib20,
+			iep.thdib21,
+			iep.thdib22,
+			iep.thdib23,
+			iep.thdib24,
+			iep.thdib25,
+			iep.thdib26,
+			iep.thdib27,
+			iep.thdib28,
+			iep.thdib29,
+			iep.thdib30,
+			iep.thdib31,
+			iep.thdib32,
+			iep.thdib33,
+			iep.thdib34,
+			iep.thdib35,
+			iep.thdib36,
+			iep.thdib37,
+			iep.thdib38,
+			iep.thdib39,
+			iep.thdib40,
+			iep.thdib41,
+			iep.thdib42,
+			iep.thdib43,
+			iep.thdib44,
+			iep.thdib45,
+			iep.thdib46,
+			iep.thdib47,
+			iep.thdib48,
+			iep.thdib49,
+			iep.thdib50,
+			iep.thdic2,
+			iep.thdic3,
+			iep.thdic4,
+			iep.thdic5,
+			iep.thdic6,
+			iep.thdic7,
+			iep.thdic8,
+			iep.thdic9,
+			iep.thdic10,
+			iep.thdic11,
+			iep.thdic12,
+			iep.thdic13,
+			iep.thdic14,
+			iep.thdic15,
+			iep.thdic16,
+			iep.thdic17,
+			iep.thdic18,
+			iep.thdic19,
+			iep.thdic20,
+			iep.thdic21,
+			iep.thdic22,
+			iep.thdic23,
+			iep.thdic24,
+			iep.thdic25,
+			iep.thdic26,
+			iep.thdic27,
+			iep.thdic28,
+			iep.thdic29,
+			iep.thdic30,
+			iep.thdic31,
+			iep.thdic32,
+			iep.thdic33,
+			iep.thdic34,
+			iep.thdic35,
+			iep.thdic36,
+			iep.thdic37,
+			iep.thdic38,
+			iep.thdic39,
+			iep.thdic40,
+			iep.thdic41,
+			iep.thdic42,
+			iep.thdic43,
+			iep.thdic44,
+			iep.thdic45,
+			iep.thdic46,
+			iep.thdic47,
+			iep.thdic48,
+			iep.thdic49,
+			iep.thdic50,
+			iep.crtTim tol_tim
+		FROM
+			iscs_equ_pqsms iep
+		WHERE equ_num = #{equ_num} 
+		
+		<![CDATA[ AND iep.crtTim >= DATE(SYSDATE()) ]]>
+		
+		<![CDATA[ AND iep.crtTim < SYSDATE()]]>
+		ORDER BY iep.crtTim DESC LIMIT 1
+	</select>
+	
+	
+	<!-- 电能质量检测装置-详情 （获取电能质量检测装置的电流电压曲线图数据以及有功无功曲线图数据（历史的）） -->
+	<select id="getIscsPqsmsUIPQsumCurvesHistory"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.uab,
+			iep.ua,
+			iep.ia,
+			iep.psum,
+			iep.qsum,
+			iep.crtTim
+		FROM
+			iscs_equ_pqsms_history iep
+		WHERE equ_num = #{equ_num} 
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY iep.crtTim 
+	</select>
+	
+	<!-- 电能质量检测装置-详情 （获取电能质量检测装置的电流电压曲线图数据以及有功无功曲线图数据（历史的））(列表) -->
+	<select id="getIscsPqsmsUIPQsumCurvesHistoryLst"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.uab,
+			iep.ua,
+			iep.ia,
+			iep.psum,
+			iep.qsum,
+			iep.pf,
+			iep.freq,
+			iep.crtTim tol_tim
+		FROM
+			iscs_equ_pqsms_history iep
+		WHERE equ_num = #{equ_num} 
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY iep.crtTim
+		LIMIT #{start},#{everyPage}	
+	</select>
+	
+	<!-- 电能质量检测装置-详情 （获取电能质量检测装置的电流电压曲线图数据以及有功无功曲线图数据（历史的））(列表,带分页) -->
+	<select id="getIscsPqsmsUIPQsumCurvesHistoryLstCou"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			COUNT(iep.id) cou 
+		FROM
+			iscs_equ_pqsms_history iep
+		WHERE equ_num = #{equ_num} 
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getEquLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+
+	</select>
+	
+	<!-- 获取PQSMS设备的最新实时数据(列表页中)-->
+	<select id="getPqsmsInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.id,
+			iep.psum,
+			iep.qsum,
+			iep.ua,
+			iep.ia,
+			iep.freq,
+			iep.ublk,
+			iep.iblk,
+			iep.thdua,
+			iep.thdia,
+			iep.stat,
+			iep.uab
+		FROM
+			iscs_equ_pqsms iep
+		WHERE
+			iep.equ_num = #{equ_num}
+			
+		ORDER BY
+			iep.crtTim DESC
+		LIMIT 1
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dctdev">
+
+	<!-- 综合监控 解列装置 -->
+	
+	
+<!-- 获取 解列装置  id查看详情-->
+	<select id="getDctdevId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iedd.id,
+			iedd.stat,
+			iedd.ua1,
+			iedd.ub1,
+			iedd.uc1,
+			iedd.ua2,
+			iedd.ub2,
+			iedd.uc2,
+			iedd.freq1,
+			iedd.freq2,
+			iedd.healthStat,
+			iedd.crtTim
+		FROM
+			iscs_equ_dct_dev iedd 
+		WHERE
+			iedd.equ_num = #{equ_num}
+		ORDER BY
+			iedd.crtTim DESC 
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 解列装置  查询最新设备和保修概况 -->
+	<select id="getDctdevInfoNewById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+			(
+				SELECT
+					sba.app_mod
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) app_mod,
+			(
+				SELECT
+					sba.rtd_pow
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) rtd_pow,
+			(
+				SELECT
+					sbm.man_nam
+				FROM
+					sys_bas_man sbm,
+					sys_bas_app sba
+				WHERE
+					sbm.id = sba.man_id
+				AND sba.id = sbe.equ_mod_id
+			) man_nam,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.equ_num,
+			sbe.equ_cod,
+			sbe.equ_nam,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim
+		FROM
+			sys_bas_equ sbe
+		WHERE
+			sbe.del_flag = 0
+		AND sbe.equ_num = #{equ_num}
+	</select>
+	
+	
+	
+	
+	<!-- 解列装置 当天 查询图表信息  -->
+	<select id="getDctdevNow" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				SELECT
+					ua1,
+					ub1,
+					uc1,
+					ua2,
+					ub2,
+					uc2,
+					crtTim
+				FROM
+					iscs_equ_dct_dev
+				WHERE
+					equ_num = #{equ_num}
+				<if test="sta_tim != null and sta_tim != ''">
+		
+					<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+		
+				</if>
+				
+				<if test="end_tim != null and end_tim != ''">
+				
+					<![CDATA[ AND crtTim < #{end_tim} ]]>
+					
+				</if>
+				
+				ORDER BY
+					crtTim
+			
+	</select>
+	
+	
+
+	
+	<!-- 解列装置 按 年 查询图表信息  -->
+	<select id="getDetdevInfoByYear" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				MONTH,
+				sum(ua1) AS ua1,
+				sum(ub1) AS ub1,
+				sum(uc1) AS uc1,
+				sum(ua2) AS ua2,
+				sum(ub2) AS ub2,
+				sum(uc2) AS uc2
+			FROM
+				(
+					SELECT
+						ua1,
+						ub1,
+						uc1,
+						ua2,
+						ub2,
+						uc2,
+						DATE_FORMAT(crtTim, '%m') MONTH
+					FROM
+						iscs_equ_dct_dev_history
+					WHERE
+						DATE_FORMAT(crtTim, '%Y') = #{year} AND equ_num = #{equ_num}
+				) a
+			GROUP BY
+				MONTH
+
+			
+	</select>
+	
+	<!-- 解列装置 按 年 查询列表信息  -->
+	<select id="getDetdevInfoByYearList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				id,
+				ua1,
+				ub1,
+				uc1,
+				ua2,
+				ub2,
+				uc2,crtTim
+			FROM
+				iscs_equ_dct_dev_history
+			where DATE_FORMAT(crtTim, '%Y') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim DESC
+	</select>
+	
+	
+	
+	<!-- 环境监测仪 按 月 查询图表信息  -->
+	<select id="getDctdevInfoByMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+				
+			SELECT
+				DATE_FORMAT(lefttable.date, '%Y-%m') AS yearMonth,
+				lefttable.date,
+				IFNULL(righttable.ua1, '0') ua1,
+				IFNULL(righttable.ub1, '0') ub1,
+				IFNULL(righttable.uc1, '0') uc1,
+				IFNULL(righttable.ua2, '0') ua2,
+				IFNULL(righttable.ub2, '0') ub2,
+				IFNULL(righttable.uc2, '0') uc2,
+				righttable.crtTim
+			FROM
+				(
+					SELECT
+						ADDDATE(y. FIRST, x.d - 1) AS date
+					FROM
+						(
+							SELECT
+								01 AS d
+							UNION ALL
+								SELECT
+									02
+								UNION ALL
+									SELECT
+										03
+									UNION ALL
+										SELECT
+											04
+										UNION ALL
+											SELECT
+												05
+											UNION ALL
+												SELECT
+													06
+												UNION ALL
+													SELECT
+														07
+													UNION ALL
+														SELECT
+															08
+														UNION ALL
+															SELECT
+																09
+															UNION ALL
+																SELECT
+																	10
+																UNION ALL
+																	SELECT
+																		11
+																	UNION ALL
+																		SELECT
+																			12
+																		UNION ALL
+																			SELECT
+																				13
+																			UNION ALL
+																				SELECT
+																					14
+																				UNION ALL
+																					SELECT
+																						15
+																					UNION ALL
+																						SELECT
+																							16
+																						UNION ALL
+																							SELECT
+																								17
+																							UNION ALL
+																								SELECT
+																									18
+																								UNION ALL
+																									SELECT
+																										19
+																									UNION ALL
+																										SELECT
+																											20
+																										UNION ALL
+																											SELECT
+																												21
+																											UNION ALL
+																												SELECT
+																													22
+																												UNION ALL
+																													SELECT
+																														23
+																													UNION ALL
+																														SELECT
+																															24
+																														UNION ALL
+																															SELECT
+																																25
+																															UNION ALL
+																																SELECT
+																																	26
+																																UNION ALL
+																																	SELECT
+																																		27
+																																	UNION ALL
+																																		SELECT
+																																			28
+																																		UNION ALL
+																																			SELECT
+																																				29
+																																			UNION ALL
+																																				SELECT
+																																					30
+																																				UNION ALL
+																																					SELECT
+																																						31
+						) x,
+						(
+							SELECT
+								CONCAT(#{year}, '-01') AS FIRST,
+								DAY (
+									LAST_DAY(
+										str_to_date(#{year}, '%Y-%m')
+									)
+								) AS last
+						) y
+					WHERE
+						x.d  &lt;= y.last
+					AND ADDDATE(y. FIRST, x.d - 1)  &lt;= CURDATE()
+				) AS lefttable
+			LEFT JOIN (
+				SELECT
+					sum(af2.ua1) AS ua1,
+					sum(af2.ub1) AS ub1,
+					sum(af2.uc1) AS uc1,
+					sum(af2.ua2) AS ua2,
+					sum(af2.ub2) AS ub2,
+					sum(af2.uc2) AS uc2,
+					af2.crtTim,
+					DATE_FORMAT(af2.crtTim, '%Y-%m-%d') AS gptime
+				FROM
+					iscs_equ_dct_dev_history af2
+				WHERE
+					DATE_FORMAT(af2.crtTim, '%Y-%m') = #{year} and equ_num = #{equ_num}
+				GROUP BY
+					DATE_FORMAT(af2.crtTim, '%Y-%m-%d')
+			) AS righttable ON DATE_FORMAT(lefttable.date, '%Y-%m-%d') = righttable.gptime
+							
+			
+	</select>
+	
+	<!-- 环境监测仪 按 月 查询列表信息  -->
+	<select id="getDctdevInfoByMonthList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				ua1,
+				ub1,
+				uc1,
+				ua2,
+				ub2,
+				uc2,
+				crtTim
+			FROM
+				iscs_equ_dct_dev_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim DESC
+	</select>
+	
+	
+	
+	<!-- 环境监测仪 按 日 查询列表信息(列表)  -->
+	<select id="getDctdevInfoByDayList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				ua1,
+				ub1,
+				uc1,
+				ua2,
+				ub2,
+				uc2,
+				crtTim
+			FROM
+				iscs_equ_dct_dev_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m-%d') = #{year} and equ_num = #{equ_num}
+			ORDER BY
+				crtTim
+			LIMIT #{start},#{everyPage}
+	</select>
+	
+	<!-- 解列装置 按 日 查询列表信息(列表,分页)  -->
+	<select id="getDctdevInfoByDayListCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				COUNT(id) cou
+			FROM
+				iscs_equ_dct_dev_history
+			WHERE
+				DATE_FORMAT(crtTim, '%Y-%m-%d') = #{year} and equ_num = #{equ_num}
+	</select>
+	
+		
+	<!-- 解列装置 按 日 查询列表信息(图表)  -->
+	<select id="getDctdevInfoByDayGraph" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				ua1,
+				ub1,
+				uc1,
+				ua2,
+				ub2,
+				uc2,
+				crtTim
+			FROM
+				iscs_equ_dct_dev_history
+			WHERE
+				equ_num = #{equ_num}
+			<if test="sta_tim != null and sta_tim != ''">
+	
+				<![CDATA[ AND crtTim >= #{sta_tim} ]]>
+	
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND crtTim < #{end_tim} ]]>
+				
+			</if>
+			
+			ORDER BY
+				crtTim
+	</select>
+	
+	
+	<!-- ====获取解列装置信息列表=== --> 
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getDctdevLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0 
+		ORDER BY sbe.equ_sor,sbe.id 
+
+	</select>
+	
+	<!-- 获取 解列装置  设备的最新实时数据(列表页中)-->
+	<select id="getDctdevInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			id,
+			equ_num,
+			stat,
+			ua1,
+			ub1,
+			uc1,
+			ua2,
+			ub2,
+			uc2,
+			freq1,
+			freq2,
+			healthStat,
+			crtTim
+		FROM
+			iscs_equ_dct_dev
+		WHERE
+			equ_num = #{equ_num}
+		ORDER BY
+			crtTim DESC
+			LIMIT 1
+		
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

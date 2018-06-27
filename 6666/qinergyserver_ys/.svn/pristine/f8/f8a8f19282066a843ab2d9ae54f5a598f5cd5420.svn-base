@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="trainingMapper">
+
+	<insert id="insTrainingTyp" parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_dat_train_typ(
+				typ_nam,
+				typ_ide,
+				remark,
+				del_flag,
+				<!-- typ_sort, -->
+				crt_use_id,
+				crt_tim)
+		VALUES (#{typ_nam},
+				#{typ_ide},
+				#{remark},
+				#{del_flag},
+				#{crt_use_id},
+				#{crt_tim})
+	</insert>
+	
+	<select id="getTrainingTypByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			id, 
+			typ_nam,                                              
+			typ_ide,                                                
+			remark                                                
+		FROM 
+			sys_dat_train_typ
+		WHERE 
+			typ_nam = #{typ_nam}
+			AND del_flag = 0
+	</select>
+	
+	
+	
+
+	<update id="updTrainingTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_dat_train_typ
+		SET
+			typ_nam = #{typ_nam},
+			typ_ide = #{typ_ide},
+			remark = #{remark},
+			typ_sort = #{typ_sort},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delTrainingTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_dat_train_typ
+		SET
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 查询一个类型 -->
+	<select id="getTrainingTypById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			id, 
+			typ_nam,                                              
+			typ_ide,                                                
+			remark                                                
+		FROM 
+			sys_dat_train_typ
+		WHERE 
+			id = #{id}
+			AND del_flag = #{del_flag}
+	</select>
+
+	<!-- 查询类型列表 -->
+	<select id="getTrainingTypList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			typ_nam,                                              
+			typ_ide, 
+			remark                                             
+		FROM 
+			sys_dat_train_typ
+		WHERE 
+			del_flag = #{del_flag}
+		ORDER BY 
+			typ_sort,id 
+	</select>
+
+
+
+	<!-- 添加文件 -->
+	<insert id="uploadTrainFile" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_dat_train_fil(
+				train_num,
+				fil_typ,
+				fil_nam,
+				fil_url,
+				remark,
+				del_flag,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES(
+				#{train_num},
+				#{file_typ},
+				#{file_nam},
+				#{file_url},
+				#{remark},
+				#{del_flag},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 根据id逻辑删除文件 -->
+	<update id="delTrainFile" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train_fil 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+
+
+	<!-- 根据id 获取文件信息 -->
+	<select id="getFileById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			train_num,
+			fil_nam,
+			fil_url,
+			fil_typ,
+			remark,
+			crt_use_id,
+			crt_tim,
+			del_flag
+		FROM
+			sys_dat_train_fil
+		WHERE
+			id = #{id}
+			AND del_flag = 0
+	</select>
+	
+	<!-- 根据train_num 获取文件列表 -->
+	<select id="getFileListByTrainNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			train_num,
+			fil_nam,
+			fil_url,
+			fil_typ,
+			remark,
+			del_flag,
+			crt_use_id,
+			(select uu.use_nam from use_use uu where uu.id = sdtf.crt_use_id) use_nam,
+			crt_tim
+		FROM
+			sys_dat_train_fil sdtf
+		WHERE
+			train_num = #{train_num}
+			AND del_flag = #{del_flag}
+	</select>
+	
+	
+	
+	
+	
+	
+<!-- 培训管理 -->
+	<!-- 添加培训管理信息 -->
+	<insert id="insTraining" parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_dat_train(
+				tra_typ_id,                                        
+				tra_num,
+				tra_sta,
+				tra_cont,
+				tra_speaker,
+				tra_target,
+				begin_tim,
+				finish_tim,
+				tra_place,
+				remark,
+				del_flag,
+				sub_com_id,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES (
+				#{tra_typ_id},                                        
+				#{tra_num},
+				#{tra_sta},
+				#{tra_cont},
+				#{tra_speaker},
+				#{tra_target},
+				#{begin_tim},
+				#{finish_tim},
+				#{tra_place},
+				#{remark},
+				#{del_flag},
+				#{sub_com_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 修改培训 管理信息 -->
+	<update id="updTraining" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_dat_train
+		SET
+			tra_typ_id = #{tra_typ_id},                                        
+			<!-- tra_num = #{tra_num}, -->
+			<!-- tra_sta = #{tra_sta}, -->
+			tra_cont = #{tra_cont},
+			tra_speaker = #{tra_speaker},
+			tra_target = #{tra_target},
+			begin_tim = #{begin_tim},
+			finish_tim = #{finish_tim},
+			tra_place = #{tra_place},
+			remark = #{remark},
+			<!-- del_flag = #{del_flag}, -->
+			sub_com_id = #{sub_com_id},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+			<!-- del_flag=0 -->
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 根据id 修改培训 状态  -->
+	<update id="executeTraining" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train 
+		SET 
+			tra_sta = #{tra_sta},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!-- 根据id逻辑删除培训 管理信息 -->
+	<update id="delTrainingById" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	<!-- 根据ids 批量逻辑删除培训 管理信息 -->
+	<update id="delBatchTrainingById" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id IN  
+			 <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+             	#{item}  
+       		</foreach>
+	</update>
+	
+	
+	<!-- 根据id获取培训 管理信息 -->
+	<select id="getTrainingById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tra_typ_id,                                        
+			tra_num,
+			tra_sta,
+			tra_cont,
+			tra_speaker,
+			tra_target,
+			begin_tim,
+			finish_tim,
+			tra_place,
+			remark,
+			del_flag,
+			sub_com_id,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_train
+		WHERE
+			id = #{id}
+			AND del_flag = #{del_flag}
+	</select>
+	
+	<!-- 获取培训 管理信息列表 -->
+	<select id="getTrainingList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sdt.id,
+				(SELECT typ_nam FROM sys_dat_train_typ sdtt WHERE sdtt.id = sdt.tra_typ_id ) typ_nam,                                    
+			sdt.tra_num,
+			sdt.tra_sta,
+			sdt.tra_cont,
+			sdt.tra_speaker,
+			sdt.tra_target,
+			sdt.begin_tim,
+			sdt.finish_tim,
+			sdt.tra_place,
+			sdt.remark,
+			sdt.del_flag,
+			(SELECT com.com_nam FROM sys_bas_com com WHERE com.id = sdt.sub_com_id ) com_nam,
+			(SELECT us.use_nam FROM use_use us WHERE us.id = sdt.crt_use_id ) use_nam,
+			sdt.crt_tim
+		FROM
+			sys_dat_train_typ sdtt,
+			sys_dat_train sdt
+		WHERE
+			sdt.tra_typ_id = sdtt.id
+			AND sdt.del_flag = #{del_flag}
+			AND sdt.sub_com_id = #{com_id}
+			<if test="typ_id != null and typ_id != ''">
+				AND sdt.tra_typ_id = #{typ_id}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdt.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdt.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdt.tra_speaker,''),
+					IFNULL(sdt.tra_target,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		ORDER BY 
+			sdt.begin_tim DESC
+		LIMIT #{start}, #{everyPage}	
+	</select>
+	
+	<!-- 获取培训 管理信息列表条数 -->
+	<select id="getTrainingListCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(sdt.id) cou
+		FROM
+			sys_dat_train_typ sdtt,
+			sys_dat_train sdt
+		WHERE
+			sdt.tra_typ_id = sdtt.id
+			AND sdt.del_flag = #{del_flag}
+			AND sdt.sub_com_id = #{com_id}
+			<if test="typ_id != null and typ_id != ''">
+				AND sdt.tra_typ_id = #{typ_id}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdt.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdt.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdt.tra_speaker,''),
+					IFNULL(sdt.tra_target,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<!-- 添加培训计划管理信息 -->
+	<insert id="insTrainingPlan" parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_dat_train_plan(
+				tra_typ_id,                                        
+				tra_num,
+				plan_num,
+				is_exec,
+				tra_cont,
+				tra_speaker,
+				tra_target,
+				begin_tim,
+				finish_tim,
+				tra_place,
+				remark,
+				del_flag,
+				sub_com_id,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES (
+				#{tra_typ_id},                                        
+				#{tra_num},
+				#{plan_num},
+				#{is_exec},
+				#{tra_cont},
+				#{tra_speaker},
+				#{tra_target},
+				#{begin_tim},
+				#{finish_tim},
+				#{tra_place},
+				#{remark},
+				#{del_flag},
+				#{sub_com_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 修改培训计划管理信息 -->
+	<update id="updTrainingPlan" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_dat_train_plan
+		SET
+			tra_typ_id = #{tra_typ_id},                                        
+			<!-- tra_num = #{tra_num},
+			plan_num = #{plan_num},
+			is_exec = #{is_exec}, -->
+			tra_cont = #{tra_cont},
+			tra_speaker = #{tra_speaker},
+			tra_target = #{tra_target},
+			begin_tim = #{begin_tim},
+			finish_tim = #{finish_tim},
+			tra_place = #{tra_place},
+			remark = #{remark},
+			<!-- del_flag = #{del_flag},-->
+			sub_com_id = #{sub_com_id},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 根据id逻辑删除培训 管理信息 -->
+	<update id="delTrainingPlanById" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train_plan 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	<!-- 根据ids 批量逻辑删除培训 管理信息 -->
+	<update id="delBatchTrainingPlanById" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_train_plan
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id IN  
+			 <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+             	#{item}  
+       		</foreach>
+	</update>
+	
+	
+	<!-- 根据id获取培训 管理信息 -->
+	<select id="getTrainingPlanById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tra_typ_id,                                        
+			tra_num,
+			plan_num,
+			is_exec,
+			tra_cont,
+			tra_speaker,
+			tra_target,
+			begin_tim,
+			finish_tim,
+			tra_place,
+			remark,
+			del_flag,
+			sub_com_id,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_train_plan
+		WHERE
+			id = #{id}
+			AND del_flag = #{del_flag}
+	</select>
+	
+	<!-- 获取培训计划管理信息列表 -->
+	<select id="getTrainingPlanList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sdt.id,
+			(SELECT typ_nam FROM sys_dat_train_typ sdtt WHERE sdtt.id = sdt.tra_typ_id ) typ_nam,                                       
+			sdt.tra_num,
+			sdt.plan_num,
+			sdt.is_exec,
+			sdt.tra_cont,
+			sdt.tra_speaker,
+			sdt.tra_target,
+			sdt.begin_tim,
+			sdt.finish_tim,
+			sdt.tra_place,
+			sdt.remark,
+			sdt.del_flag,
+			(SELECT com.com_nam FROM sys_bas_com com WHERE com.id = sdt.sub_com_id ) com_nam,
+			(SELECT us.use_nam FROM use_use us WHERE us.id = sdt.crt_use_id ) use_nam,
+			sdt.crt_tim
+		FROM
+			sys_dat_train_typ sdtt,
+			sys_dat_train_plan sdt
+		WHERE
+			sdt.tra_typ_id = sdtt.id
+			AND sdt.del_flag = #{del_flag}
+			
+			<if test="com_id != null and com_id != ''">
+			AND sdt.sub_com_id = #{com_id}
+			</if>
+			<if test="typ_id != null and typ_id != ''">
+				AND sdt.tra_typ_id = #{typ_id}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdt.begin_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdt.begin_tim < #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdt.tra_speaker,''),
+					IFNULL(sdt.tra_target,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		ORDER BY 
+			sdt.begin_tim DESC
+		LIMIT #{start}, #{everyPage}	
+	</select>
+	
+	<!-- 获取培训计划管理信息列表条数 -->
+	<select id="getTrainingPlanListCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(sdt.tra_typ_id) cou
+		FROM
+			sys_dat_train_typ sdtt,
+			sys_dat_train_plan sdt 
+		WHERE
+			sdt.tra_typ_id = sdtt.id
+			AND sdt.del_flag = #{del_flag}
+			AND sdt.sub_com_id = #{com_id}
+			<if test="typ_id != null and typ_id != ''">
+				AND sdt.tra_typ_id = #{typ_id}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdt.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdt.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdt.tra_speaker,''),
+					IFNULL(sdt.tra_target,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+	
+	
+	
+</mapper>

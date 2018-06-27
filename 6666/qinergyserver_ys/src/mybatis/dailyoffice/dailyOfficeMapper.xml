@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dailyOffice">
+	<insert id="createFile" parameterType="java.util.LinkedHashMap">
+		insert into
+		dat_file(fil_nam,fil_url,fil_typ,com_id,crt_use_id,comment,crt_tim)
+		values(#{file_name},#{file_path},#{file_type},#{com_id},#{created_id},#{comment},#{created_date})
+	</insert>
+	<select id="selectFileById" resultType="java.util.LinkedHashMap">
+		select * from dat_file
+		where id=#{id} and del_flag=0
+	</select>
+	
+<!--app端 文件下载 需要返回的参数  -->	
+	<select id="AppSelectFileById" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+		select * from dat_file
+			where id=#{id} 
+			and fil_typ = #{file_type}
+			and com_id = #{com_id}
+			and crt_use_id = #{created_id}
+			and del_flag=0
+	</select>
+<!-- app端 文件下载 需要返回的参数   -->
+	
+	
+	
+	
+	
+	
+	
+	
+	<update id="removeFile">
+		update dat_file set del_flag=1 where
+		id=#{id}
+	</update>
+	<select id="getFileList" resultType="java.util.LinkedHashMap">
+		SELECT
+			t.id,
+			t.fil_nam,
+			c.com_nam,
+			u.use_nam,
+			t.comment,
+			t.crt_tim,
+			t.fil_url
+			
+		FROM
+			dat_file t,
+			sys_bas_com c,
+			use_use u
+		WHERE
+			1 = 1
+		<if test="type!=null">
+			AND t.fil_typ = #{type}
+		</if>
+		AND t.del_flag = 0
+		AND t.com_id = c.id
+		AND t.crt_use_id = u.id
+		AND t.com_id =#{com_id}
+		<if test="name!=null">
+			and t.fil_nam like #{name}
+		</if>
+	order by t.crt_tim DESC
+	</select>
+	
+	<select id="getAllComs" resultType="java.util.LinkedHashMap">
+		select id from sys_bas_com where del_flag = 0
+	</select>
+	
+	<select id="getFileType" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select 
+			id,
+			fil_typ_nam,
+			remark 
+		from sys_bas_fil_typ 
+		where del_flag=0
+		<if test="id != null and id != ''">
+			
+			and id = #{id}
+
+		</if>
+	</select>
+	
+	<insert id="insertFileType">
+		insert into sys_bas_fil_typ
+		(fil_typ_nam,crt_use_id,crt_tim,remark,del_flag)
+		values(#{fil_typ_nam},#{crt_use_id},#{crt_tim},#{remark},0)
+	</insert>
+	
+	<select id="selFileTypByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select 
+			*
+		from sys_bas_fil_typ 
+		where del_flag=0 and fil_typ_nam = #{fil_typ_nam}
+	</select>
+	
+	
+	
+	
+	<update id="updateFileTypeById">
+		update sys_bas_fil_typ set 
+			fil_typ_nam=#{fil_typ_nam},
+			mod_use_id=#{mod_use_id},
+			mod_tim=#{mod_tim},
+			remark=#{remark}
+		where id=#{id}
+	</update>
+	<select id="getFileCountInType" resultType="Integer">
+		select count(id) from dat_file where fil_typ=#{id}
+		and del_flag=0
+	</select>
+	
+	<update id="removeFileType">
+		update sys_bas_fil_typ set del_flag=1 where id=#{id}
+	</update>
+
+
+
+	<!-- 员工、客户管理 start -->
+	<insert id="insertUserInfo" parameterType="java.util.LinkedHashMap">
+		insert into use_use
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="use_typ != null"> use_typ, </if>
+			<if test="com_id != null"> com_id, </if>
+			<if test="dep_id != null and dep_id != ''"> dep_id, </if>
+			<if test="pos_id != null"> pos_id, </if>
+			<if test="edu_id != null"> edu_id, </if>
+			<if test="rol_id != null"> rol_id, </if>
+			<if test="use_sta != null"> use_sta, </if>
+			<if test="acc_num != null"> acc_num, </if>
+			<if test="use_pas != null"> use_pas, </if>
+			<if test="use_nam != null"> use_nam, </if>
+			<if test="use_mob != null"> use_mob, </if>
+			<if test="use_sex != null"> use_sex, </if>
+			<if test="use_idc != null"> use_idc, </if>
+			<if test="use_mal != null"> use_mal, </if>
+			<if test="use_add != null"> use_add, </if>
+			<if test="pic_url != null"> pic_url, </if>
+			<if test="use_maj != null"> use_maj, </if>
+			<if test="tak_tim != null"> tak_tim, </if>
+			<if test="pla_ori != null"> pla_ori, </if>
+			<if test="remark != null"> remark, </if>
+			<if test="crt_use_id != null"> crt_use_id, </if>
+			<if test="crt_tim != null"> crt_tim, </if>
+			<if test="slt_opt_sta != null"> slt_opt_sta, </if>
+			<if test="is_def_sta != null"> is_def_sta, </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="use_typ != null"> #{use_typ}, </if>
+			<if test="com_id != null"> #{com_id}, </if>
+			<if test="dep_id != null and dep_id != ''"> #{dep_id}, </if>
+			<if test="pos_id != null"> #{pos_id}, </if>
+			<if test="edu_id != null"> #{edu_id}, </if>
+			<if test="rol_id != null"> #{rol_id}, </if>
+			<if test="use_sta != null"> #{use_sta}, </if>
+			<if test="acc_num != null"> #{acc_num}, </if>
+			<if test="use_pas != null"> #{use_pas}, </if>
+			<if test="use_nam != null"> #{use_nam}, </if>
+			<if test="use_mob != null"> #{use_mob}, </if>
+			<if test="use_sex != null"> #{use_sex}, </if>
+			<if test="use_idc != null"> #{use_idc}, </if>
+			<if test="use_mal != null"> #{use_mal}, </if>
+			<if test="use_add != null"> #{use_add}, </if>
+			<if test="pic_url != null"> #{pic_url}, </if>
+			<if test="use_maj != null"> #{use_maj}, </if>
+			<if test="tak_tim != null"> #{tak_tim}, </if>
+			<if test="pla_ori != null"> #{pla_ori}, </if>
+			<if test="remark != null"> #{remark}, </if>
+			<if test="crt_use_id != null"> #{crt_use_id}, </if>
+			<if test="crt_tim != null"> #{crt_tim}, </if>
+			<if test="slt_opt_sta != null"> #{slt_opt_sta}, </if>
+			<if test="is_def_sta != null"> #{is_def_sta}, </if>
+		</trim>
+	</insert>
+
+	<update id="updateUserInfo" parameterType="java.util.LinkedHashMap">
+		update use_use 
+		<set>
+			<if test="use_typ != null"> use_typ = #{use_typ},</if>
+			<if test="com_id != null"> com_id = #{com_id},</if>
+			<if test="dep_id != null"> dep_id = #{dep_id},</if>
+			<if test="pos_id != null"> pos_id = #{pos_id},</if>
+			<if test="edu_id != null"> edu_id = #{edu_id},</if>
+			<if test="rol_id != null"> rol_id = #{rol_id},</if>
+			<if test="use_sta != null"> use_sta = #{use_sta},</if>
+			<if test="acc_num != null"> acc_num = #{acc_num},</if>
+			<if test="use_pas != null"> use_pas = #{use_pas},</if>
+			<if test="use_nam != null"> use_nam = #{use_nam},</if>
+			<if test="use_mob != null"> use_mob = #{use_mob},</if>
+			<if test="use_sex != null"> use_sex = #{use_sex},</if>
+			<if test="use_idc != null"> use_idc = #{use_idc},</if>
+			<if test="use_mal != null"> use_mal = #{use_mal},</if>
+			<if test="use_add != null"> use_add = #{use_add},</if>
+			<if test="pic_url != null"> pic_url= #{pic_url},</if>
+			<if test="use_maj != null"> use_maj = #{use_maj},</if>
+			<if test="tak_tim != null"> tak_tim = #{tak_tim},</if>
+			<if test="pla_ori != null"> pla_ori = #{pla_ori},</if>
+			<if test="remark != null"> remark = #{remark},</if>
+			<if test="mod_use_id != null"> mod_use_id = #{mod_use_id}, </if>
+			<if test="mod_tim != null"> mod_tim = #{mod_tim}, </if>
+			<if test="slt_opt_sta != null"> slt_opt_sta = #{slt_opt_sta}, </if>
+			<if test="is_def_sta != null"> is_def_sta = #{is_def_sta}, </if>
+		</set>
+		where id = #{id} and use_sta = #{use_sta}
+	</update>
+	
+	<update id="updateUserScore" parameterType="java.util.LinkedHashMap">
+		update use_use 
+		<set>
+			<if test="use_score != null"> use_score = #{use_score},</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="updateUserDep" parameterType="java.util.LinkedHashMap">
+		update use_use set
+		dep_id = #{dep_id},
+		mod_use_id = #{mod_use_id},
+		mod_tim = #{mod_tim}
+		where id = #{id} and use_sta = #{use_sta}
+	</update>
+
+	<update id="resetPwd" parameterType="java.util.LinkedHashMap">
+		update use_use set
+			use_pas = #{use_pas},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		where id = #{id}
+	</update>
+
+	<update id="setAccStat" parameterType="java.util.LinkedHashMap">
+		update use_use set
+			use_sta = #{use_sta},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		where id = #{id}
+	</update>
+
+	<update id="delUserInfo" parameterType="java.util.LinkedHashMap">
+		update use_use set
+			del_flag = 1,
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		where id = #{id}
+		
+	</update>
+
+
+
+	<select id="getUserInfById"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select
+			id,
+			use_typ,
+			com_id,
+			dep_id,
+			pos_id,
+			(select sbp.pos_nam from sys_bas_pos sbp where sbp.id = pos_id) pos_nam,
+			edu_id,
+			rol_id,
+			use_sta,
+			acc_num,
+			use_pas,
+			use_nam,
+			use_mob,
+			use_sex,
+			use_idc,
+			use_mal,
+			use_add,
+			use_maj,
+			tak_tim,
+			pla_ori,
+			remark,
+			pic_url,
+			pic_nam,
+			pic_new_nam,
+			slt_opt_sta,
+			is_def_sta
+		from use_use 
+		where id = #{id} 
+		<if test="use_sta != null and use_sta != ''">
+			and use_sta = #{use_sta}
+		</if> 
+	</select>
+
+	<select id="getUserInfListByType"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select
+			u.id,
+			u.use_typ,
+			u.com_id,
+			(select sbc.com_nam from sys_bas_com sbc where sbc.id = u.com_id) com_nam, 
+			u.dep_id, 
+			(select sbd.dep_nam from sys_bas_dep sbd where sbd.id = u.dep_id) dep_nam,
+			u.pos_id, 
+			(select sbp.pos_nam from sys_bas_pos sbp where sbp.id = u.pos_id) pos_nam,
+			u.edu_id,
+			(select sbe.edu_nam from sys_bas_edu sbe where sbe.id = u.edu_id) edu_nam,
+			u.rol_id, 
+			(select sbr.rol_nam from sys_bas_rol sbr where sbr.id = u.rol_id) rol_nam,
+			u.use_sta,
+			u.acc_num,
+			u.use_pas,
+			u.use_nam,
+			u.use_mob,
+			u.use_sex,
+			u.use_idc,
+			u.use_mal,
+			u.use_add,
+			u.use_maj,
+			u.tak_tim,
+			u.pla_ori,
+			u.remark,
+			u.crt_use_id,
+			u.crt_tim,
+			u.mod_use_id,
+			u.mod_tim,
+			u.slt_opt_sta,
+			u.is_def_sta
+		from
+			use_use u
+		where 1=1 and u.use_sta = 1 and u.del_flag = 0
+			<if test="com_id != null and com_id != ''">
+				AND u.com_id = #{com_id}
+			</if>
+			 <if test="use_typ != null and use_typ != ''">
+				AND u.use_typ = #{use_typ}
+			</if> 
+			<if test="dep_id != null and dep_id != ''">
+				AND u.dep_id = #{dep_id}
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(u.use_mob,''),
+					IFNULL(u.use_nam,''),
+					IFNULL(u.acc_num,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+			ORDER BY u.crt_tim
+			limit #{start},#{everyPage}
+	</select>
+	
+	<select id="getUserListCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select 
+			count(1) cou
+		from
+			use_use u
+		where 1=1 and u.use_sta = 1 and u.del_flag = 0
+			<if test="com_id != null">
+				AND u.com_id = ${com_id}
+			</if>
+			<if test="use_typ != null">
+				AND u.use_typ = #{use_typ}
+			</if>
+			<if test="dep_id != null">
+				AND u.dep_id = #{dep_id}
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(u.use_mob,''),
+					IFNULL(u.use_nam,''),
+					IFNULL(u.acc_num,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+	
+
+	<!-- 员工、客户管理 end -->
+	
+	
+	
+	
+	<!--根据  账号，用户姓名 查询   防止用户账号重复或姓名重复-->
+	<select id="getUserByNumAndNam" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			u.id,
+			u.acc_num,
+			u.use_nam
+		FROM
+			use_use u
+		WHERE
+			u.del_flag = 0
+		AND u.acc_num = #{acc_num}
+		OR u.use_nam = #{use_nam}
+	</select>
+	
+	
+	
+	
+	
+</mapper>

@@ -1,0 +1,4031 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="satisticAnalysis">
+	<!-- 获取报表信息 -->
+	<!-- 获取光伏逆变器报表信息 -->
+	<!-- 获取统计信息（包含最大、最小、平均、统计） -->
+	<select id="getPVStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			MIN(sumPvs.sum_power) min_power,
+			MAX(sumPvs.sum_power) max_power,
+			AVG(sumPvs.sum_power) avg_power,
+			SUM(sumPvs.sum_power) sum_power
+		FROM
+			(
+				SELECT
+					SUM(sps.power) sum_power,
+					sps.equ_num
+				FROM
+					sa_pvs_sta sps,
+					sys_bas_equ sbe,
+					sys_bas_app sba
+				WHERE
+					sps.equ_num = sbe.equ_num
+				AND sbe.equ_mod_id = sba.id
+				AND sbe.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+		
+					<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+		
+				</if>
+				
+				<if test="end_tim != null and end_tim != ''">
+				
+					<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+					
+				</if>
+					
+				<if test="pws_id != null and pws_id != ''">
+				
+					and sbe.pws_id = #{pws_id}
+					
+				</if>
+				
+				<if test="app_mod != null and app_mod != ''">
+				
+					and sba.id = #{app_mod}
+					
+				</if>
+				
+				<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+		
+				</if>
+				
+				<if test="end_rtd_pow != null and end_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+					
+				</if>
+				GROUP BY
+					sps.equ_num
+			) sumPvs
+	</select>
+	
+	
+	<!-- 获取统计信息(光伏详情中的统计信息)（包含最大、最小、平均、统计） -->
+	<select id="getPVInfStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			MIN(sps.power) min_power,
+			MIN(sps.cnv_eff) min_cnv_eff,
+			MIN(sps.power_whe_equ) min_power_whe_equ,
+			MIN(sps.bra_u_dis_rate) min_bra_u_dis_rate,
+			MIN(sps.good_run_time) min_good_run_time,
+			MIN(sps.fault_time) min_fault_time,
+			MIN(sps.failure_time) min_failure_time,
+			MIN(sps.com_int_time) min_com_int_time,
+			MAX(sps.power) max_power,
+			MAX(sps.cnv_eff) max_cnv_eff,
+			MAX(sps.power_whe_equ) max_power_whe_equ,
+			MAX(sps.bra_u_dis_rate) max_bra_u_dis_rate,
+			MAX(sps.good_run_time) max_good_run_time,
+			MAX(sps.fault_time) max_fault_time,
+			MAX(sps.failure_time) max_failure_time,
+			MAX(sps.com_int_time) max_com_int_time,
+			AVG(sps.power) avg_power,
+			AVG(sps.cnv_eff) avg_cnv_eff,
+			AVG(sps.power_whe_equ) avg_power_whe_equ,
+			AVG(sps.bra_u_dis_rate) avg_bra_u_dis_rate,
+			AVG(sps.good_run_time) avg_good_run_time,
+			AVG(sps.fault_time) avg_fault_time,
+			AVG(sps.failure_time) avg_failure_time,
+			AVG(sps.com_int_time) avg_com_int_time,
+			SUM(sps.power) sum_power,
+			SUM(sps.cnv_eff) sum_cnv_eff,
+			SUM(sps.power_whe_equ) sum_power_whe_equ,
+			SUM(sps.bra_u_dis_rate) sum_bra_u_dis_rate,
+			SUM(sps.good_run_time) sum_good_run_time,
+			SUM(sps.fault_time) sum_fault_time,
+			SUM(sps.failure_time) sum_failure_time,
+			SUM(sps.com_int_time) sum_com_int_time,
+			sps.tol_tim
+		FROM
+			sa_pvs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取统计信息（包含总计） -->
+	<select id="getPVStaTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.power) sum_power
+		FROM
+			sa_pvs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取列表中的信息（所有逆变器的发电量数据，每天一条） -->
+	<select id="getPVStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.power) power,
+			sbe.equ_num,
+			sps.tol_tim
+		FROM
+			sa_pvs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<!-- <if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if> -->
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id 
+		
+	</select>
+	
+	<!-- 获取列表中的信息（所有逆变器的发电量数据，每天一条） -->
+	<select id="getPVInfStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.power) power,
+			SUM(sps.cnv_eff)/COUNT(sps.id) cnv_eff,
+			SUM(sps.power_whe_equ) power_whe_equ,
+			SUM(sps.bra_u_dis_rate)/COUNT(sps.id) bra_u_dis_rate,
+			SUM(sps.good_run_time) good_run_time,
+			SUM(sps.fault_time) fault_time,
+			SUM(sps.failure_time) failure_time,
+			SUM(sps.com_int_time) com_int_time,
+			sbe.equ_nam,
+			sbe.equ_num,
+			sps.tol_tim
+		FROM
+			sa_pvs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	<!-- 获取所有逆变器的发电量统计信息 -->
+	<select id="getPVStaInfLstTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.power) tol_power
+		FROM
+			sa_pvs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<!-- <if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if> -->
+		
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	<!-- 获取储能逆变器报表信息 -->
+	<!-- 获取统计信息（包含最大、最小、平均、统计） -->
+	<select id="getPCStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+	
+		SELECT
+			MIN(sumPcs.sum_phi) min_phi,
+			MIN(sumPcs.sum_phe) min_phe,
+			MAX(sumPcs.sum_phi) max_phi,
+			MAX(sumPcs.sum_phe) max_phe,
+			AVG(sumPcs.sum_phi) avg_phi,
+			AVG(sumPcs.sum_phe) avg_phe,
+			SUM(sumPcs.sum_phi) sum_phi,
+			SUM(sumPcs.sum_phe) sum_phe
+		FROM
+			(
+				SELECT
+					SUM(sps.phi) sum_phi,
+					SUM(sps.phe) sum_phe,
+					sps.equ_num
+				FROM
+					sa_pcs_sta sps,
+					sys_bas_equ sbe,
+					sys_bas_app sba
+				WHERE
+					sps.equ_num = sbe.equ_num
+				AND sbe.equ_mod_id = sba.id
+				AND sbe.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+		
+					<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+		
+				</if>
+				
+				<if test="end_tim != null and end_tim != ''">
+				
+					<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+					
+				</if>
+					
+				<if test="pws_id != null and pws_id != ''">
+				
+					and sbe.pws_id = #{pws_id}
+					
+				</if>
+				
+				<if test="app_mod != null and app_mod != ''">
+				
+					and sba.id = #{app_mod}
+					
+				</if>
+				
+				<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+		
+				</if>
+				
+				<if test="end_rtd_pow != null and end_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+					
+				</if>
+				GROUP BY
+					sps.equ_num
+			) sumPcs
+		
+	</select>
+	
+	<!-- 获取统计信息(储能详情中的统计信息)（包含最大、最小、平均、统计） -->
+	<select id="getPCInfStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			MIN(sps.phi) min_phi,
+			MIN(sps.phe) min_phe,
+			MIN(sps.cnv_eff) min_cnv_eff,
+			MIN(sps.charge_time) min_charge_time,
+			MIN(sps.good_run_time) min_good_run_time,
+			MIN(sps.fault_time) min_fault_time,
+			MIN(sps.failure_time) min_failure_time,
+			MIN(sps.com_int_time) min_com_int_time,
+			MAX(sps.phi) max_phi,
+			MAX(sps.phe) max_phe,
+			MAX(sps.cnv_eff) max_cnv_eff,
+			MAX(sps.charge_time) max_charge_time,
+			MAX(sps.good_run_time) max_good_run_time,
+			MAX(sps.fault_time) max_fault_time,
+			MAX(sps.failure_time) max_failure_time,
+			MAX(sps.com_int_time) max_com_int_time,
+			AVG(sps.phi) avg_phi,
+			AVG(sps.phe) avg_phe,
+			AVG(sps.cnv_eff) avg_cnv_eff,
+			AVG(sps.charge_time) avg_charge_time,
+			AVG(sps.good_run_time) avg_good_run_time,
+			AVG(sps.fault_time) avg_fault_time,
+			AVG(sps.failure_time) avg_failure_time,
+			AVG(sps.com_int_time) avg_com_int_time,
+			SUM(sps.phi) sum_phi,
+			SUM(sps.phe) sum_phe,
+			SUM(sps.cnv_eff) sum_cnv_eff,
+			SUM(sps.charge_time) sum_charge_time,
+			SUM(sps.good_run_time) sum_good_run_time,
+			SUM(sps.fault_time) sum_fault_time,
+			SUM(sps.failure_time) sum_failure_time,
+			SUM(sps.com_int_time) sum_com_int_time,
+			sps.tol_tim
+		FROM
+			sa_pcs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取统计信息（包含总计） -->
+	<select id="getPCStaTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.phi) sum_phi,
+			SUM(sps.phe) sum_phe
+		FROM
+			sa_pcs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取列表中的信息（所有逆变器的充放电量数据，每天一条） -->
+	<select id="getPCStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.phi) phi,
+			SUM(sps.phe) phe,
+			sbe.equ_num,
+			sps.tol_tim
+		FROM
+			sa_pcs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<!-- <if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if> -->
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	<!-- 获取列表中的信息（所有储能逆变器的统计数据，每天一条） -->
+	<select id="getPCInfStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.phi) phi,
+			SUM(sps.phe) phe,
+			SUM(sps.cnv_eff)/COUNT(sps.id) cnv_eff,
+			SUM(sps.charge_time) charge_time,
+			SUM(sps.good_run_time) good_run_time,
+			SUM(sps.fault_time) fault_time,
+			SUM(sps.failure_time) failure_time,
+			SUM(sps.com_int_time) com_int_time,
+			sbe.equ_nam,
+			sbe.equ_num,
+			sps.tol_tim
+		FROM
+			sa_pcs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	<!-- 获取所有逆变器的充放电量统计信息 -->
+	<select id="getPCStaInfLstTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.phi) tol_phi,
+			SUM(sps.phe) tol_phe
+		FROM
+			sa_pcs_sta sps,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sps.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<!-- <if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if> -->
+		
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	<!-- 获取充电桩报表信息 -->
+	<!-- 获取统计信息（包含最大、最小、平均、统计） -->
+	<select id="getChpStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			MIN(sumCha.sum_cha_vol) min_cha_vol,
+			MAX(sumCha.sum_cha_vol) max_cha_vol,
+			AVG(sumCha.sum_cha_vol) avg_cha_vol,
+			SUM(sumCha.sum_cha_vol) sum_cha_vol
+		FROM
+			(
+				SELECT
+					SUM(scs.cha_vol) sum_cha_vol,
+					scs.equ_num
+				FROM
+					sa_chp_sta scs,
+					sys_bas_equ sbe,
+					sys_bas_app sba
+				WHERE
+					scs.equ_num = sbe.equ_num
+				AND sbe.equ_mod_id = sba.id
+				AND sbe.del_flag = 0
+				<if test="sta_tim != null and sta_tim != ''">
+		
+					<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+		
+				</if>
+				
+				<if test="end_tim != null and end_tim != ''">
+				
+					<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+					
+				</if>
+					
+				<if test="pws_id != null and pws_id != ''">
+				
+					and sbe.pws_id = #{pws_id}
+					
+				</if>
+				
+				<if test="app_mod != null and app_mod != ''">
+				
+					and sba.id = #{app_mod}
+					
+				</if>
+				
+				<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+		
+				</if>
+				
+				<if test="end_rtd_pow != null and end_rtd_pow != ''">
+				
+					<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+					
+				</if>
+				GROUP BY
+					scs.equ_num
+			) sumCha
+		
+	</select>
+	
+	<!-- 获取统计信息(充电桩详情中的统计信息)（包含最大、最小、平均、统计） -->
+	<select id="getChpInfStaMaxMinAvgSum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			MIN(scs.cha_vol) min_cha_vol,
+			MIN(scs.cha_vol_whe_equ) min_cha_vol_whe_equ,
+			MIN(scs.cha_vol_tim) min_cha_vol_tim,
+			MIN(scs.good_run_time) min_good_run_time,
+			MIN(scs.fault_time) min_fault_time,
+			MIN(scs.failure_time) min_failure_time,
+			MIN(scs.com_int_time) min_com_int_time,
+			MAX(scs.cha_vol) max_cha_vol,
+			MAX(scs.cha_vol_whe_equ) max_cha_vol_whe_equ,
+			MAX(scs.cha_vol_tim) max_cha_vol_tim,
+			MAX(scs.good_run_time) max_good_run_time,
+			MAX(scs.fault_time) max_fault_time,
+			MAX(scs.failure_time) max_failure_time,
+			MAX(scs.com_int_time) max_com_int_time,
+			AVG(scs.cha_vol) avg_cha_vol,
+			AVG(scs.cha_vol_whe_equ) avg_cha_vol_whe_equ,
+			AVG(scs.cha_vol_tim) avg_cha_vol_tim,
+			AVG(scs.good_run_time) avg_good_run_time,
+			AVG(scs.fault_time) avg_fault_time,
+			AVG(scs.failure_time) avg_failure_time,
+			AVG(scs.com_int_time) avg_com_int_time,
+			SUM(scs.cha_vol) sum_cha_vol,
+			SUM(scs.cha_vol_whe_equ) sum_cha_vol_whe_equ,
+			SUM(scs.cha_vol_tim) sum_cha_vol_tim,
+			SUM(scs.good_run_time) sum_good_run_time,
+			SUM(scs.fault_time) sum_fault_time,
+			SUM(scs.failure_time) sum_failure_time,
+			SUM(scs.com_int_time) sum_com_int_time,
+			scs.tol_tim
+		FROM
+			sa_chp_sta scs,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			scs.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取统计信息（包含总计） -->
+	<select id="getChpStaTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(scs.cha_vol) sum_cha_vol
+		FROM
+			sa_chp_sta scs,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			scs.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+	</select>
+	
+	<!-- 获取列表中的信息（所有逆变器的充放电量数据，每天一条） -->
+	<select id="getChpStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(scs.cha_vol) cha_vol,
+			sbe.equ_num,
+			scs.tol_tim
+		FROM
+			sa_chp_sta scs,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			scs.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	<!-- 获取列表中的信息（所有储能逆变器的统计数据，每天一条） -->
+	<select id="getChpInfStaInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(scs.cha_vol) cha_vol,
+			SUM(scs.cha_vol_whe_equ) cha_vol_whe_equ,
+			SUM(scs.cha_vol_tim) cha_vol_tim,
+			SUM(scs.good_run_time) good_run_time,
+			SUM(scs.fault_time) fault_time,
+			SUM(scs.failure_time) failure_time,
+			SUM(scs.com_int_time) com_int_time,
+			scs.equ_num,
+			sbe.equ_nam,
+			scs.tol_tim
+		FROM
+			sa_chp_sta scs,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			scs.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		<!-- group by sbe.equ_nam -->
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	
+	<!-- 获取所有逆变器的充放电量统计信息 -->
+	<select id="getChpStaInfLstTol" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(scs.cha_vol) tol_cha_vol
+		FROM
+			sa_chp_sta scs,
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			scs.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sbe.del_flag = 0
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND scs.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sbe.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		order by sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+	
+	
+	<!-- 获取指定站点计划发电量列表 -->
+	<select id="getPlanPowerLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			sppp.id,
+			sppp.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sppp.pws_id
+			) pws_nam,
+			sppp.plan_power,
+			sppp.plan_tim,
+			sppp.crt_tim,
+			sppp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sppp.crt_use_id
+			) crt_use_nam
+		FROM
+			sa_pv_plan_power sppp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sppp.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim < #{end_tim} ]]>
+			
+		</if>
+		
+		ORDER BY sppp.plan_tim
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取指定站点计划发电量列表 -->
+	<select id="getPlanPowerLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			count(sppp.id) count
+		FROM
+			sa_pv_plan_power sppp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sppp.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sppp.plan_tim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获得某计划电量信息 -->
+	<select id="getPlanPowerInfById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			sppp.id,
+			sppp.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = sppp.pws_id
+			) pws_nam,
+			sppp.plan_power,
+			sppp.plan_tim
+		FROM
+			sa_pv_plan_power sppp
+			
+		WHERE sppp.id = #{id}
+	</select>
+	
+	<!-- 修改计划发电量信息 -->
+	<update id="updatePlanPower" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sa_pv_plan_power
+		SET pws_id = #{pws_id},
+		plan_power = #{plan_power},
+		plan_tim = #{plan_tim},
+		mod_tim = #{mod_tim},
+		mod_use_id = #{mod_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 新增计划发电量信息-->	
+	<insert id="insertPlanPower"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sa_pv_plan_power
+			(
+				pws_id, 
+				plan_power, 
+				plan_tim, 
+				crt_tim, 
+				crt_use_id
+			)
+		VALUES
+			( 
+				#{pws_id}, 
+				#{plan_power}, 
+				#{plan_tim}, 
+				#{crt_tim}, 
+				#{crt_use_id}
+				
+			)
+	</insert>
+	
+	<!-- 删除计划发电量信息-->
+	<delete id="deletePlanPower" parameterType="java.util.LinkedHashMap" >
+	 
+	 	DELETE
+		FROM
+			sa_pv_plan_power
+		WHERE
+			id = #{id}
+	 
+	</delete>
+	
+	
+	
+	<!-- 理论发电量 -->
+	<!-- 获取指定站点理论发电量列表 -->
+	<select id="getFsbPowerLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			spfp.id,
+			spfp.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = spfp.pws_id
+			) pws_nam,
+			spfp.fsb_power,
+			spfp.fsb_amo,
+			spfp.fsb_tim,
+			spfp.crt_tim,
+			spfp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = spfp.crt_use_id
+			) crt_use_nam
+		FROM
+			sa_pv_fsb_power spfp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and spfp.pws_id = #{pws_id}
+			
+		</if>
+		
+		ORDER BY spfp.fsb_tim
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取指定站点理论发电量列表 -->
+	<select id="getFsbPowerLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			count(spfp.id) count
+		FROM
+			sa_pv_fsb_power spfp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and spfp.pws_id = #{pws_id}
+			
+		</if>
+	</select>
+	
+	<!-- 获得某理论电量信息 -->
+	<select id="getFsbPowerInfById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			spfp.id,
+			spfp.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = spfp.pws_id
+			) pws_nam,
+			spfp.fsb_power,
+			spfp.fsb_amo,
+			spfp.fsb_tim
+		FROM
+			sa_pv_fsb_power spfp
+			
+		WHERE spfp.id = #{id}
+	</select>
+	
+	<!-- 修改理论发电量信息 -->
+	<update id="updateFsbPower" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sa_pv_fsb_power
+		SET pws_id = #{pws_id},
+		fsb_power = #{fsb_power},
+		fsb_amo = #{fsb_amo},
+		fsb_tim = #{fsb_tim},
+		mod_tim = #{mod_tim},
+		mod_use_id = #{mod_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 新增理论发电量信息-->	
+	<insert id="insertFsbPower"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sa_pv_fsb_power
+			(
+				pws_id, 
+				fsb_power, 
+				fsb_amo, 
+				fsb_tim, 
+				crt_tim, 
+				crt_use_id
+			)
+		VALUES
+			( 
+				#{pws_id}, 
+				#{fsb_power}, 
+				#{fsb_amo}, 
+				#{fsb_tim}, 
+				#{crt_tim}, 
+				#{crt_use_id}
+				
+			)
+	</insert>
+	
+	<!-- 删除计划理论量信息-->
+	<delete id="deleteFsbPower" parameterType="java.util.LinkedHashMap" >
+	 
+	 	DELETE
+		FROM
+			sa_pv_fsb_power
+		WHERE
+			id = #{id}
+	 
+	</delete>
+	
+
+	<!-- 理论辐射量 -->
+	<!-- 获取指定站点理论辐射量列表 -->
+	<select id="getFsbHvLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			spfh.id,
+			spfh.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = spfh.pws_id
+			) pws_nam,
+			spfh.fsb_hv,
+			spfh.month,
+			spfh.crt_tim,
+			spfh.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = spfh.crt_use_id
+			) crt_use_nam
+		FROM
+			sa_pv_fsb_hv spfh
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and spfh.pws_id = #{pws_id}
+			
+		</if>
+		
+		ORDER BY spfh.month,sbe.id 
+		LIMIT #{start}, #{everyPage} 
+	</select>
+	
+	<!-- 获取指定站点理论辐射量列表 -->
+	<select id="getFsbHvLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			count(spfh.id) count
+		FROM
+			sa_pv_fsb_hv spfh
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and spfh.pws_id = #{pws_id}
+			
+		</if>
+	</select>
+	
+	<!-- 获得某理论辐射量信息 -->
+	<select id="getFsbHvInfById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			spfh.id,
+			spfh.pws_id,
+			(
+				SELECT
+					sbp.pws_nam
+				FROM
+					sys_bas_pws sbp
+				WHERE
+					sbp.id = spfh.pws_id
+			) pws_nam,
+			spfh.fsb_hv,
+			spfh.month
+		FROM
+			sa_pv_fsb_hv spfh
+			
+		WHERE spfh.id = #{id}
+	</select>
+	
+	<!-- 修改理论辐射量信息 -->
+	<update id="updateFsbHv" parameterType="java.util.LinkedHashMap">
+
+		UPDATE sa_pv_fsb_hv
+		SET pws_id = #{pws_id},
+		fsb_hv = #{fsb_hv},
+		month = #{month},
+		mod_tim = #{mod_tim},
+		mod_use_id = #{mod_use_id}
+		WHERE
+			id = #{id}
+
+	</update>
+	
+	<!-- 新增理论辐射量信息-->	
+	<insert id="insertFsbHv"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sa_pv_fsb_hv
+			(
+				pws_id, 
+				fsb_hv, 
+				month, 
+				crt_tim, 
+				crt_use_id
+			)
+		VALUES
+			( 
+				#{pws_id}, 
+				#{fsb_hv}, 
+				#{month}, 
+				#{crt_tim}, 
+				#{crt_use_id}
+				
+			)
+	</insert>
+	
+	<!-- 删除计划理论辐射量信息-->
+	<delete id="deleteFsbHv" parameterType="java.util.LinkedHashMap" >
+	 
+	 	DELETE
+		FROM
+			sa_pv_fsb_hv
+		WHERE
+			id = #{id}
+	 
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 采集数据查询 -->
+	<!-- 获取指定站点下储能逆变器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPcsHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_pcs_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+		LIMIT #{start}, #{everyPage} 
+		</if>
+		
+	</select>
+	
+	<!-- 获取指定站点下DC/DC设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcdcHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dcdc_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+		LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下变压器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquTransfHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_transf_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电表设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquMeterHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_meter_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电能质量检测装置设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPqsmsHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_pqsms_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下汇流箱设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquBoxHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_box_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下光伏逆变器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPvsHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_pvs_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流配电柜设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcdbHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_ac_db_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下直流配电柜设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcdbHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dc_db_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下环境监测仪设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquEnvHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_env_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>  
+	</select>
+	
+	<!-- 获取指定站点下储能电池设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquBmsHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_bms_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>  
+	</select>
+	
+	<!-- 获取指定站点下解列装置设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDctDevHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dct_dev_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>   
+	</select>
+	
+	<!-- 获取指定站点下线路保护设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquLnePttHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_lne_ptt_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>  
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩充电流程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpOrdHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dc_chp_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>  
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩充电中实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpRelHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dc_chp_rel_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != '' and everyPage!=null and everyPage != ''">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩待机状态信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpStdHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_dc_chp_std_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下电动汽车充电信息实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquChpCarStaHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_chp_car_sta_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下电动汽车充电过程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquChpCarOrdHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_chp_car_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != '' and everyPage!=null and everyPage != ''">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩充电流程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpOrdHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_ac_chp_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩充电中实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpRelHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_ac_chp_rel_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩待机状态信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpStdHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_ac_chp_std_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下的控制器在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquCtlHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_ctl_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	<!-- 获取指定站点下的微网系统在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquMicHistoryInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			ieh.*
+		FROM
+			iscs_equ_mic_sys_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		ORDER BY ieh.crtTim
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+			LIMIT #{start}, #{everyPage} 
+		</if> 
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 获取指定站点下储能逆变器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPcsHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_pcs_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+	</select>
+	
+	<!-- 获取指定站点下DC/DC设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcdcHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dcdc_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+	</select>
+	
+	<!-- 获取指定站点下变压器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquTransfHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_transf_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电表设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquMeterHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_meter_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电能质量检测装置设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPqsmsHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_pqsms_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下汇流箱设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquBoxHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_box_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下光伏逆变器设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquPvsHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_pvs_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流配电柜设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcdbHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_ac_db_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下直流配电柜设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcdbHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dc_db_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下环境监测仪设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquEnvHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_env_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下储能电池设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquBmsHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_bms_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下解列装置设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDctDevHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dct_dev_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下线路保护设备在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquLnePttHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_lne_ptt_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩充电流程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpOrdHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dc_chp_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩充电中实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpRelHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dc_chp_rel_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下直流充电桩待机状态信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquDcChpStdHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_dc_chp_std_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电动汽车充电信息实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquChpCarStaHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_chp_car_sta_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下电动汽车充电过程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquChpCarOrdHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_chp_car_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩充电流程信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpOrdHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_ac_chp_ord_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩充电中实时数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpRelHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_ac_chp_rel_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下交流充电桩待机状态信息数据在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquAcChpStdHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_ac_chp_std_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.pileNo = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	<!-- 获取指定站点下的控制器在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquCtlHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_ctl_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	<!-- 获取指定站点下的微网系统在指定时间范围下的详情列表信息 -->
+	<select id="getIscsEquMicHistoryInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(ieh.id) count
+		FROM
+			iscs_equ_mic_sys_history ieh,sys_bas_equ sbe
+		WHERE
+		
+		ieh.equ_num = sbe.equ_num
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		
+		<if test="equ_num != null and equ_num != ''">
+				AND CONCAT(
+					IFNULL(sbe.equ_nam,''),
+					IFNULL(sbe.equ_num,'')
+				) 
+				LIKE CONCAT('%',#{equ_num},'%')
+			</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND ieh.crtTim < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	<!-- 获取指定站点下的告警信息在指定时间范围下的列表信息 -->
+	<select id="getIscsEquFauInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			sdf.id,
+			sdf.equ_num PID,
+			sbe.equ_nam `name`,
+			sbat.typ_nam type,
+			sdf.fau_level `level`,
+			sdf.fau_num num,
+			(select sdff.`index` from sys_dat_fau sdff where sdff.id = sdf.fau_id) `index`,
+			sdf.fau_info `info`,
+			sdf.fau_flag `flag`,
+			sdf.fau_time time
+		FROM
+			sys_dat_alarm sdf,
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+		
+			sdf.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		
+		<if test="typ_ide != null and typ_ide != ''">
+		
+			AND sbat.typ_ide = #{typ_ide} 
+
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+			AND CONCAT(
+				IFNULL(sbe.equ_nam,''),
+				IFNULL(sbe.equ_num,'')
+			) 
+			LIKE CONCAT('%',#{equ_num},'%')
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time < #{end_tim} ]]>
+			
+		</if>
+		
+		ORDER BY sdf.fau_time
+		<if test="start != null and start != ' ' and everyPage!=null and everyPage != ' '">
+		LIMIT #{start}, #{everyPage} 
+		</if>
+		
+		
+	</select>
+	
+	<!-- 获取指定站点下的告警信息在指定时间范围下的列表信息(分页) -->
+	<select id="getIscsEquFauInfLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			count(sdf.id) count
+		FROM
+			sys_dat_alarm sdf,
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+		
+			sdf.equ_num = sbe.equ_num
+		AND sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		
+		<if test="typ_ide != null and typ_ide != ''">
+		
+			AND sbat.typ_ide = #{typ_ide} 
+
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sbe.pws_id = #{pws_id} 
+
+		</if>
+		
+		<if test="equ_num != null and equ_num != ''">
+			AND CONCAT(
+				IFNULL(sbe.equ_nam,''),
+				IFNULL(sbe.equ_num,'')
+			) 
+			LIKE CONCAT('%',#{equ_num},'%')
+		</if>
+			
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sdf.fau_time < #{end_tim} ]]>
+			
+		</if>
+	</select>
+	
+	
+	
+	
+	<!-- 以下为电站年月报表 -->
+	
+	<!-- 获取电站中月报表信息 -->
+	<!-- <select id="getPwsMonthReportInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.pvs_sun_hour) pvs_sun_hour,
+			SUM(sps.pvs_pek_sun_hour) pvs_pek_sun_hour,
+			SUM(sps.pvs_radiation_tol) pvs_radiation_tol,
+			
+			SUM(sps.power) power,
+			SUM(sps.pow_gen_eff_hours) pow_gen_eff_hours,
+			
+			SUM(sps.phi) phi,
+			SUM(sps.phe) phe,
+			
+			SUM(sps.cha_vol) cha_vol,
+			SUM(sps.cha_tim) cha_tim,
+			SUM(sps.cha_gen_eff_hours) cha_gen_eff_hours,
+			sps.tol_tim
+		FROM
+			sa_pws_sta sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id >= #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select> -->
+	
+	<!-- 获取电站中月报表信息(辐射) -->
+	<select id="getPwsMonthReportInfLstHv" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			
+			SUM(sps.pvs_sun_hour) pvs_sun_hour,
+			SUM(sps.pvs_pek_sun_hour) pvs_pek_sun_hour,
+			SUM(sps.pvs_radiation_tol) pvs_radiation_tol
+			
+			 <!-- 
+			IFNULL(SUM(sps.pvs_sun_hour), '0') pvs_sun_hour, 
+			IFNULL(SUM(sps.pvs_pek_sun_hour), '0') pvs_pek_sun_hour, 
+			IFNULL(SUM(sps.pvs_radiation_tol), '0') pvs_radiation_tol
+			 -->
+		FROM
+			sa_pws_sta_hv sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中月报表信息(光伏逆变器) -->
+	<select id="getPwsMonthReportInfLstPVS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			
+			
+			SUM(sps.power) power,
+			SUM(sps.pow_gen_eff_hours) pow_gen_eff_hours
+			<!-- 
+			IFNULL(SUM(sps.power), '0') power,
+			IFNULL(SUM(sps.pow_gen_eff_hours), '0') pow_gen_eff_hours
+			 -->
+		FROM
+			sa_pws_sta_pvs sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中月报表信息(储能逆变器) -->
+	<select id="getPwsMonthReportInfLstPCS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			 
+			SUM(sps.phi) phi,
+			SUM(sps.phe) phe
+			<!--
+			IFNULL(SUM(sps.phi), '0') phi,
+			IFNULL(SUM(sps.phe), '0') phe
+			 -->
+		FROM
+			sa_pws_sta_pcs sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中月报表信息(充电桩) -->
+	<select id="getPwsMonthReportInfLstChp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			 
+			SUM(sps.cha_vol) cha_vol,
+			SUM(sps.cha_tim) cha_tim,
+			SUM(sps.cha_gen_eff_hours) cha_gen_eff_hours
+			
+			 <!--
+			IFNULL(SUM(sps.cha_vol), '0') cha_vol, 
+			IFNULL(SUM(sps.cha_tim), '0') cha_tim, 
+			IFNULL(SUM(sps.cha_gen_eff_hours), '0') cha_gen_eff_hours
+			  -->
+
+			
+			
+		FROM
+			sa_pws_sta_chp sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中年报表信息 -->
+	<!-- <select id="getPwsYearReportInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sps.pvs_sun_hour) pvs_sun_hour,
+			SUM(sps.pvs_pek_sun_hour) pvs_pek_sun_hour,
+			SUM(sps.pvs_radiation_tol) pvs_radiation_tol,
+			SUM(sps.pvs_power) power,
+			SUM(sps.pvs_equ_hour_use) pow_gen_eff_hours,
+			SUM(sps.pcs_phi) phi,
+			SUM(sps.pcs_phe) phe,
+			SUM(sps.chp_cha_vol) cha_vol,
+			SUM(sps.chp_cha_vol_tim) cha_tim,
+			SUM(sps.chp_cha_eff_hour) cha_gen_eff_hours
+			sps.tol_tim
+		FROM
+			sa_pws_mon_sta sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id >= #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select> -->
+	
+	<!-- 获取电站中年报表信息(辐射) -->
+	<select id="getPwsYearReportInfLstHv" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+	
+			SUM(sps.pvs_sun_hour) pvs_sun_hour,
+			SUM(sps.pvs_pek_sun_hour) pvs_pek_sun_hour,
+			SUM(sps.pvs_radiation_tol) pvs_radiation_tol
+			<!-- 
+			IFNULL(SUM(sps.pvs_sun_hour), '0') pvs_sun_hour, 
+			IFNULL(SUM(sps.pvs_pek_sun_hour), '0') pvs_pek_sun_hour, 
+			IFNULL(SUM(sps.pvs_radiation_tol), '0') pvs_radiation_tol
+			 	 -->
+		FROM
+			sa_pws_mon_sta_hv sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中年报表信息(光伏) -->
+	<select id="getPwsYearReportInfLstPVS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			 
+			SUM(sps.pvs_power) power,
+			SUM(sps.pvs_equ_hour_use) pow_gen_eff_hours
+			 <!--
+			IFNULL(SUM(sps.pvs_power), '0') power,
+			IFNULL(SUM(sps.pvs_equ_hour_use), '0') pow_gen_eff_hours
+			-->
+		FROM
+			sa_pws_mon_sta_pvs sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中年报表信息(储能) -->
+	<select id="getPwsYearReportInfLstPCS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+		
+			SUM(sps.pcs_phi) phi,
+			SUM(sps.pcs_phe) phe
+			<!-- 
+			IFNULL(SUM(sps.pcs_phi), '0') phi,
+			IFNULL(SUM(sps.pcs_phe), '0') phe 
+			  -->
+		FROM
+			sa_pws_mon_sta_pcs sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中年报表信息(充电桩) -->
+	<select id="getPwsYearReportInfLstChp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+		
+			SUM(sps.chp_cha_vol) cha_vol,
+			SUM(sps.chp_cha_vol_tim) cha_tim,
+			SUM(sps.chp_cha_eff_hour) cha_gen_eff_hours
+			<!-- 
+			 IFNULL(SUM(sps.chp_cha_vol), '0') cha_vol,
+			 IFNULL(SUM(sps.chp_cha_vol_tim), '0') cha_tim,
+			 IFNULL(SUM(sps.chp_cha_eff_hour), '0') cha_gen_eff_hours
+			  -->
+		FROM
+			sa_pws_mon_sta_chp sps
+		WHERE 1=1
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			AND sps.pws_id = #{pws_id}
+
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sps.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中电表报表信息 -->
+	<select id="getPwsMeterReportInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			SUM(sms.ratio) ratio,
+			SUM(sms.phi_sta_clk_val) phi_sta_clk_val,
+			SUM(sms.phi_clk_val) phi_clk_val,
+			SUM(sms.phi_power) phi_power,
+			SUM(sms.phe_sta_clk_val) phe_sta_clk_val,
+			SUM(sms.phe_clk_val) phe_clk_val,
+			SUM(sms.phe_power) phe_power,
+			SUM(sms.qhi_sta_clk_val) qhi_sta_clk_val,
+			SUM(sms.qhi_clk_val) qhi_clk_val,
+			SUM(sms.qhi_power) qhi_power,
+			SUM(sms.qhe_sta_clk_val) qhe_sta_clk_val,
+			SUM(sms.qhe_clk_val) qhe_clk_val,
+			SUM(sms.qhe_power) qhe_power,
+			sms.tol_tim
+		FROM
+			sa_meter_sta sms
+		WHERE 1=1
+		
+		<if test="equ_num != null and equ_num != ''">
+		
+			and sms.equ_num = #{equ_num}
+			
+		</if>
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND sms.tol_tim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND sms.tol_tim < #{end_tim} ]]>
+			
+		</if>
+			
+		ORDER BY sms.tol_tim 
+		
+	</select>
+	
+	<!-- 获取电站中电表信息 -->
+	<select id="getPwsMeterInfLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			sbe.id,
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbat.typ_ide = 'DB'
+		
+		<if test="meter_typ != null and meter_typ != ''">
+		
+			and sbe.meter_typ = #{meter_typ}
+			
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+		
+			and sbe.pws_id = #{pws_id}
+			
+		</if>
+		
+		<if test="app_mod != null and app_mod != ''">
+		
+			and sba.id = #{app_mod}
+			
+		</if>
+		
+		<if test="sta_rtd_pow != null and sta_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow >= #{sta_rtd_pow} ]]>
+
+		</if>
+		
+		<if test="end_rtd_pow != null and end_rtd_pow != ''">
+		
+			<![CDATA[ AND sba.rtd_pow <= #{end_rtd_pow} ]]>
+			
+		</if>
+		
+		ORDER BY sbe.equ_sor,sbe.id  
+		
+	</select>
+	
+
+		
+</mapper>

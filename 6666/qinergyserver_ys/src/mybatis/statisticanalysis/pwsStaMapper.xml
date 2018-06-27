@@ -1,0 +1,1282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pwsSta">
+
+	
+	<!-- 根据公司id查询地区-->
+	<select id="getPwsByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+					
+		SELECT pws.id,
+			pws.com_id,pws.pws_nam,pws.pro_id,pws.cit_id,
+			(SELECT br.reg_nam	FROM sys_bas_reg br	WHERE br.id = pws.pro_id) pro_nam,
+			(SELECT	br.reg_nam	FROM sys_bas_reg br	WHERE	br.id = pws.cit_id) cit_nam
+		FROM
+			sys_bas_pws pws,
+			sys_bas_com com
+		
+		WHERE
+			com.id = pws.com_id
+		
+		AND pws.del_flag = 0
+		AND pws.com_id = #{com_id}
+		GROUP BY pws.pro_id,pws.cit_id
+	</select>	
+
+	
+	<!-- 根据地区查询站点-->
+	<select id="getStaByPws" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				pws.id,
+				pws.pws_nam
+			FROM
+				sys_bas_pws pws,
+				sys_bas_com sbc
+			WHERE
+				pws.com_id = sbc.id
+			AND pws.del_flag = 0
+			AND pws.pro_id = #{pro_id}
+			AND pws.cit_id = #{cit_id}
+			AND pws.com_id =#{com_id}
+			GROUP BY
+				pws.pws_nam
+	</select>	
+	
+	<!-- 根据站点查询信息 年-->
+	<!-- <select id="getSatInfoByStaId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sps.tol_tim,
+				pws.pws_nam,
+				
+				sum(sps.pow_gen_eff_hours) AS pow_gen_eff_hours,
+				sum(sps.power) AS power,
+				
+				sum(sps.cha_vol) AS cha_vol,
+				sum(sps.cha_gen_eff_hours) AS cha_gen_eff_hours,
+				
+				sum(sps.loss) AS loss,
+				
+				sum(sps.fal_equ_num) AS fal_equ_num,
+				
+				sum(sps.ene_stg_rvn) AS ene_stg_rvn
+			FROM
+				sa_pws_sta sps,
+				sys_bas_pws pws
+			WHERE
+				pws.id = sps.pws_id
+				
+			AND sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim <= #{end_tim} ]]>
+				
+			</if>
+			
+	</select> -->
+	
+	<!-- 根据站点查询信息 年(光伏)-->
+	<select id="getSatInfoByStaIdPVS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sum(sps.pow_gen_eff_hours) AS pow_gen_eff_hours,
+				sum(sps.power) AS power
+				
+			FROM
+				sa_pws_sta_pvs sps
+			WHERE
+				sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+	</select>
+	
+	
+	<!-- 根据站点查询信息 年(充电桩)-->
+	<select id="getSatInfoByStaIdChp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sum(sps.cha_vol) AS cha_vol,
+				sum(sps.cha_gen_eff_hours) AS cha_gen_eff_hours
+			FROM
+				sa_pws_sta_chp sps
+			WHERE
+				sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+	</select>
+	
+	
+	<!-- 根据站点查询信息 年(耗损)-->
+	<select id="getSatInfoByStaIdLoss" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sum(sps.loss) AS loss
+				
+			FROM
+				sa_pws_sta_loss sps
+			WHERE
+				sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+	</select>
+	
+	<!-- 根据站点查询信息 年(故障)-->
+	<select id="getSatInfoByStaIdFau" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sum(sps.fal_equ_num) AS fal_equ_num
+				
+			FROM
+				sa_pws_sta_fau sps
+			WHERE
+				sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+	</select>
+	
+	
+	<!-- 根据站点查询信息 年(储能)-->
+	<select id="getSatInfoByStaIdPCS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+						
+			SELECT
+				sum(sps.ene_stg_rvn) AS ene_stg_rvn
+			FROM
+				sa_pws_sta_pcs sps
+			WHERE
+				sps.pws_id = #{pws_id}
+			
+			<if test="sta_tim != null and sta_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim >= #{sta_tim} ]]>
+
+			</if>
+			
+			<if test="end_tim != null and end_tim != ''">
+			
+				<![CDATA[ AND sps.tol_tim < #{end_tim} ]]>
+				
+			</if>
+			
+	</select>
+	
+	<!-- 根据站点查询信息 月-->
+	<!-- <select id="getSatInfoByStaIdMonth" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				MONTH,DAY,
+				a.pws_nam,
+				sum(a.power) AS 'power',
+				sum(a.cha_vol) AS 'cha_vol',
+				sum(a.pow_gen_eff_hours) AS 'pow_gen_eff_hours',
+				sum(a.cha_gen_eff_hours) AS 'cha_gen_eff_hours',
+				sum(a.loss) AS 'loss',
+				sum(a.fal_equ_num) As 'fal_equ_num',
+				sum(a.ene_stg_rvn) AS 'ene_stg_rvn'
+			FROM
+				(
+					SELECT
+						pws.pws_nam,
+						sps.power,
+						sps.cha_vol,
+						sps.pow_gen_eff_hours,
+						sps.cha_gen_eff_hours,
+						sps.loss,
+						sps.fal_equ_num,
+						sps.ene_stg_rvn,
+						DATE_FORMAT(sps.tol_tim, '%Y-%m') MONTH,
+			DATE_FORMAT(sps.tol_tim, '%d') DAY
+					FROM
+						sa_pws_sta sps,
+						sys_bas_pws pws
+					WHERE
+						pws.id = sps.pws_id
+					AND DATE_FORMAT(sps.tol_tim, '%Y-%m') = #{year}
+					AND sps.pws_id = #{pws_id}
+				) a
+			GROUP BY
+				MONTH,DAY
+	</select> -->
+
+
+
+<!-- 计划发电量-->
+	<select id="getPlanPower" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+			select pws.pws_nam,spp.plan_tim,spp.plan_power
+			from sa_pv_plan_power spp,sys_bas_pws pws
+			where pws.id = spp.pws_id
+			and spp.pws_id = #{pws_id}	and DATE_FORMAT(spp.plan_tim, '%Y') = #{year}									
+	</select>
+
+
+
+	<!-- 实际发电量-->
+	<select id="getMonthPower" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+			select 
+				pws.pws_nam,
+				pms.tol_tim,
+				pms.pvs_power
+			from 
+				sa_pws_mon_sta_pvs pms, 
+				sys_bas_pws pws
+			where pws.id = pms.pws_id
+				and pms.pws_id = #{pws_id}	
+				and DATE_FORMAT(pms.tol_tim, '%Y') = #{year}
+								
+	</select>
+
+
+	<!-- 计划、实际-->
+	<select id="getPowerNew" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+			select tk.pws_id,tl.pws_nam,tg.tol_tim,tg.pvs_power,tk.plan_tim,tk.plan_power from 
+			(select tt.pws_id pws_id,tt.tol_tim tol_tim,tt.pvs_power pvs_power from sa_pws_mon_sta_pvs tt where tt.pws_id = #{pws_id} and DATE_FORMAT(tt.tol_tim,'%Y') = #{year}) tg
+			RIGHT JOIN
+			(select ts.pws_id pws_id,ts.plan_tim plan_tim,ts.plan_power plan_power from sa_pv_plan_power ts where ts.pws_id = #{pws_id} and DATE_FORMAT(ts.plan_tim,'%Y') = #{year}) tk
+			on 
+			tg.tol_tim= tk.plan_tim
+			LEFT join sys_bas_pws  tl
+			on tk.pws_id= tl.id			
+	</select>
+	
+	<!-- 获取计划发电量-->
+	<select id="getPowerByPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			sppp.plan_power
+		FROM
+			sa_pv_plan_power sppp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND sppp.pws_id =#{pws_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sppp.plan_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sppp.plan_tim < #{endTim} ]]>
+
+		</if> 
+		
+		ORDER BY sppp.plan_tim
+		
+	</select>
+	
+	<!-- 获取实际发电量-->
+	<select id="getPowerByReal" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			spms.pvs_power
+		FROM
+			sa_pws_mon_sta_pvs spms
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND spms.pws_id =#{pws_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND spms.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND spms.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		ORDER BY spms.tol_tim	
+	</select>
+	
+	<!-- 获取计划充放电量-->
+	<select id="getPhiPheByPlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			spppp.plan_phi,
+			spppp.plan_phe
+		FROM
+			sa_pc_plan_phi_phe spppp
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND spppp.pws_id =#{pws_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND spppp.plan_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND spppp.plan_tim < #{endTim} ]]>
+
+		</if> 
+		
+		ORDER BY spppp.plan_tim
+		
+	</select>
+	
+	<!-- 获取实际充放电量-->
+	<select id="getPhiPheByReal" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+		SELECT
+			spms.pcs_phi,
+			spms.pcs_phe
+		FROM
+			sa_pws_mon_sta_pcs spms
+		WHERE 1=1 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND spms.pws_id =#{pws_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND spms.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND spms.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		ORDER BY spms.tol_tim	
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- 故障数量 前5-->
+	<select id="getFalEquNumTop" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+			SELECT
+				IFNULL(SUM(spsf.fal_equ_num),0) fal_equ_num,
+				pws.id,
+				pws.pws_nam
+			FROM
+				sa_pws_sta_fau spsf RIGHT JOIN
+				sys_bas_pws pws ON
+				pws.id = spsf.pws_id
+			where pws.del_flag = 0
+				AND spsf.pws_id IN (${pws_id}) 
+				AND DATE_FORMAT(spsf.tol_tim, "%Y") = #{year}
+			GROUP BY pws.id
+			ORDER BY
+				spsf.fal_equ_num DESC
+			LIMIT 5
+	</select>
+	
+	<!-- 故障数量 后5-->
+	<select id="getFalEquNumBoottom" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT
+				IFNULL(SUM(spsf.fal_equ_num),0) fal_equ_num,
+				pws.id,
+				pws.pws_nam
+			FROM
+				sa_pws_sta_fau spsf RIGHT JOIN
+				sys_bas_pws pws ON
+				pws.id = spsf.pws_id
+			where pws.del_flag = 0
+				AND spsf.pws_id IN (${pws_id}) 
+				AND DATE_FORMAT(spsf.tol_tim, "%Y") = #{year}
+			GROUP BY pws.id
+			ORDER BY
+				spsf.fal_equ_num ASC
+			LIMIT 5
+	</select>
+	
+	
+	
+	<!-- 排行榜（业主）-->	
+	<!-- 发电量排行榜 TOP5-->
+	<select id="getPowerRankByComTop5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.power),0) power,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			power DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 发电量排行榜 BOTTOM5-->
+	<select id="getPowerRankByComBottom5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.power),0) power,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			power
+		LIMIT 5
+	</select>
+	
+	<!-- 故障排行榜 TOP5-->
+	<select id="getFaultRankByComTop5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.fal_equ_num),0) fal_equ_num,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_fau sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			fal_equ_num DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 故障排行榜 BOTTOM5-->
+	<select id="getFaultRankByComBottom5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.fal_equ_num),0) fal_equ_num,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_fau sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			fal_equ_num
+		LIMIT 5
+	</select>
+	
+	
+	<!-- 发电有效小时数排行榜 TOP5-->
+	<select id="getPowGenEffHourRankByComTop5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.pow_gen_eff_hours),0) pow_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			pow_gen_eff_hours DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 发电有效小时数排行榜 BOTTOM5-->
+	<select id="getPowGenEffHourRankByComBottom5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.pow_gen_eff_hours),0) pow_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			pow_gen_eff_hours
+		LIMIT 5
+	</select>
+	
+	<!-- 充电量排行榜 TOP5-->
+	<select id="getChaVolRankByComTop5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_vol),0) cha_vol,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0 
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_vol DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 充电量排行榜 BOTTOM5-->
+	<select id="getChaVolRankByComBottom5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_vol),0) cha_vol,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_vol
+		LIMIT 5
+	</select>
+	
+	<!-- 充电有效小时数排行榜 TOP5-->
+	<select id="getChaGenEffHourRankByComTop5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_gen_eff_hours),0) cha_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_gen_eff_hours DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 充电有效小时数排行榜 BOTTOM5-->
+	<select id="getChaGenEffHourRankByComBottom5Owner" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_gen_eff_hours),0) cha_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+			LEFT JOIN sys_bas_com sbc ON pws.com_id = sbc.id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="com_id != null and com_id != '' ">
+
+			AND sbc.id = #{com_id} 
+
+		</if> 
+		<if test="com_fat_id != null and com_fat_id != '' ">
+
+			AND sbc.com_fat_id = #{com_fat_id} 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_gen_eff_hours
+		LIMIT 5
+	</select>
+	
+	
+	<!-- 排行榜（运维公司）-->	
+	<!-- 发电量排行榜 TOP5-->
+	<select id="getPowerRankByComTop5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.power),0) power,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN
+			sys_bas_pws pws ON
+		pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			power DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 发电量排行榜 BOTTOM5-->
+	<select id="getPowerRankByComBottom5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.power),0) power,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			power
+		LIMIT 5
+	</select>
+	
+	<!-- 故障排行榜 TOP5-->
+	<select id="getFaultRankByComTop5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.fal_equ_num),0) fal_equ_num,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_fau sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			fal_equ_num DESC,id DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 故障排行榜 BOTTOM5-->
+	<select id="getFaultRankByComBottom5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+	
+		SELECT
+			IFNULL(SUM(sps.fal_equ_num),0) fal_equ_num,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_fau sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id})  
+
+		</if> 
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			fal_equ_num,id
+		LIMIT 5
+	</select>
+	
+	
+	<!-- 发电有效小时数排行榜 TOP5-->
+	<select id="getPowGenEffHourRankByComTop5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.pow_gen_eff_hours),0) pow_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			pow_gen_eff_hours DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 发电有效小时数排行榜 BOTTOM5-->
+	<select id="getPowGenEffHourRankByComBottom5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.pow_gen_eff_hours),0) pow_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_pvs sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			pow_gen_eff_hours
+		LIMIT 5
+	</select>
+	
+	<!-- 充电量排行榜 TOP5-->
+	<select id="getChaVolRankByComTop5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_vol),0) cha_vol,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_vol DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 充电量排行榜 BOTTOM5-->
+	<select id="getChaVolRankByComBottom5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.cha_vol),0) cha_vol,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_vol
+		LIMIT 5
+	</select>
+	
+	<!-- 充电有效小时数排行榜 TOP5-->
+	<select id="getChaGenEffHourRankByComTop5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			IFNULL(SUM(sps.cha_gen_eff_hours),0) cha_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_gen_eff_hours DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 充电有效小时数排行榜 BOTTOM5-->
+	<select id="getChaGenEffHourRankByComBottom5Opm" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			IFNULL(SUM(sps.cha_gen_eff_hours),0) cha_gen_eff_hours,
+			pws.id,
+			pws.pws_nam
+		FROM
+			sa_pws_sta_chp sps RIGHT JOIN sys_bas_pws pws ON pws.id = sps.pws_id
+		WHERE pws.del_flag = 0
+		
+		<if test="pws_id != null and pws_id != '' ">
+
+			AND pws.id IN (${pws_id}) 
+
+		</if> 
+		
+		<if test="staTim != null and staTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim >= #{staTim} ]]>
+
+		</if> 
+		
+		<if test="endTim != null and endTim != '' ">
+
+			<![CDATA[ AND sps.tol_tim < #{endTim} ]]>
+
+		</if> 
+		
+		GROUP BY pws.id
+		ORDER BY
+			cha_gen_eff_hours
+		LIMIT 5
+	</select>
+
+</mapper>

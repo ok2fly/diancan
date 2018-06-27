@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="knowledgeBase">
+	<insert id="insertKnw" parameterType="java.util.Map">
+		insert into
+		sys_dat_knw_bas
+		(knw_typ_id,knw_nam,knw_dec,crt_use_id,crt_tim,del_flag)
+		values(#{knw_typ_id},#{knw_nam},#{knw_dec},#{use_id},#{crt_tim},0)
+	</insert>
+	<update id="updateKnw">
+		update sys_dat_knw_bas set
+		knw_typ_id=#{knw_typ_id},knw_nam=#{knw_nam},knw_dec=#{knw_dec},mod_use_id=#{use_id},mod_tim=#{mod_tim}
+		where id=#{knw_id}
+	</update>
+	<insert id="createFile">
+		insert into sys_dat_knw_bas_fil
+		(knw_bas_id,fil_nam,fil_url,crt_use_id,crt_tim,remark,del_flag)
+		values(#{knw_bas_id},#{fil_nam},#{fil_url},#{use_id},#{crt_tim},#{remark},#{flag})
+
+	</insert>
+	<select id="selectCreatedKnw" resultType="java.util.Map">
+		select id from
+		sys_dat_knw_bas where crt_tim=#{crt_tim} and
+		knw_nam=#{knw_nam} and
+		knw_dec=#{knw_dec}
+	</select>
+	<select id="getFileInfoById" resultType="java.util.Map">
+		select
+		fil_nam,fil_url,del_flag from sys_dat_knw_bas_fil where id=#{id}
+	</select>
+	<update id="removeFilebyId">
+		update sys_dat_knw_bas_fil set del_flag=1 where
+		id=#{id}
+	</update>
+	<update id="removeKnw">
+		update sys_dat_knw_bas set del_flag=1 where id=#{id};
+	</update>
+
+	<update id="removeFileByKnwID">
+		update sys_dat_knw_bas_fil set flag=1 where
+		knw_bas_id =#{id};
+	</update>
+	<insert id="createKnwType">
+		INSERT INTO sys_bas_knw_bas_typ
+		(knw_typ_nam,crt_use_id,
+		crt_tim, remark,del_flag)
+		VALUES
+		(#{knw_typ_nam},#{crt_use_id},#{crt_tim},#{remark},0)
+	</insert>
+	
+	<select id="getKnwTypeByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select *
+			from sys_bas_knw_bas_typ
+			where knw_typ_nam = #{knw_typ_nam}
+			and del_flag= 0
+	
+	</select>
+	
+	
+	
+	
+	
+	
+	<select id="getKnwType" resultType="java.util.Map">
+		select id
+		,knw_typ_nam,crt_tim,crt_use_id,remark from sys_bas_knw_bas_typ
+		where
+		del_flag=0
+		<if test="id !=null and id != ''">
+			AND
+			id=#{id}
+		</if>
+	</select>
+	
+	<update id="updateTypeInfo">
+		update sys_bas_knw_bas_typ 
+		set knw_typ_nam=#{knw_typ_nam},
+		remark=#{remark},
+		mod_use_id=#{mod_use_id},
+		mod_tim=#{mod_tim}
+		where id =#{id};
+	</update>
+	
+	<select id="getKnwByType" resultType="java.util.Map">
+		SELECT
+		t.id,
+		t.knw_nam,
+		t.knw_dec,
+		t.crt_tim,
+		t.remark,
+		t.mod_tim,
+		p.use_nam
+		FROM
+		sys_dat_knw_bas t
+		Left JOIN use_use p ON t.crt_use_id = p.id
+		WHERE
+		<if test="id!=0">
+			t.knw_typ_id = #{id}
+			AND
+		</if>
+		t.del_flag = 0
+		<if test="info !=null and info != ''">
+			AND
+			t.knw_nam like #{info}
+		</if>
+		
+		LIMIT #{start},#{everyPage}
+
+	</select>
+	<select id="getKnwByTypeCou" resultType="java.util.Map">
+		SELECT COUNT(t.id) cou,
+		t.id,
+		t.knw_nam,
+		t.knw_dec,
+		t.crt_tim,
+		t.remark,
+		t.mod_tim,
+		p.use_nam
+		FROM
+		sys_dat_knw_bas t
+		Left JOIN use_use p ON t.crt_use_id = p.id
+		WHERE
+		<if test="id!=0">
+			t.knw_typ_id = #{id}
+			AND
+		</if>
+		t.del_flag = 0
+		<if test="info !=null and info != ''">
+			AND
+			t.knw_nam like #{info}
+		</if>
+	</select>
+	
+	<select id="getKnwById" resultType="java.util.Map">
+		SELECT
+		t.id,
+		t.knw_nam,
+		t.knw_dec,
+		t.crt_tim,
+		t.remark,
+		t.mod_tim,
+		p.use_nam,
+		t.knw_typ_id
+		FROM
+		sys_dat_knw_bas t
+		Left JOIN use_use p ON t.crt_use_id = p.id
+		WHERE
+		t.id = #{id}
+		AND
+		t.del_flag = 0
+
+	</select>
+
+	<select id="getFileInfoByKnw" resultType="java.util.Map">
+		SELECT
+		t.id,
+		t.knw_bas_id,
+		t.fil_nam,
+		t.fil_url,
+		t.crt_tim,
+		t.mod_tim,
+		t.remark,
+		p.use_nam
+		FROM
+		sys_dat_knw_bas_fil t
+		LEFT JOIN
+		use_use p
+		on p.id=t.crt_use_id
+		WHERE
+		t.del_flag = 0
+		AND
+		t.knw_bas_id=#{id}
+	</select>
+	<select id="getKnwCountByTypeId" resultType="Integer">
+		select count(id)
+		from sys_dat_knw_bas where knw_typ_id= #{id} and
+		del_flag=0
+	</select>
+	<update id="removeKnwType">
+		update sys_bas_knw_bas_typ set del_flag=1 where
+		id=#{id}
+	</update>
+
+
+	<!-- 一下为安全管理部分 -->
+	<insert id="addSct">
+		insert into
+		sys_dat_sct
+		(sct_typ_id,sct_nam,sct_dec,crt_use_id,crt_tim,remark,del_flag)
+		values(#{sct_typ_id},#{sct_nam},#{sct_dec},#{use_id},#{crt_tim},#{remark},0)
+	</insert>
+	<insert id="addSctFile">
+		insert into sys_dat_sct_fil
+		(sct_id,fil_nam,fil_url,crt_use_id,crt_tim,remark,del_flag)
+		values(#{sct_id},#{fil_nam},#{fil_url},#{use_id},#{crt_tim},#{remark},#{flag});
+	</insert>
+	<select id="getSctIdByInfo" resultType="java.util.Map">
+		<!-- select id from
+		sys_dat_sct where crt_tim=#{crt_tim} and
+		sct_nam=#{sct_nam} and
+		sct_dec=#{sct_dec} and 
+		del_flag='0' -->
+				
+		select * from sys_dat_sct 
+		where sct_typ_id = #{sct_typ_id}
+		and crt_use_id = #{use_id} 
+		and del_flag = 0
+		ORDER BY crt_tim DESC
+		limit 1
+		
+	</select>
+	<select id="getSctFileInfoById" resultType="java.util.Map">
+		select
+		fil_nam,fil_url,del_flag from sys_dat_sct_fil where id = #{id} and del_flag='0'
+	</select>
+	<update id="removeFileInSct">
+		update sys_dat_sct_fil set del_flag=1 where id=#{id}
+	</update>
+	<update id="updateSctInfo">
+		update sys_dat_sct set
+		sct_typ_id=#{sct_typ_id},sct_nam=#{sct_nam},sct_dec=#{sct_dec},mod_use_id=#{use_id},mod_tim=#{mod_tim}
+		where id=#{id} 
+	</update>
+	<update id="ReomveSctInfoById">
+		update sys_dat_sct set del_flag=1 where id=#{id}
+	</update>
+	<select id="getSctCountBySctId" resultType="Integer">
+		select COUNT(id) from
+		sys_dat_sct_fil where sct_id=#{sctId} and del_flag=0
+	</select>
+	<update id="removeFileBySctId">
+		update sys_dat_sct_fil set del_flag=1 where
+		sct_id=#{id}
+	</update>
+	<insert id="insertSctType">
+		INSERT INTO sys_bas_sct_typ (sct_typ_nam,crt_use_id,
+		crt_tim, remark,del_flag)
+		VALUES
+		(#{sct_typ_nam},#{crt_use_id},#{crt_tim},#{remark},0)
+	</insert>
+	
+	<select id="getSctTypeByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			select *
+			from sys_bas_sct_typ 
+			where sct_typ_nam = #{sct_typ_nam}
+			and del_flag= 0
+	
+	</select>
+	
+	
+	<select id="getSctType" resultType="java.util.Map">
+		select id,sct_typ_nam,crt_tim,remark from sys_bas_sct_typ where del_flag=0
+		<if test="id!=null">
+			AND
+			id=#{id}
+		</if>
+	</select>
+	<select id="getSctByTypeOrName" resultType="java.util.Map">
+		SELECT
+		t.id,
+		t.sct_nam,
+		t.sct_dec,
+		t.crt_tim,
+		t.remark,
+		t.mod_tim,
+		p.use_nam,
+		(select sbst.id from sys_bas_sct_typ sbst where sbst.id = t.sct_typ_id) typeId,
+		(select sbst.sct_typ_nam from sys_bas_sct_typ sbst where sbst.id = t.sct_typ_id) typeName
+		FROM
+		sys_dat_sct t
+		Left JOIN use_use p ON t.crt_use_id = p.id
+		WHERE t.del_flag = 0
+		<if test="typeId !=null and typeId != ''">
+		AND	t.sct_typ_id = #{typeId}
+		</if>
+		<if test="info !=null and info != ''">
+		AND
+			t.sct_nam like #{info}
+		</if>
+		<if test="sctId !=null and sctId != ''">
+		AND
+			t.id=#{sctId}
+		</if>
+		order by t.crt_tim
+		LIMIT #{start},#{everyPage}
+	</select>
+	<select id="getSctByTypeOrNameCou" resultType="java.util.Map">
+		SELECT count(t.id) cou,
+		t.id,
+		t.sct_nam,
+		t.sct_dec,
+		t.crt_tim,
+		t.remark,
+		t.mod_tim,
+		p.use_nam,
+		(select sbst.id from sys_bas_sct_typ sbst where sbst.id = t.sct_typ_id) typeId,
+		(select sbst.sct_typ_nam from sys_bas_sct_typ sbst where sbst.id = t.sct_typ_id) typeName
+		FROM
+		sys_dat_sct t
+		Left JOIN use_use p ON t.crt_use_id = p.id
+		WHERE t.del_flag = 0
+		<if test="typeId !=null and typeId != ''">
+		AND	t.sct_typ_id = #{typeId}
+		</if>
+		<if test="info !=null and info != ''">
+		AND
+			t.sct_nam like #{info}
+		</if>
+		<if test="sctId !=null and sctId != ''">
+		AND
+			t.id=#{sctId}
+		</if>
+	</select>
+
+
+	<select id="getFileInfoBySctId" resultType="java.util.Map">
+		SELECT
+		t.id,
+		t.sct_id,
+		t.fil_nam,
+		t.fil_url,
+		t.crt_tim,
+		t.mod_tim,
+		t.remark,
+		p.use_nam
+		FROM
+		sys_dat_sct_fil t
+		LEFT JOIN
+		use_use p
+		on p.id=t.crt_use_id
+		WHERE
+		t.del_flag = 0
+		<if test="sct_id !=null and sct_id != ''">
+			AND
+			t.sct_id=#{sct_id}
+		</if>
+	</select>
+	<update id="removeSctType">
+		update sys_bas_sct_typ set del_flag=1 where id=#{id}
+	</update>
+	<select id="getSctCount" resultType="Integer">
+		select COUNT(id) as count
+		from sys_dat_sct where sct_typ_id=#{id} and
+		del_flag=0
+	</select>
+	<update id="updateSctTypeInfo">
+		update sys_bas_sct_typ set
+		sct_typ_nam=#{sct_typ_nam},
+		mod_use_id=#{mod_use_id},
+		mod_tim=#{mod_tim},
+		remark=#{remark}
+		where id=#{id} and del_flag=0
+	</update>
+
+</mapper>

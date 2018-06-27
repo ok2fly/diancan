@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="acchp">
+
+	<!-- 综合监控  交流充电桩 -->
+
+	<!-- 交流充电桩-详情,待机数据 （获取最新那条数据）-->
+	<select id="getIscsAcchpStdInfByEquNumTopOne" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			iep.stat,
+			iep.healthStat,
+			iep.gunStat,
+			iep.cumTime,
+			iep.cumPower,
+			iep.cumMoney,
+			iep.validTime
+		FROM
+			iscs_equ_ac_chp_std iep
+		WHERE iep.pileNo = #{equ_num}
+		<!-- ORDER BY iep.crtTim DESC LIMIT 1 -->
+		
+			AND TO_DAYS(iep.crtTim) =  TO_DAYS(NOW())
+		ORDER BY iep.crtTim DESC LIMIT 1
+		
+		
+		
+	</select>
+	
+	<!-- 交流充电桩-详情,待机数据 （获取最新那条数据）-->
+	<select id="getIscsAcchpRelInfByEquNumTopOne" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			iep.ua,
+			iep.ia,
+			iep.power,
+			iep.time,
+			iep.money,
+			iep.tolPower
+		FROM
+			iscs_equ_ac_chp_rel iep
+		WHERE iep.pileNo = #{equ_num}
+		<!-- ORDER BY iep.crtTim DESC LIMIT 1 -->
+		
+			AND TO_DAYS(iep.crtTim) =  TO_DAYS(NOW())
+		ORDER BY iep.crtTim DESC LIMIT 1
+		
+	</select>
+	
+	<!-- 交流充电桩-详情 （获取交流充电桩设备的电流、电压曲线（当天的）） -->
+	<select id="getIscsAcchpRelUICurves"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.ua,
+			iep.ia,
+			iep.crtTim
+		FROM
+			iscs_equ_ac_chp_rel iep
+		WHERE pileNo = #{equ_num} 
+		
+		<if test="sta_tim != null and sta_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+
+		</if>
+		
+		<if test="end_tim != null and end_tim != ''">
+		
+			<![CDATA[ AND iep.crtTim < #{end_tim} ]]>
+			
+		</if>
+		
+	</select>
+	
+	
+	<!-- 交流充电桩-详情 （获取光伏设备的直/交流的电流、电压、功率曲线（当天的））(使用订单信息获取) -->
+	<select id="getIscsAcchpRelUICurvesHistory"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			iep.ua,
+			iep.ia,
+			iep.crtTim tol_tim
+		FROM
+			iscs_equ_ac_chp_rel_history iep
+		WHERE 1=1 
+		
+		<if test="orderNo != null and orderNo != ''">
+			
+			and iep.orderNo = #{orderNo}
+
+		</if>
+		
+		ORDER BY iep.crtTim
+		
+	</select>
+	
+	<!-- 交流充电桩-详情 （获取订单信息） -->
+	<select id="getIscsAcchpOrdInfLst"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			iep.orderNo,
+			iep.beginTime,
+			iep.endTime,
+			iep.time,
+			iep.power,
+			iep.money,
+			iep.endReason,
+			iep.payWay,
+			iep.crtTim tol_tim
+		FROM
+		
+			iscs_equ_ac_chp_ord_history iep
+			
+		WHERE iep.pileNo = #{equ_num}  
+		
+		<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+		
+		<![CDATA[ AND iep.crtTim < #{end_tim}]]>
+		
+		ORDER BY iep.crtTim
+		
+		LIMIT #{start},#{everyPage}
+	</select>
+	
+	<!-- 交流充电桩-详情 （获取订单信息）（分页） -->
+	<select id="getIscsAcchpOrdInfLstCou"  parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		
+		SELECT
+			COUNT(iep.id) cou
+		FROM
+		
+			iscs_equ_ac_chp_ord_history iep
+			
+		WHERE iep.pileNo = #{equ_num}  
+		
+		<![CDATA[ AND iep.crtTim >= #{sta_tim} ]]>
+		
+		<![CDATA[ AND iep.crtTim < #{end_tim}]]>
+	</select>
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getEquLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+		ORDER BY sbe.equ_sor,sbe.id 
+
+	</select>
+	
+	<!-- 获取交流充电桩设备的最新实时数据(列表页中)-->
+	<select id="getAcchpInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			iep.id,
+			iep.cumTime,
+			iep.cumPower,
+			iep.cumMoney,
+			iep.validTime,
+			iep.runTime,
+			iep.stat
+		FROM
+			iscs_equ_ac_chp_std iep
+		WHERE
+			iep.pileNo = #{equ_num}
+			
+		ORDER BY
+			iep.crtTim DESC
+		LIMIT 1
+	</select>
+	
+	
+</mapper>

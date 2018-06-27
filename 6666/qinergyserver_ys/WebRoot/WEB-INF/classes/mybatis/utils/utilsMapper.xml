@@ -1,0 +1,2837 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="utils">
+	<!-- 工具类信息查询数据维护 start -->
+	
+	<!-- 本接口为使用userId获取公司信息接口 -->
+	<select id="getComInfByUseId" parameterType="com.qinergy.dto.system.UserDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			use_use uu,
+			sys_bas_com sbc
+		WHERE
+			uu.com_id = sbc.id
+		AND uu.id = #{id}
+
+	</select>
+	<!-- 本接口为获取平台中所有指定公司下的自己公司的信息接口 -->
+	<select id="getOrgFatComInfByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.del_flag=0
+		
+		<if test="com_fat_id != null and com_fat_id != ''">
+		
+			AND sbc.com_fat_id = #{com_fat_id}
+			
+		</if>
+		<if test="com_lev != null and com_lev != ''">
+		
+			AND sbc.com_lev = #{com_lev}
+			
+		</if>
+		<if test="com_rol != null and com_rol != ''">
+		
+			AND sbc.com_rol = #{com_rol}
+			
+		</if>
+
+	</select>
+	<!-- 本接口为使用公司ID获取公司信息接口 -->
+	<select id="getComInfByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.id = #{id}
+			and sbc.del_flag=0
+
+	</select>
+	
+	
+	<!-- 本接口为使用公司ID获取其下所有子公司信息接口 -->
+	<select id="getFatComInfByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			<![CDATA[ and sbc.com_lev <> 1 ]]>
+			
+			<if test="com_rol != null and com_rol != ''">
+				
+				AND sbc.com_rol = #{com_rol}
+	
+			</if>
+			and sbc.del_flag=0
+	</select>
+	
+	<!-- 本接口为使用公司ID获取其下所有子公司信息接口 -->
+	<select id="getFatComInfByComIdAll" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			<![CDATA[ and sbc.com_lev <> 1 ]]>
+			and sbc.del_flag=0
+	</select>
+	
+	<!-- 本接口为使用公司ID获取其下所有子公司信息接口 -->
+	<select id="getAllFatComInfByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			<![CDATA[ and sbc.com_lev <> 1 ]]>
+			and sbc.del_flag=0
+	</select>
+	
+	<!-- 本接口为使用子公司ID获取其下所有电站接口 -->
+	<select id="getPwsLstByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.id = #{id}
+
+	</select>
+	
+	
+	
+	
+	<!-- 使用公司名称获取公司信息 -->
+	<select id="getComInfByComNam" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_nam = #{com_nam}
+
+	</select>
+	
+	<!-- 本接口为获取平台中所有客户公司的信息接口 -->
+	<select id="getOwnerComLstByComLevComRol" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_lev = 2
+		AND sbc.com_rol = 1
+		and sbc.del_flag=0
+
+	</select>
+	
+	<!-- 本接口为获取平台中所有1级运维公司的信息接口 -->
+	<select id="getOptComLstByComLevComRol" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_lev = 1
+		<![CDATA[ AND sbc.com_rol <> 1 ]]>
+		and sbc.del_flag=0
+
+	</select>
+	
+	<!-- 本接口为获取平台中所有运维公司的信息接口 -->
+	<select id="getComLstByComLevComRol" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_lev = 1
+		and sbc.del_flag=0
+
+	</select>
+	
+		
+	<!-- 本接口为获取平台中所有指定公司下的运维公司的信息接口 -->
+	<select id="getOptFatComInfByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			<![CDATA[ and sbc.com_lev <> 1 ]]>
+			<![CDATA[ and sbc.com_rol <> 1 ]]>
+			and sbc.del_flag=0
+
+	</select>
+		
+	<!-- 本接口为获取平台中所有指定公司下的自己公司的信息接口 -->
+	<select id="getOneselfFatComInfByComId" parameterType="com.qinergy.dto.system.CompanyDto" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_bas_com sbc
+		WHERE
+			sbc.com_fat_id = #{id}
+			<![CDATA[ and sbc.com_lev <> 1 ]]>
+			and sbc.com_rol = #{com_rol}
+			and sbc.del_flag=0
+
+	</select>
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的3级公司ID接口 -->
+	<select id="getThrLevComLstByOptUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			sys_dat_use_pws sdup,
+			sys_bas_pws sbp,
+			sys_bas_com sbc
+		WHERE
+			sdup.pws_id = sbp.id
+		AND sbp.com_id = sbc.id
+		AND sdup.use_id = #{use_id}
+
+	</select>
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的3级公司ID接口 -->
+	<select id="getThrLevComLstByOptComUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.pro_id
+			) pro_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.cit_id
+			) cit_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.are_id
+			) are_nam,
+			(
+				SELECT
+					sbct.com_typ
+				FROM
+					sys_bas_com_typ sbct
+				WHERE
+					sbct.id = sbc.com_typ_id
+			) com_type_nam
+		FROM
+			sys_dat_use_pws sdup,
+			sys_bas_pws sbp,
+			sys_bas_com sbc
+		WHERE
+			sdup.pws_id = sbp.id
+		AND sbp.com_id = sbc.id
+		AND sdup.use_id = #{use_id}
+		AND (
+			sbc.com_rol = 0
+			OR sbc.com_rol = 2
+		)
+
+
+	</select>
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此业主有关的3级公司ID接口 -->
+	<select id="getThrLevComLstByOwnerComUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.pro_id
+			) pro_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.cit_id
+			) cit_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.are_id
+			) are_nam,
+			(
+				SELECT
+					sbct.com_typ
+				FROM
+					sys_bas_com_typ sbct
+				WHERE
+					sbct.id = sbc.com_typ_id
+			) com_type_nam
+		FROM
+			sys_dat_use_pws sdup,
+			sys_bas_pws sbp,
+			sys_bas_com sbc
+		WHERE
+			sdup.pws_id = sbp.id
+		AND sbp.com_id = sbc.id
+		AND sdup.use_id = #{use_id}
+		AND sbc.com_rol = 1
+
+	</select>
+	
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的2级公司ID接口 -->
+	<select id="getTwoLevComLstByOptUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					sys_dat_use_pws sdup,
+					sys_bas_pws sbp,
+					sys_bas_com sbc
+				WHERE
+					sdup.pws_id = sbp.id
+				AND sbp.com_id = sbc.id
+				AND sdup.use_id = #{use_id}
+			) thrLevCom,
+			sys_bas_com sbc
+		WHERE
+			thrLevCom.com_fat_id = sbc.id
+
+	</select>
+	
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的2级公司ID接口 -->
+	<select id="getTwoLevComLstByOptComUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.pro_id
+			) pro_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.cit_id
+			) cit_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.are_id
+			) are_nam,
+			(
+				SELECT
+					sbct.com_typ
+				FROM
+					sys_bas_com_typ sbct
+				WHERE
+					sbct.id = sbc.com_typ_id
+			) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					sys_dat_use_pws sdup,
+					sys_bas_pws sbp,
+					sys_bas_com sbc
+				WHERE
+					sdup.pws_id = sbp.id
+				AND sbp.com_id = sbc.id
+				AND sdup.use_id = #{use_id}
+				AND (
+					sbc.com_rol = 0
+					OR sbc.com_rol = 2
+				)
+			) thrLevCom,
+			sys_bas_com sbc
+		WHERE
+			thrLevCom.com_fat_id = sbc.id
+
+	</select>
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此业主人员有关的2级公司ID接口 -->
+	<select id="getTwoLevComLstByOwnerComUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.pro_id
+			) pro_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.cit_id
+			) cit_nam,
+			(
+				SELECT
+					br.reg_nam
+				FROM
+					sys_bas_reg br
+				WHERE
+					br.id = sbc.are_id
+			) are_nam,
+			(
+				SELECT
+					sbct.com_typ
+				FROM
+					sys_bas_com_typ sbct
+				WHERE
+					sbct.id = sbc.com_typ_id
+			) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					sys_dat_use_pws sdup,
+					sys_bas_pws sbp,
+					sys_bas_com sbc
+				WHERE
+					sdup.pws_id = sbp.id
+				AND sbp.com_id = sbc.id
+				AND sdup.use_id = #{use_id}
+				AND sbc.com_rol = 1
+			) thrLevCom,
+			sys_bas_com sbc
+		WHERE
+			thrLevCom.com_fat_id = sbc.id
+
+	</select>
+	
+	
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的1级公司ID接口 -->
+	<select id="getFstLevComLstByOptUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					(
+						SELECT DISTINCT
+							sbc.*
+						FROM
+							sys_dat_use_pws sdup,
+							sys_bas_pws sbp,
+							sys_bas_com sbc
+						WHERE
+							sdup.pws_id = sbp.id
+						AND sbp.com_id = sbc.id
+						AND sdup.use_id = #{use_id}
+						AND (
+							sbc.com_rol = 0
+							OR sbc.com_rol = 2
+						)
+					) thrLevCom,
+					sys_bas_com sbc
+				WHERE
+					thrLevCom.com_fat_id = sbc.id
+			) twoLevCom,
+			sys_bas_com sbc
+		WHERE
+			twoLevCom.com_fat_id = sbc.id
+
+	</select>
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的1级公司ID接口 -->
+	<select id="getFstLevComLstByOwnerUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					(
+						SELECT DISTINCT
+							sbc.*
+						FROM
+							sys_dat_use_pws sdup,
+							sys_bas_pws sbp,
+							sys_bas_com sbc
+						WHERE
+							sdup.pws_id = sbp.id
+						AND sbp.com_id = sbc.id
+						AND sdup.use_id = #{use_id}
+						AND sbc.com_rol = 1
+					) thrLevCom,
+					sys_bas_com sbc
+				WHERE
+					thrLevCom.com_fat_id = sbc.id
+			) twoLevCom,
+			sys_bas_com sbc
+		WHERE
+			twoLevCom.com_fat_id = sbc.id
+
+	</select>
+	<!-- 本接口为使用运维人员用户ID,获取所有与此运维人员有关的1级公司ID接口 -->
+	<select id="getFstLevComLstByUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT DISTINCT
+					sbc.*
+				FROM
+					(
+						SELECT DISTINCT
+							sbc.*
+						FROM
+							sys_dat_use_pws sdup,
+							sys_bas_pws sbp,
+							sys_bas_com sbc
+						WHERE
+							sdup.pws_id = sbp.id
+						AND sbp.com_id = sbc.id
+						AND sdup.use_id = #{use_id}
+					) thrLevCom,
+					sys_bas_com sbc
+				WHERE
+					thrLevCom.com_fat_id = sbc.id
+			) twoLevCom,
+			sys_bas_com sbc
+		WHERE
+			twoLevCom.com_fat_id = sbc.id
+
+	</select>
+	
+	<!-- 本接口为使用设备编号，获取该编号设备信息（设备详情页面中，右侧设备基础数据信息展示） -->
+	<select id="getEquInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			(
+				SELECT
+					sba.rtd_pow
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) rtd_pow,
+			(
+				SELECT
+					sba.app_mod
+				FROM
+					sys_bas_app sba
+				WHERE
+					sba.id = sbe.equ_mod_id
+			) app_mod,
+			(
+				SELECT
+					sbm.man_nam
+				FROM
+					sys_bas_man sbm,
+					sys_bas_app sba
+				WHERE
+					sbm.id = sba.man_id
+				AND sba.id = sbe.equ_mod_id
+			) man_nam,
+			sbe.equ_num,
+			sbe.equ_cod,
+			sbe.pro_tim,
+			sbe.ope_tim,
+			sbe.lst_mat_tim,
+			sbe.fnl_mat_tim,
+			sbe.nxt_mat_tim
+		FROM
+			sys_bas_equ sbe
+		WHERE
+			sbe.del_flag = 0
+		AND sbe.equ_num = #{equ_num}
+
+	</select>
+	
+	
+	<!-- 三级(或二级)公司人员查询上级(二级)公司信息 -->
+	<select id="getSuperiorComInfLstByTwoOrThrComUse" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					sys_bas_com sbc,
+					use_use uu
+				WHERE
+					uu.com_id = sbc.id
+				AND uu.id = #{use_id}
+			) sucom,
+			sys_bas_com sbc
+		WHERE
+			sucom.com_fat_id = sbc.id
+		AND	sbc.del_flag = 0
+
+	</select>
+	
+	
+	<!-- 三级公司人员查询上上级(一级)公司信息 -->
+	<select id="getSuperiorSuperiorComInfLstByThrComUse" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					(
+						SELECT
+							sbc.*
+						FROM
+							sys_bas_com sbc,
+							use_use uu
+						WHERE
+							uu.com_id = sbc.id
+						AND uu.id = #{use_id}
+					) sucom,
+					sys_bas_com sbc
+				WHERE
+					sucom.com_fat_id = sbc.id
+			) sucom,
+			sys_bas_com sbc
+		WHERE
+			sucom.com_fat_id = sbc.id
+		AND	sbc.del_flag = 0
+
+	</select>
+	
+	
+	<!-- 一级公司人员查询三级公司信息 -->
+	<select id="getThrComInfLstByFstComUse" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					(
+						SELECT
+							sbc.*
+						FROM
+							sys_bas_com sbc,
+							use_use uu
+						WHERE
+							uu.com_id = sbc.id
+						AND uu.id = #{use_id}
+					) sucom,
+					sys_bas_com sbc
+				WHERE
+					sucom.id = sbc.com_fat_id
+			) sucom,
+			sys_bas_com sbc
+		WHERE
+			sucom.id = sbc.com_fat_id
+
+		AND	sbc.del_flag = 0
+
+	</select>
+	
+	
+	
+	<!-- （一级或）二级公司人员查询下级公司信息 -->
+	<select id="getInferiorsComInfLstByFstOrTwoComUse" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbc.id,
+			sbc.com_nam,
+			sbc.com_ide,
+			sbc.com_add,
+			sbc.com_sta,
+			sbc.com_con,
+			sbc.com_tel,
+			sbc.com_typ_id,
+			sbc.com_fat_id,
+			sbc.com_lep,
+			sbc.com_lep_cod,
+			sbc.com_lon,
+			sbc.com_lat,
+			sbc.com_cen_lon,
+			sbc.com_cen_lat,
+			sbc.com_zoo_lev,
+			sbc.pro_id,
+			sbc.cit_id,
+			sbc.are_id,
+			sbc.com_lev,
+			sbc.com_rol,
+			sbc.remark,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.pro_id) pro_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.cit_id) cit_nam,
+			(select br.reg_nam from sys_bas_reg br where br.id = sbc.are_id) are_nam,
+			(select sbct.com_typ from sys_bas_com_typ sbct where sbct.id = sbc.com_typ_id) com_type_nam
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					sys_bas_com sbc,
+					use_use uu
+				WHERE
+					uu.com_id = sbc.id
+				AND uu.id = #{use_id}
+			) sucom,
+			sys_bas_com sbc
+		WHERE
+			sucom.id = sbc.com_fat_id
+		AND	sbc.del_flag = 0
+
+	</select>
+	
+	
+    <!-- 获取与该人员有关的站点中的所有运维人员信息，使用人员ID -->
+	<select id="getOptUseByPwsInfLstByPwsIdOpt" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT DISTINCT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = uu.com_id
+			) com_nam,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			(
+				SELECT
+					sbp.id,
+					sbp.pws_nam,
+					sbp.pws_typ,
+					sbp.com_id
+				FROM
+					sys_bas_pws sbp,
+					sys_dat_use_pws sdup
+				WHERE
+					sdup.pws_id = sbp.id
+				AND sdup.use_id = #{use_id}
+			) ssdup,
+			sys_dat_use_pws sdup,
+			use_use uu,
+			sys_bas_pws sbp
+		WHERE
+			ssdup.id = sdup.pws_id
+		AND sdup.use_id = uu.id
+		AND sbp.id = sdup.pws_id
+		AND uu.del_flag = 0
+		AND uu.use_typ = 1
+	</select>
+	
+    <!-- 获取站点信息，使用ID -->
+	<select id="getPwsInfLstByPwsIdOpt" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp,
+			sys_dat_use_pws sdup
+		WHERE
+			sdup.pws_id = sbp.id
+			AND sbp.del_flag = 0 
+		<if test="use_id != null and use_id != ''">
+			
+			AND sdup.use_id = #{use_id}
+
+		</if>
+		
+		<if test="com_id != null and com_id != ''">
+			
+			AND sbp.com_id = #{com_id}
+
+		</if>
+
+	</select>
+	
+    <!-- 获取站点信息，使用ID -->
+	<select id="getPwsInfLstByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp
+		WHERE
+			1=1 
+		
+		<if test="com_id != null and com_id != ''">
+			
+			AND sbp.com_id = #{com_id}
+
+		</if>
+		
+		<if test="pws_id != null and pws_id != ''">
+			
+			AND sbp.id = #{pws_id}
+
+		</if>
+
+	</select>
+	
+    <!-- 获取本公司内的所有运维人员 -->
+	<select id="getOptUseInfInComLstByOptId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = uu.com_id
+			) com_nam,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					use_use uu,
+					sys_bas_com sbc
+				WHERE
+					uu.com_id = sbc.id
+				AND uu.id = #{use_id}
+			) usbc,
+			use_use uu
+		WHERE
+			usbc.id = uu.com_id
+		AND uu.use_typ = 1
+
+	</select>
+    <!-- 获取本公司内的所有运维人员 -->
+	<select id="getUseInfInComLstById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			(
+				SELECT
+					sbc.*
+				FROM
+					use_use uu,
+					sys_bas_com sbc
+				WHERE
+					uu.com_id = sbc.id
+				AND uu.id = #{use_id}
+			) usbc,
+			use_use uu
+		WHERE
+			usbc.id = uu.com_id and uu.use_sta = 1
+
+	</select>
+	
+	
+    <!-- 获取某公司内的所有运维人员 -->
+	<select id="getOptUseInfLstByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = uu.com_id
+			) com_nam,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			use_use uu
+		WHERE
+		uu.com_id = #{id}
+		AND uu.use_typ = 1 and uu.use_sta = 1
+
+	</select>
+	
+    <!-- 获取某公司内的所有人员 -->
+	<select id="getUseInfLstByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			use_use uu
+		WHERE
+		
+		uu.com_id = #{id}
+		AND uu.del_flag = 0 and uu.use_sta = 1
+		
+		<if test="acc_num != null and acc_num != ''">
+				
+			and uu.acc_num Like concat('%',#{acc_num},'%') 
+		
+		</if>
+		
+		<if test="use_nam != null and use_nam != ''">
+				
+			and uu.use_nam Like concat('%',#{use_nam},'%') 
+		
+		</if>
+		
+		<if test="use_mob != null and use_mob != ''">
+				
+			and uu.use_mob Like concat('%',#{use_mob},'%') 
+		
+		</if>
+		
+		<if test="word != null and word != ''">
+			AND CONCAT(
+				IFNULL(uu.use_mob,''),
+				IFNULL(uu.use_nam,'')
+			) 
+			LIKE CONCAT('%',#{word},'%')
+		</if>
+		
+			LIMIT #{start},#{everyPage}
+		
+
+	</select>
+	
+    <!-- 获取某公司内的所有人员  分页-->
+	<select id="getUseInfLstByComIdCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT COUNT(uu.id) cou,
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			use_use uu
+		WHERE
+		
+		uu.com_id = #{id}
+		AND uu.del_flag = 0 and uu.use_sta = 1
+		
+		<if test="acc_num != null and acc_num != ''">
+				
+			and uu.acc_num Like concat('%',#{acc_num},'%') 
+		
+		</if>
+		
+		<if test="use_nam != null and use_nam != ''">
+				
+			and uu.use_nam Like concat('%',#{use_nam},'%') 
+		
+		</if>
+		
+		<if test="use_mob != null and use_mob != ''">
+				
+			and uu.use_mob Like concat('%',#{use_mob},'%') 
+		
+		</if>
+		<if test="word != null and word != ''">
+			AND CONCAT(
+				IFNULL(uu.use_mob,''),
+				IFNULL(uu.use_nam,'')
+			) 
+			LIKE CONCAT('%',#{word},'%')
+		</if>
+
+	</select>
+	
+    <!-- 获取平台中的安全运维天数 -->
+	<select id="getSafeRunDays" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			DATEDIFF(
+				SYSDATE(),
+				sbc.safe_run_start_tim
+			) AS safe_run_days
+		FROM
+			sys_bas_conf sbc
+
+	</select>
+	
+    <!-- 获取平台中地图页面右侧统计数据 -->
+	<select id="getIntMonLeftSide" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			spsr.pv_power,
+			spsr.pc_power,
+			spsr.chp_power,
+			spsr.tol__rvn,
+			spsr.equ_pla_tre,
+			spsr.car_dio_emi_red,
+			spsr.sta_coal
+		FROM
+			sa_pws_sta_rel spsr
+		WHERE
+			spsr.pws_id = #{id}
+		ORDER BY
+			spsr.tol_tim DESC
+		LIMIT 1
+
+	</select>
+	
+    <!-- 获取平台中地图页面左侧电站图片信息 -->
+	<select id="getIntMonLeftSidePwsPic" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbpp.id,
+			sbpp.pic_nam,
+			sbpp.pic_url
+		FROM
+			sys_bas_pws_pic sbpp
+		WHERE
+			sbpp.pws_id = #{id}
+		ORDER BY
+			sbpp.crt_tim 
+
+	</select>
+	
+	<!-- 新增用户定位信息-->	
+	<insert id="insertUseLatLon"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO use_position (
+				use_id,
+				use_lon,
+				use_lat,
+				crt_tim
+			)
+			VALUES
+				(
+					#{use_id},
+					#{use_lon},
+					#{use_lat},
+					#{crt_tim}
+				)
+	</insert>
+	
+    <!-- 获取用户在地图中最新的定位信息 -->
+	<select id="getUseLonLatNewByUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			up.id,
+			up.use_id,
+			up.use_lon,
+			up.use_lat,
+			up.crt_tim
+		FROM
+			use_position up
+		WHERE
+			up.use_id = #{id}
+		ORDER BY
+			up.crt_tim DESC
+		LIMIT 1
+
+	</select>
+	
+	
+    <!-- 使用字典类型，获取字典表中字典信息下拉列表 -->
+	<select id="getDicInfLstByDicTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbd.id,
+			sbd.par_ide,
+			sbd.par_nam
+		FROM
+			sys_bas_dic sbd,
+			sys_bas_dic_typ sbdt
+		WHERE
+			sbdt.id = sbd.dic_typ_id 
+		AND sbdt.dic_typ_ide = #{dic_typ_ide}
+		ORDER BY
+			sbd.sor_num,sbd.id
+
+	</select>
+	
+    <!-- 使用设备类型唯一标识获取设备型号 -->
+	<select id="getBasAppByAppTypIde" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sba.app_mod,
+			sba.id
+		FROM
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sba.app_typ_id = sbat.id
+		AND sba.del_flag=0
+		AND sbat.typ_ide =#{app_typ_ide}
+
+	</select>
+	
+	<!-- 新增设备型号信息-->	
+	<insert id="insertBasAppInf"  parameterType="java.util.LinkedHashMap">
+	
+			INSERT INTO sys_bas_app
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="app_typ_id != null"> app_typ_id, </if>
+				<if test="app_mod != null"> app_mod, </if>
+				<if test="man_id != null"> man_id, </if>
+				<if test="com_id != null"> com_id, </if>
+				<if test="crt_use_id != null"> crt_use_id, </if>
+				<if test="crt_tim != null"> crt_tim, </if>
+				<if test="rtd_elc != null"> rtd_elc, </if>
+				<if test="rtd_vol != null"> rtd_vol, </if>
+				<if test="rtd_pow != null"> rtd_pow, </if>
+				<if test="app_size != null"> app_size, </if>
+				<if test="app_weight != null"> app_weight, </if>
+				<if test="app_altitude != null"> app_altitude, </if>
+				<if test="work_temp != null"> work_temp, </if>
+				<if test="prtc_grade != null"> prtc_grade, </if>
+				<if test="com_typ != null"> com_typ, </if>
+				<if test="com_pro != null"> com_pro, </if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				<if test="app_typ_id != null"> #{app_typ_id}, </if>
+				<if test="app_mod != null"> #{app_mod}, </if>
+				<if test="man_id != null"> #{man_id}, </if>
+				<if test="com_id != null"> #{com_id}, </if>
+				<if test="crt_use_id != null"> #{crt_use_id}, </if>
+				<if test="crt_tim != null"> #{crt_tim}, </if>
+				<if test="rtd_elc != null"> #{rtd_elc}, </if>
+				<if test="rtd_vol != null"> #{rtd_vol}, </if>
+				<if test="rtd_pow != null"> #{rtd_pow}, </if>
+				<if test="app_size != null"> #{app_size}, </if>
+				<if test="app_weight != null"> #{app_weight}, </if>
+				<if test="app_altitude != null"> #{app_altitude}, </if>
+				<if test="work_temp != null"> #{work_temp}, </if>
+				<if test="prtc_grade != null"> #{prtc_grade}, </if>
+				<if test="com_typ != null"> #{com_typ}, </if>
+				<if test="com_pro != null"> #{com_pro}, </if>
+			</trim>
+	</insert>
+	
+    <!-- 获取电站类型列表 -->
+	<select id="getBasPwsTypLst" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbpt.id,
+			sbpt.typ_ide,
+			sbpt.typ_nam
+		FROM
+			sys_bas_pws_typ sbpt
+
+	</select>
+	
+	<!-- 获取所有用户  -->
+	<select id="getUserName" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			u.id,
+			u.use_nam
+		FROM
+			use_use u
+		where u.del_flag = 0 and u.use_sta = 1
+
+	</select>
+	
+<!-- 根据电站id获取所有设备类型  -->
+	<select id="getSysBasAppTypeByPwsId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbat.id,
+			sbat.typ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba,
+			sys_bas_app_typ sbat
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = sbat.id
+		AND sbe.del_flag = 0
+		AND sba.del_flag = 0
+		AND sbat.del_flag = 0
+		AND sbe.pws_id = #{pws_id}
+		GROUP BY
+			sbat.id
+
+	</select>
+	
+	<!-- 根据设备类型id获取设备编号  -->
+	<select id="getEquNumBySysBasAppTypeId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+			SELECT
+				sbe.id,
+				sbe.equ_nam,
+				sbe.equ_num
+			FROM
+				sys_bas_equ sbe,
+				sys_bas_app sba
+			WHERE
+				sbe.equ_mod_id = sba.id
+			AND sbe.del_flag = 0
+			AND sba.del_flag = 0
+			AND sba.app_typ_id = #{app_typ_id}
+			AND sbe.pws_id = #{pws_id}
+
+	</select>
+	
+	<!-- 新增日志信息-->	
+	<insert id="insertOptLogInf"  parameterType="java.util.LinkedHashMap">
+		INSERT INTO sys_dat_opt_log (
+				use_id,
+				opt_typ,
+				opt_tim,
+				opt_fut,
+				opt_ctn,
+				is_suc
+			)
+			VALUES
+				(
+					#{use_id},
+					#{opt_typ},
+					#{opt_tim},
+					#{opt_fut},
+					#{opt_ctn},
+					#{is_suc}
+				)
+	</insert>
+	
+	
+	<!-- 获取操作日志信息列表  -->
+	<select id="getOptLogLst" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+
+			SELECT
+				sdol.id,
+				sdol.use_id,
+				(select uu.use_nam from use_use uu where uu.id = sdol.use_id) use_nam,
+				sdol.opt_typ,
+				sdol.opt_tim,
+				sdol.opt_fut,
+				sdol.opt_ctn,
+				sdol.is_suc
+			FROM
+				sys_dat_opt_log sdol
+			WHERE 1=1 
+			<if test="sta_tim != null and sta_tim != ''">
+				
+				<![CDATA[ and sdol.opt_tim >= #{sta_tim} ]]>
+	
+			</if>
+				
+			<if test="end_tim != null and end_tim != ''">
+				
+				<![CDATA[ and sdol.opt_tim <= #{end_tim} ]]>
+					
+			</if>
+			ORDER BY sdol.opt_tim DESC
+			LIMIT #{start}, #{everyPage}
+	</select>
+	
+	<!-- 获取操作日志信息列表（分页）  -->
+	<select id="getOptLogLstCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+			SELECT
+				COUNT(sdol.id) cou
+			FROM
+				sys_dat_opt_log sdol
+			WHERE 1=1 
+			<if test="sta_tim != null and sta_tim != ''">
+				
+				<![CDATA[ and sdol.opt_tim >= #{sta_tim} ]]>
+	
+			</if>
+				
+			<if test="end_tim != null and end_tim != ''">
+				
+				<![CDATA[ and sdol.opt_tim <= #{end_tim} ]]>
+					
+			</if>
+
+	</select>
+	
+	<!-- 根据公司id 获取公司人员  -->
+	<select id="getUserNameByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select u.id,u.use_nam from use_use u where u.del_flag = 0 and u.com_id = #{com_id} and u.use_sta = 1
+	</select>
+	
+	<!-- 获取与查询人有关联的站的有关联的人  -->
+	<select id="getUseLstBySelectUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT DISTINCT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			sys_dat_use_pws sdup,
+			use_use uu,
+			(
+				SELECT
+					sdup.pws_id
+				FROM
+					sys_dat_use_pws sdup
+				WHERE
+					sdup.use_id = #{use_id}
+			) psdup
+		WHERE
+			sdup.use_id = uu.id
+		AND sdup.pws_id = psdup.pws_id
+		AND uu.use_typ = 1
+		AND uu.del_flag = 0 
+		
+		<if test="com_id != null and com_id != ''">
+				
+			and uu.com_id = #{com_id}
+		
+		</if>
+		
+		<if test="acc_num != null and acc_num != ''">
+				
+			and uu.acc_num Like concat('%',#{acc_num},'%') 
+		
+		</if>
+		
+		<if test="use_nam != null and use_nam != ''">
+				
+			and uu.use_nam Like concat('%',#{use_nam},'%') 
+		
+		</if>
+		
+		<if test="use_mob != null and use_mob != ''">
+				
+			and uu.use_mob Like concat('%',#{use_mob},'%') 
+		
+		</if>
+		
+		<if test="word != null and word != ''">
+			AND CONCAT(
+				IFNULL(uu.use_mob,''),
+				IFNULL(uu.use_nam,'')
+			) 
+			LIKE CONCAT('%',#{word},'%')
+		</if>
+		LIMIT #{start},#{everyPage}
+
+	</select>
+	<!-- 获取与查询人有关联的站的有关联的人 分页 -->
+	<select id="getUseLstBySelectUseIdCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT DISTINCT
+			uu.*, uu.com_id con_com_id,COUNT(uu.id) cou, 
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			sys_dat_use_pws sdup,
+			use_use uu,
+			(
+				SELECT
+					sdup.pws_id
+				FROM
+					sys_dat_use_pws sdup
+				WHERE
+					sdup.use_id = #{use_id}
+			) psdup
+		WHERE
+			sdup.use_id = uu.id
+		AND sdup.pws_id = psdup.pws_id
+		AND uu.use_typ = 1
+		AND uu.del_flag = 0 
+		
+		<if test="com_id != null and com_id != ''">
+				
+			and uu.com_id Like concat('%',#{com_id},'%') 
+		
+		</if>
+		
+		<if test="acc_num != null and acc_num != ''">
+				
+			and uu.acc_num Like concat('%',#{acc_num},'%') 
+		
+		</if>
+		
+		<if test="use_nam != null and use_nam != ''">
+				
+			and uu.use_nam Like concat('%',#{use_nam},'%') 
+		
+		</if>
+		
+		<if test="use_mob != null and use_mob != ''">
+				
+			and uu.use_mob Like concat('%',#{use_mob},'%') 
+		
+		</if>
+		<if test="word != null and word != ''">
+			AND CONCAT(
+				IFNULL(uu.use_mob,''),
+				IFNULL(uu.use_nam,'')
+			) 
+			LIKE CONCAT('%',#{word},'%')
+		</if>
+	</select>
+	
+	<!-- 获取与查询人有关联的站的有关联的人  -->
+	<select id="getUseLstBySelectUseIdOpt" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT DISTINCT
+			uu.*, uu.com_id con_com_id,
+			(
+				SELECT
+					sbp.pos_nam
+				FROM
+					sys_bas_pos sbp
+				WHERE
+					sbp.id = uu.pos_id
+			) pos_name,
+			ROUND(
+				DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+				1
+			) AS work_year
+		FROM
+			sys_dat_use_pws sdup,
+			use_use uu,
+			(
+				SELECT
+					sdup.pws_id
+				FROM
+					sys_dat_use_pws sdup
+				WHERE
+					sdup.use_id = #{use_id}
+			) psdup,
+			sys_bas_com sbc
+		WHERE
+			sdup.use_id = uu.id
+		AND sdup.pws_id = psdup.pws_id
+		AND uu.com_id = sbc.id
+		AND sbc.com_rol = 1
+
+		<if test="com_id != null and com_id != ''">
+				
+			and uu.com_id Like concat('%',#{com_id},'%') 
+		
+		</if>
+		
+		<if test="acc_num != null and acc_num != ''">
+				
+			and uu.acc_num Like concat('%',#{acc_num},'%') 
+		
+		</if>
+		
+		<if test="use_nam != null and use_nam != ''">
+				
+			and uu.use_nam Like concat('%',#{use_nam},'%') 
+		
+		</if>
+		
+		<if test="use_mob != null and use_mob != ''">
+				
+			and uu.use_mob Like concat('%',#{use_mob},'%') 
+		
+		</if>
+		<if test="word != null and word != ''">
+			AND CONCAT(
+				IFNULL(uu.use_mob,''),
+				IFNULL(uu.use_nam,'')
+			) 
+			LIKE CONCAT('%',#{word},'%')
+		</if>
+		LIMIT #{start},#{everyPage}
+	</select>
+	<!-- 获取与查询人有关联的站的有关联的人  -->
+	<select id="getUseLstBySelectUseIdOptCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select count(a.id) cou,a.* from (
+			SELECT DISTINCT
+				uu.*, uu.com_id con_com_id,
+				(
+					SELECT
+						sbp.pos_nam
+					FROM
+						sys_bas_pos sbp
+					WHERE
+						sbp.id = uu.pos_id
+				) pos_name,
+				ROUND(
+					DATEDIFF(SYSDATE(), uu.tak_tim) / 365,
+					1
+				) AS work_year
+			FROM
+				sys_dat_use_pws sdup,
+				use_use uu,
+				(
+					SELECT
+						sdup.pws_id
+					FROM
+						sys_dat_use_pws sdup
+					WHERE
+						sdup.use_id = #{use_id}
+				) psdup,
+				sys_bas_com sbc
+			WHERE
+				sdup.use_id = uu.id
+			AND sdup.pws_id = psdup.pws_id
+			AND uu.com_id = sbc.id
+			AND sbc.com_rol = 1
+	
+			<if test="com_id != null and com_id != ''">
+					
+				and uu.com_id Like concat('%',#{com_id},'%') 
+			
+			</if>
+			
+			<if test="acc_num != null and acc_num != ''">
+					
+				and uu.acc_num Like concat('%',#{acc_num},'%') 
+			
+			</if>
+			
+			<if test="use_nam != null and use_nam != ''">
+					
+				and uu.use_nam Like concat('%',#{use_nam},'%') 
+			
+			</if>
+			
+			<if test="use_mob != null and use_mob != ''">
+					
+				and uu.use_mob Like concat('%',#{use_mob},'%') 
+			
+			</if>
+			<if test="word != null and word != ''">
+				AND CONCAT(
+					IFNULL(uu.use_mob,''),
+					IFNULL(uu.use_nam,'')
+				) 
+				LIKE CONCAT('%',#{word},'%')
+			</if>
+		) a
+	</select>
+	
+	<!-- 获取与查询人有关联的站的有关联的人的公司ID  -->
+	<select id="getUseComIdLstBySelectUseId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT DISTINCT
+			sbc.*
+		FROM
+			sys_dat_use_pws sdup,
+			use_use uu,
+			sys_bas_com sbc,
+			(
+				SELECT
+					sdup.pws_id
+				FROM
+					sys_dat_use_pws sdup
+				WHERE
+					sdup.use_id = #{use_id}
+			) psdup
+		WHERE
+			sdup.use_id = uu.id
+		AND sdup.pws_id = psdup.pws_id
+		AND uu.com_id = sbc.id
+		AND uu.use_typ = 1
+
+	</select>
+	
+	<!-- 使用菜单ID获取按钮列表  -->
+	<select id="getButtonLstByModuleId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbb.*
+		FROM
+			sys_bas_btt sbb,
+			sys_bas_men sbm
+		WHERE
+			sbm.id = sbb.men_id
+		AND sbm.id = #{module_id} 
+
+	</select>
+	
+	<!-- 使用菜单ID与用户ID获取按钮列表  -->
+	<select id="getSelectedButtonLstByModuleId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbmrb.*
+		FROM
+			sys_bas_men_rol_btt sbmrb,
+			use_use uu
+		WHERE
+			sbmrb.role_id = uu.rol_id
+		AND uu.id = #{use_id}
+		AND sbmrb.module_id = #{module_id}
+
+	</select>
+	
+	<!-- 使用一级公司ID获取电站列表信息  -->
+	<select id="getPwsIdByFistComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp,
+			sys_dat_use_pws sdup,
+			(
+				SELECT
+					sbc.*
+				FROM
+					sys_bas_com sbc,
+					(
+						SELECT
+							sbc.*
+						FROM
+							sys_bas_com sbc,
+							(
+								SELECT
+									sbc.*
+								FROM
+									sys_bas_com sbc
+								WHERE
+									sbc.id = #{com_id}
+									AND sbc.del_flag = 0
+							) sbc1
+						WHERE
+							sbc.com_fat_id = sbc1.id
+							AND sbc.del_flag = 0
+					) sbc2
+				WHERE
+					sbc.com_fat_id = sbc2.id
+					AND sbc.del_flag = 0
+			) sbc
+		WHERE
+			sdup.pws_id = sbp.id
+		AND sbp.del_flag = 0
+		AND sdup.use_id = #{use_id}
+		AND sbp.com_id = sbc.id
+
+	</select>
+	
+	<!-- 使用二级公司ID获取电站列表信息  -->
+	<select id="getPwsIdBySecdComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp,
+			sys_dat_use_pws sdup,
+			(
+				SELECT
+					sbc.*
+				FROM
+					sys_bas_com sbc,
+					(
+						SELECT
+							sbc.*
+						FROM
+							sys_bas_com sbc
+						WHERE
+						
+							sbc.id = #{com_id}
+							AND sbc.del_flag = 0
+					) sbc2
+				WHERE
+					sbc.com_fat_id = sbc2.id
+					AND sbc.del_flag = 0
+			) sbc
+		WHERE
+			sdup.pws_id = sbp.id
+		AND sbp.del_flag = 0
+		AND sdup.use_id = #{use_id}
+		AND sbp.com_id = sbc.id
+
+	</select>
+	
+	<!-- 使用三级公司ID获取电站列表信息  -->
+	<select id="getPwsIdByThrdComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+
+		SELECT
+			sbp.id,
+			sbp.pws_nam,
+			sbp.pws_typ,
+			(
+				SELECT
+					sbpt.typ_nam
+				FROM
+					sys_bas_pws_typ sbpt
+				WHERE
+					sbpt.id = sbp.pws_typ
+			) pws_typ_nam,
+			sbp.ope_typ,
+			sbp.cur_sta,
+			sbp.dev_add_num,
+			sbp.pro_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.pro_id
+			) pro_nam,
+			sbp.cit_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.cit_id
+			) cit_nam,
+			sbp.are_id,
+			(
+				SELECT
+					sbr.reg_nam
+				FROM
+					sys_bas_reg sbr
+				WHERE
+					sbr.id = sbp.are_id
+			) are_nam,
+			sbp.con_nam,
+			sbp.con_mob,
+			sbp.org_nam,
+			sbp.ope_tim,
+			sbp.are_cov,
+			sbp.pws_add,
+			sbp.pws_lon,
+			sbp.pws_lat,
+			sbp.own_nam,
+			sbp.rem,
+			sbp.com_id,
+			(
+				SELECT
+					sbc.com_nam
+				FROM
+					sys_bas_com sbc
+				WHERE
+					sbc.id = sbp.com_id
+			) com_nam,
+			sbp.pws_sor,
+			sbp.pws_num,
+			sbp.rat_vol,
+			sbp.rat_cur,
+			sbp.rat_pow,
+			sbp.crt_tim,
+			sbp.crt_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.crt_use_id
+			) crt_use_nam,
+			sbp.mod_tim,
+			sbp.mod_use_id,
+			(
+				SELECT
+					uu.use_nam
+				FROM
+					use_use uu
+				WHERE
+					uu.id = sbp.mod_use_id
+			) mod_use_nam,
+			sbp.del_flag,
+			sbp.sec_ope,
+			sbp.fnl_mat_tim,
+			sbp.nxt_mat_tim,
+			sbp.pv_rtd_pow,
+			sbp.pc_rtd_pow,
+			sbp.pc_cap,
+			sbp.chp_rtd_pow
+		FROM
+			sys_bas_pws sbp,
+			sys_dat_use_pws sdup,
+			(select sbc.* from sys_bas_com sbc where sbc.id = #{com_id}) sbc
+		WHERE
+			sdup.pws_id = sbp.id
+			AND sbp.del_flag = 0 
+
+			AND sdup.use_id = #{use_id}
+			
+			AND sbp.com_id = sbc.id
+
+	</select>
+	
+</mapper>

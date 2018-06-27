@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="efficAnalysisMapper">
+
+
+	<!-- 根据公司id 获取所属电站列表 -->
+	<select id="getStationListByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			pws_nam
+		FROM 
+			sys_bas_pws
+		WHERE 
+			com_id = #{com_id}
+			AND del_flag = #{del_flag}
+	</select>
+	
+	
+	
+	<!--  综合效率分析 -->
+	<!-- <select id="getOverallEffic" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			pvs_power, 
+			whe_equ,
+			com_eff,
+			plan_com_rate,
+			radiation
+		FROM 
+			sa_pws_mon_sta
+		WHERE 
+			pws_id = #{pws_id}
+			AND tol_tim &gt;= #{startTim}
+			AND tol_tim &lt; #{endTim}
+		ORDER BY tol_tim 
+		LIMIT 1
+	</select> -->
+	
+	<!--  综合效率分析(光伏) -->
+	<select id="getOverallEfficPVS" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			pvs_power
+		FROM 
+			sa_pws_mon_sta_pvs
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim 
+		LIMIT 1
+	</select>
+	
+	<!--  综合效率分析(效率) -->
+	<select id="getOverallEfficEff" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			whe_equ,
+			com_eff,
+			int_cha,
+			plan_com_rate
+		FROM 
+			sa_pws_mon_sta_eff
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim 
+		LIMIT 1
+	</select>
+	
+	
+	<!--  综合效率分析(辐射) -->
+	<select id="getOverallEfficHv" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			radiation,
+			pvs_radiation_tol
+		FROM 
+			sa_pws_mon_sta_hv
+		WHERE 
+			pws_id = #{pws_id}
+		<if test="startTim != null and startTim != ''">
+			<![CDATA[ AND tol_tim >= #{startTim} ]]>
+		</if>
+		<if test="endTim != null and endTim != ''">
+			<![CDATA[ AND tol_tim < #{endTim} ]]>
+		</if>
+		ORDER BY tol_tim 
+		LIMIT 1
+	</select>
+	
+	<!-- 公用：电站月运行报表数据  -->
+	<select id="getMonthDataStation" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			pvs_power
+		FROM 
+			sa_pws_mon_sta_pvs
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+		LIMIT 1
+	</select>
+	
+<!--  计划完成率 --> 
+	<!-- 计划发电量 -->
+	<select id="getPlanPvsPower" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			plan_tim,
+			plan_power
+		FROM
+			sa_pv_plan_power
+		WHERE
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND plan_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND plan_tim < #{endTim} ]]>
+			</if>
+		ORDER BY plan_tim
+		LIMIT 1
+	</select>
+	
+	
+	<!--  弃光率 --> 
+	<select id="getDiscardRate" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			dis_rate,
+			mai_dis_power,
+			mai_dis_rate,
+			fal_dis_power,
+			fal_dis_rate,
+			rat_dis_power,
+			rat_dis_rate
+		FROM 
+			sa_pws_sta_loss
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+		LIMIT 1
+	</select>
+	
+	
+	<!--  损耗分析 --> 
+	<select id="getLossAnalysis" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			tol_tim,
+			loss_tol_whe_equ,
+			loss_bot_sta_whe_equ,
+			loss_sel_bxch_whe_equ,
+			loss_inv_whe_equ,
+			loss_pv_arr_abs_whe_equ,
+			net_power_whe_equ,
+			com_eff
+		FROM 
+			sa_pws_sta_loss
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+		LIMIT 1
+	</select>
+	
+	
+	
+	<!-- 太阳能资源 --> 
+	<select id="getSolarEnergyResources" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			hv,
+			line_power,
+			tol_tim crtTim
+		FROM
+			sa_pws_sta_rel
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+	</select>
+
+
+	<!--  逆变器性能  -->
+	<select id="getInverterProp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			inv_whe_equ_exc_value,
+			inv_whe_equ_exc_rate,
+			inv_whe_equ_good_value,
+			inv_whe_equ_good_rate,
+			inv_whe_equ_med_value,
+			inv_whe_equ_med_rate,
+			inv_whe_equ_bad_value,
+			inv_whe_equ_bad_rate,
+			tol_tim
+		FROM 
+			sa_pws_mon_sta_eff
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+		LIMIT 1
+	</select>
+ 
+</mapper>

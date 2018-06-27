@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rationAnalysisMapper">
+
+	
+	<!--  功率预测与限电分析  --> 
+		<!-- 实际、预测、调度下发功率预测 -->
+		<select id="getPowerRation" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			SELECT 
+				*
+			FROM
+				sa_pws_fct_sta_rel
+			WHERE 
+				pws_id = #{pws_id}
+			AND type = #{typ}
+			AND val_sta = #{val_sta}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+			ORDER BY tol_tim
+			LIMIT 1	
+		</select>
+
+	<!--  储能系统分析  -->
+		<!-- 实际充放电 -->
+	<select id="getEnergyStorage" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			pcs_phi,
+			pcs_phe,
+			tol_tim
+		FROM 
+			sa_pws_mon_sta_pcs 
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+		LIMIT 1
+	</select>
+		<!-- 计划充放电 -->
+	<select id="getEnergyStoragePlan" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			pws_id,
+			plan_phi,
+			plan_phe,
+			plan_tim 
+		FROM 
+			sa_pc_plan_phi_phe 
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND plan_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND plan_tim < #{endTim} ]]>
+			</if>
+		ORDER BY plan_tim
+		LIMIT 1
+	</select>
+	
+	<!-- 网荷 -->
+	<select id="getStorNetCharge" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			pv_power,                            
+			pc_power,                                 
+			chp_power,                                 
+			line_power,                            
+			load_power,
+            tol_tim crtTim
+		FROM 
+			sa_pws_sta_rel 
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY tol_tim
+	</select>
+
+ 
+</mapper>

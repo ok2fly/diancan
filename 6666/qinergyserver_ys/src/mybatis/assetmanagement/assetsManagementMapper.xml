@@ -1,0 +1,1316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="assetsManagement">
+
+<!-- 资产类型 start  -->
+	<!-- 添加资产类型 -->
+	<insert id="insAssetsTyp" parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_assets_typ(
+				typ_nam,
+				typ_ide,
+				remark,
+				ass_typ_sort,
+				del_flag,
+				crt_use_id,
+				crt_tim)
+				
+		VALUES (#{typ_nam},
+				#{typ_ide},
+				#{remark},
+				#{ass_typ_sort},
+				#{del_flag},
+				#{crt_use_id},
+				#{crt_tim})
+	</insert>
+
+	<select id="getAssetsTypByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			id, 
+			typ_nam,                                              
+			typ_ide,                                                
+			remark,                                                  
+			ass_typ_sort  
+		FROM 
+			sys_bas_assets_typ
+		WHERE 
+			typ_nam = #{typ_nam}
+			AND del_flag = 0
+	</select>
+
+
+
+
+	<!-- 修改资产类型 -->
+	<update id="updAssetsTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_bas_assets_typ
+		SET
+			typ_nam = #{typ_nam},
+			typ_ide = #{typ_ide},
+			remark = #{remark},
+			ass_typ_sort = #{ass_typ_sort},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delAssetsTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_bas_assets_typ
+		SET
+			del_flag = 1,
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE id = #{id}
+	</update>
+	
+
+	<!-- 查询一个类型 -->
+	<select id="getAssetsTypById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			id, 
+			typ_nam,                                              
+			typ_ide,                                                
+			remark,                                                  
+			ass_typ_sort  
+		FROM 
+			sys_bas_assets_typ
+		WHERE 
+			id = #{id}
+			AND del_flag = 0
+	</select>
+	
+	<!-- 查询类型列表 -->
+	<select id="getAssetsTypList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			typ_nam,                                              
+			typ_ide, 
+			remark,                                                
+			ass_typ_sort  
+		FROM 
+			sys_bas_assets_typ
+		WHERE 
+			del_flag = 0
+	</select>
+<!-- 资产类型end  -->
+
+
+<!-- 资产start  -->
+	<!-- 获取台账筛选信息数量 -->
+	<select id="getAssetsListCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+			
+	<!-- 	SELECT 	
+			COUNT(ass.ass_num) cou	
+		FROM	
+			(SELECT 
+				sbas.ass_nam,
+				sba.app_mod,
+				
+				sbas.ass_num
+			FROM 
+			sys_bas_assets sbas,
+			sys_bas_app sba
+		WHERE 
+			sba.id = sbas.app_mod_id
+			AND sbas.del_flag = 0
+			AND sbas.sub_com_id = #{sub_com_id}
+				<if test="ass_typ_id != null and ass_typ_id != 0">
+					AND sbas.ass_typ_id = #{ass_typ_id}
+				</if>
+				<if test="words != null and words != ''">
+					AND CONCAT(
+						IFNULL(sbas.ass_nam,''),
+						IFNULL(sba.app_mod,''),
+						IFNULL(sbas.ass_num,'')
+					) 
+					LIKE CONCAT('%',#{words},'%')
+				</if>
+				GROUP BY sbas.equ_sor
+			) ass
+			 -->
+		SELECT 
+			DISTINCT sbas.ass_num,
+			sbas.ass_nam,
+			sbas.remark,
+			sba.app_mod,
+			(select sbm.man_nam from sys_bas_man sbm where sbm.id = sbas.man_id ) man_nam,
+			(select sbw.ware_nam from sys_bas_ware sbw where sbw.id = sbas.war_id )ware_nam,			
+			sbas.id,
+			sbas.unit,
+			sbas.price,
+			sbas.siz,
+			sbas.weight,
+			sbas.inp_elc,
+			sbas.inp_vol,
+			sbas.rtd_pow,
+			sbas.out_elc,
+			sbas.out_vol,
+			sbas.work_temp,
+			sbas.altitude,
+			sbas.prtc_grade,
+			sbas.res_val,
+			sbas.dep_fix_num_year,
+			sbas.mon_dep,
+			sbas.acc_dep,
+			sbas.is_scrap,
+			(select SUM(sbaa.ala_num) ala_num from sys_bas_assets_ala sbaa where sbaa.ass_num = sbas.ass_num ) ala_num,
+			SUM(cou) stock_num 
+		FROM 
+			sys_bas_assets sbas,
+			sys_bas_app sba,
+			sys_bas_assets_typ sbat
+		WHERE 
+			sba.id = sbas.app_mod_id
+			AND sbas.ass_typ_id = sbat.id
+			AND sbat.del_flag = 0
+			AND sbas.del_flag = 0
+			<if test="sub_com_id != null and sub_com_id != 0">
+			AND sbas.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="ass_typ_id != null and ass_typ_id != 0">
+				AND sbas.ass_typ_id = #{ass_typ_id}
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sbas.ass_nam,''),
+					IFNULL(sba.app_mod,''),
+					IFNULL(sbas.ass_num,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		GROUP BY 
+			sbas.ass_num
+		ORDER BY 
+			sbas.equ_sor,sbas.id 
+
+			
+	</select>
+	
+	
+	<!-- 台账 ： 查询资产统计信息 -->
+	<select id="getAssetsListByTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			DISTINCT sbas.ass_num,
+			sbas.ass_nam,
+			sbas.remark,
+			sba.app_mod,
+			(select sbm.man_nam from sys_bas_man sbm where sbm.id = sbas.man_id ) man_nam,
+			(select sbw.ware_nam from sys_bas_ware sbw where sbw.id = sbas.war_id )ware_nam,			
+			sbas.id,
+			sbas.unit,
+			sbas.price,
+			sbas.siz,
+			sbas.weight,
+			sbas.inp_elc,
+			sbas.inp_vol,
+			sbas.rtd_pow,
+			sbas.out_elc,
+			sbas.out_vol,
+			sbas.work_temp,
+			sbas.altitude,
+			sbas.prtc_grade,
+			sbas.res_val,
+			sbas.dep_fix_num_year,
+			sbas.mon_dep,
+			sbas.acc_dep,
+			sbas.is_scrap,
+			(select SUM(sbaa.ala_num) ala_num from sys_bas_assets_ala sbaa where sbaa.ass_num = sbas.ass_num ) ala_num,
+			SUM(cou) stock_num 
+		FROM 
+			sys_bas_assets sbas,
+			sys_bas_app sba,
+			sys_bas_assets_typ sbat
+		WHERE 
+			sba.id = sbas.app_mod_id
+			AND sbas.ass_typ_id = sbat.id
+			AND sbat.del_flag = 0
+			AND sbas.del_flag = 0
+			<if test="sub_com_id != null and sub_com_id != 0">
+			AND sbas.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="ass_typ_id != null and ass_typ_id != 0">
+				AND sbas.ass_typ_id = #{ass_typ_id}
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sbas.ass_nam,''),
+					IFNULL(sba.app_mod,''),
+					IFNULL(sbas.ass_num,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		GROUP BY 
+			sbas.ass_num
+		ORDER BY 
+			sbas.equ_sor,sbas.id 
+		LIMIT #{start}, #{everyPage}
+	</select>
+
+
+
+
+	<!-- 添加物资： 入库 -->
+	<insert id="insAssets" parameterType="java.util.LinkedHashMap">
+		INSERT INTO 
+			sys_bas_assets
+			(
+				ass_nam,
+				ass_typ_id,
+				pro_tim,
+				pur_tim,
+				ass_num,
+				remark,
+				del_flag,
+				equ_sor,
+				app_mod_id,
+				man_id,
+				unit,
+				price,
+				sub_com_id,
+				siz,
+				weight,
+				inp_elc,
+				inp_vol,
+				rtd_pow,
+				out_elc,
+				out_vol,
+				work_temp,
+				altitude,
+				prtc_grade,
+				res_val,
+				dep_fix_num_year,
+				mon_dep,
+				acc_dep,
+				is_scrap,
+				war_id,
+				crt_use_id,
+				crt_tim,
+				cur_sta,
+				cou,
+				ord_num
+			)
+		VALUES 
+			(
+				#{ass_nam},
+				#{ass_typ_id},
+				#{pro_tim},
+				#{pur_tim},
+				#{ass_num},
+				#{remark},
+				#{del_flag},
+				#{equ_sor},
+				#{app_mod_id},
+				#{man_id},
+				#{unit},
+				#{price},
+				#{sub_com_id},
+				#{siz},
+				#{weight},
+				#{inp_elc},
+				#{inp_vol},
+				#{rtd_pow},
+				#{out_elc},
+				#{out_vol},
+				#{work_temp},
+				#{altitude},
+				#{prtc_grade},
+				#{res_val},
+				#{dep_fix_num_year},
+				#{mon_dep},
+				#{acc_dep},
+				#{is_scrap},
+				#{war_id},
+				#{crt_use_id},
+				#{crt_tim},
+				#{cur_sta},
+				#{cou},
+				#{ord_num}
+			)
+	</insert>
+	<!--  查询某ass_num 资产id  -->
+	<select id="getAssetsIdsByAssNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			ass_num
+		FROM 
+			sys_bas_assets
+		WHERE
+			del_flag = #{del_flag}
+			AND ass_num = #{ass_num}
+	</select>	
+	
+	
+	<!--  查询某ass_num资产统计信息  -->
+	<select id="getAssetsByAssNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+				ass_nam,
+				ass_typ_id,
+				pro_tim,
+				pur_tim,
+				ass_num,
+				remark,
+				del_flag,
+				equ_sor,
+				app_mod_id,
+				man_id,
+				unit,
+				price,
+				sub_com_id,
+				siz,
+				weight,
+				inp_elc,
+				inp_vol,
+				rtd_pow,
+				out_elc,
+				out_vol,
+				work_temp,
+				altitude,
+				prtc_grade,
+				res_val,
+				dep_fix_num_year,
+				mon_dep,
+				acc_dep,
+				is_scrap,
+				war_id,
+				crt_use_id,
+				crt_tim,
+				cur_sta,
+				mod_use_id,
+				mod_tim,
+				SUM(cou) stock_num,
+				ord_num
+		FROM 
+			sys_bas_assets
+		WHERE
+			del_flag = #{del_flag}
+			<if test="ass_num != null and ass_num != ''">
+				AND ass_num = #{ass_num} 
+			</if>
+		GROUP BY
+			ass_num
+	</select>
+	
+			
+	<!-- 修改物资信息 -->
+	<update id="updAssets" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_bas_assets
+		SET
+			ass_nam = #{ass_nam},
+			ass_typ_id = #{ass_typ_id},
+			pro_tim = #{pro_tim},
+			pur_tim = #{pur_tim},
+			remark = #{remark},
+			equ_sor = #{equ_sor},
+			app_mod_id = #{app_mod_id},
+			man_id = #{man_id},
+			unit = #{unit},
+			price = #{price},
+			siz = #{siz},
+			weight = #{weight},
+			inp_elc = #{inp_elc},
+			inp_vol = #{inp_vol},
+			rtd_pow = #{rtd_pow},
+			out_elc = #{out_elc},
+			out_vol = #{out_vol},
+			work_temp = #{work_temp},
+			altitude = #{altitude},
+			prtc_grade = #{prtc_grade},
+			res_val = #{res_val},
+			dep_fix_num_year = #{dep_fix_num_year},
+			mon_dep = #{mon_dep},
+			acc_dep = #{acc_dep},
+			war_id = #{war_id},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		<!-- 		
+			cou = #{cou},
+			cur_sta = #{cur_sta},
+			del_flag = #{del_flag},
+			is_scrap = #{is_scrap}
+		 -->
+		WHERE 
+			ass_num = #{ass_num}
+	</update>
+
+	<!-- ass_num 逻辑删除 资产 -->
+	<update id="delAssets" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_assets
+		SET
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE 
+			ass_num = #{ass_num}
+	</update>
+	
+	
+	<!-- 逻辑删除 资产 -->
+	<update id="delBatchAssets" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_assets
+		SET
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE 
+			ass_num IN
+			 <foreach collection="ass_nums" item="ass_num" index="index" open="(" separator="," close=")">
+             	#{ass_num}  
+       		</foreach>
+	</update>
+	
+	
+	<!-- 物资出入库列表 -->
+	<select id="getInOutBroundList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sba.id,
+			sba.ord_num,
+			sba.ass_nam,
+			sba.ass_num,
+			sba.cou,
+			sba.cur_sta,
+			sbap.app_mod,
+			us.use_nam,
+			sba.unit,
+			sba.crt_tim,
+			sba.remark
+		FROM 
+			use_use us,
+			sys_bas_app sbap,
+			sys_bas_assets sba,
+			sys_bas_assets_typ sbat
+		WHERE
+			us.id = sba.crt_use_id
+			AND sba.app_mod_id = sbap.id
+			AND sbat.id = sba.ass_typ_id
+			AND sbat.del_flag = 0
+			AND sba.del_flag = 0
+			<if test="sub_com_id != null and sub_com_id != ''">
+				AND sba.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="cur_sta != null and cur_sta != ''">
+				AND sba.cur_sta  = #{cur_sta}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sba.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sba.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sba.ord_num,''),
+					IFNULL(us.use_nam,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+			ORDER BY 
+				sba.crt_tim DESC
+			LIMIT #{start}, #{everyPage}
+	</select>
+	
+	
+	<!-- 物资出入库列表 信息个数 -->
+	<select id="getInOutBroundCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(sba.ord_num) cou
+		FROM 
+			use_use us,
+			sys_bas_app sbap,
+			sys_bas_assets sba,
+			sys_bas_assets_typ sbat
+		WHERE
+			us.id = sba.crt_use_id
+			AND sba.app_mod_id = sbap.id
+			AND sbat.id = sba.ass_typ_id
+			AND sbat.del_flag = 0
+			AND sba.del_flag = 0
+			<if test="sub_com_id != null and sub_com_id != ''">
+				AND sba.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="cur_sta != null and cur_sta != ''">
+				AND sba.cur_sta  = #{cur_sta}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sba.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sba.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sba.ord_num,''),
+					IFNULL(us.use_nam,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+	
+	
+	
+	<!-- 根据单号 查询 所有资产列表 -->
+	<select id="getAssetsListByOrdNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sbas.id,
+			sbas.ass_nam,
+			sbas.ass_num,
+			sbas.remark,
+				sba.app_mod,
+				sbm.man_nam,
+				sbw.ware_nam,
+			sbas.unit,
+			sbas.price,
+			sbas.siz,
+			sbas.weight,
+			sbas.inp_elc,
+			sbas.inp_vol,
+			sbas.rtd_pow,
+			sbas.out_elc,
+			sbas.out_vol,
+			sbas.work_temp,
+			sbas.altitude,
+			sbas.prtc_grade,
+			sbas.res_val,
+			sbas.dep_fix_num_year,
+			sbas.mon_dep,
+			sbas.acc_dep,
+			sbas.is_scrap,
+			sbas.cur_sta,
+			sbas.ord_num
+		FROM	
+			sys_bas_app sba,
+			sys_bas_ware sbw,
+			sys_bas_man sbm,
+			sys_bas_assets sbas
+		WHERE
+			sbas.app_mod_id = sba.id
+			AND sbas.man_id = sbm.id
+			AND sbas.war_id = sbw.id
+			AND sbas.del_flag = 0
+			AND sbas.ord_num = #{ord_num}
+	</select>
+	
+	
+	
+	<!-- 根据 ass_num 获取 资产告警数量 -->
+	<select id="getAssetsAlaCou" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sbaa.ass_num,
+			sbaa.ala_num,
+			(SELECT  DISTINCT ass_nam FROM sys_bas_assets WHERE ass_num = sbaa.ass_num) ass_nam 
+		FROM 
+			sys_bas_assets_ala sbaa
+		WHERE 
+			sbaa.del_flag = 0
+			AND sbaa.ass_num = #{ass_num}
+	</select>
+	
+	<insert id="insAssetsAlaInfo" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_bas_assets_ala(
+				ass_num,
+				ala_num,
+				crt_use_id,
+				crt_tim,
+				remark,
+				del_flag
+			)
+		VALUES(
+				#{ass_num},
+				#{ala_num},
+				#{crt_use_id},
+				#{crt_tim},
+				#{remark},
+				#{del_flag}
+			)
+	</insert>	
+	<!--  设置 资产告警数量  -->
+	<update id="setAssetsAlaCou" parameterType="java.util.LinkedHashMap">
+		UPDATE  
+			sys_bas_assets_ala
+		SET
+			ala_num = #{ala_num},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE 
+			ass_num = #{ass_num}	
+	</update>
+	
+	
+	<!-- 根据公司id 查询 仓库信息 -->
+	<select id="getStoreHouseByComId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			ware_nam,           
+			ware_ide,
+			remark,                 
+			ware_add,
+			res_per_nam, 
+			res_per_mob
+		FROM
+			sys_bas_ware
+		WHERE
+			sub_com_id = #{sub_com_id}
+	</select>
+<!-- 资产end  -->
+
+
+
+<!-- 缺陷管理start  -->
+	
+	<!-- 添加文件 -->
+	<insert id="uploadFile" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_dat_defect_fil(
+				def_num,
+				fil_nam,
+				fil_url,
+				fil_typ,
+				remark,
+				del_flag,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES(
+				#{def_num},
+				#{file_nam},
+				#{file_url},
+				#{file_typ},
+				#{remark},
+				#{del_flag},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	<!-- 根据id逻辑删除文件 -->
+	<update id="delFile" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect_fil 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id=#{id}
+	</update>
+	<!-- 根据id 获取缺陷文件信息 -->
+	<select id="getFileById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		select * from sys_dat_defect_fil where id = #{id}	and del_flag = 0
+			
+	</select>
+
+	<!-- 根据缺陷def_num 获取文件列表 -->
+	<select id="getFileListByDefId" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sddf.id,
+			sddf.def_num,
+			sddf.fil_nam,
+			sddf.fil_url,
+			sddf.fil_typ,
+			sddf.remark,
+			sddf.del_flag,
+			sddf.crt_tim,
+			us.use_nam
+		FROM
+			use_use us,
+			sys_dat_defect_fil sddf
+		WHERE
+			us.id = sddf.crt_use_id
+			AND sddf.def_num = #{def_num}
+			AND sddf.del_flag = 0
+	</select>
+
+	<!-- 添加缺陷类型 -->
+	<insert id="insDefectTyp" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_dat_defect_typ(
+				typ_nam,
+				typ_ide,
+				remark,
+				del_flag,
+				typ_sor,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES(
+				#{typ_nam},
+				#{typ_ide},
+				#{remark},
+				#{del_flag},
+				#{typ_sor},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<select id="getDefectTypByName" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			typ_nam,
+			typ_ide,
+			remark,
+			del_flag,
+			typ_sor,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_defect_typ
+		WHERE
+			typ_nam = #{typ_nam}
+			and del_flag = 0
+	</select>
+	
+	
+	
+	<!-- 修改缺陷类型 -->
+	<update id="updDefectTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect_typ 
+		SET 
+			typ_nam = #{typ_nam},
+			typ_ide = #{typ_ide},
+			remark = #{remark},
+			typ_sor = #{typ_sor},
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id=#{id}
+	</update>
+	<!-- 逻辑删除缺陷类型 -->
+	<update id="delDefectTyp" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect_typ 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id=#{id}
+	</update>
+	
+	<!-- 根据id获取类型信息 -->
+	<select id="getDefectTypById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			typ_nam,
+			typ_ide,
+			remark,
+			del_flag,
+			typ_sor,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_defect_typ
+		WHERE
+			id = #{id}
+			and del_flag = #{del_flag}
+	</select>
+	
+	<!-- 获取缺陷类型列表  -->
+	<select id="getDefectTypList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			typ_nam,
+			typ_ide,
+			remark,
+			del_flag,
+			typ_sor,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_defect_typ
+		WHERE
+			del_flag = #{del_flag}
+		ORDER BY typ_sor,id 
+	</select>
+	
+	<!-- 获取缺陷类型列表个数  -->
+	<select id="getDefectTypCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(id) cou
+		FROM
+			sys_dat_defect_typ
+		WHERE
+			del_flag = #{del_flag}
+	</select>
+	
+	
+	
+	
+	
+	<!-- 添加缺陷信息 -->
+	<insert id="insDefectInfo" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_dat_defect(
+				def_typ_id,
+				def_num,
+				def_sta,
+				def_grade,
+				def_desc,
+				remark,
+				del_flag,
+				sub_com_id,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES(
+				#{def_typ_id},
+				#{def_num},
+				#{def_sta},
+				#{def_grade},
+				#{def_desc},
+				#{remark},
+				#{del_flag},
+				#{sub_com_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	
+	<!-- 修改缺陷状态 -->
+	<update id="updDefectInfo" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect 
+		SET 
+			def_typ_id = #{def_typ_id},
+			def_sta = #{def_sta},
+			def_grade = #{def_grade},
+			def_desc = #{def_desc},
+			remark = #{remark},
+			del_flag = #{del_flag},
+			sub_com_id = #{sub_com_id},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			def_num = #{def_num}
+	</update>
+	
+	<!-- 根据def_num逻辑删除缺陷信息 -->
+	<update id="delDefectInfo" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect 
+		SET 
+			del_flag = 1,
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!-- 根据def_num 批量逻辑删除缺陷信息 -->
+	<update id="delBatchDefectInfo" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_dat_defect 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			def_num IN
+			 <foreach collection="def_nums" item="item" index="index" open="(" separator="," close=")">
+              	#{item}  
+       		</foreach>
+       		
+	</update>
+	
+	<!-- 根据def_num获取缺陷信息 -->
+	<select id="getDefectInfoByDefnum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			def_typ_id,
+			def_num,
+			def_sta,
+			def_grade,
+			def_desc,
+			remark,
+			del_flag,
+			sub_com_id,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_dat_defect
+		WHERE
+			def_num = #{def_num}
+			AND del_flag = #{del_flag}
+	</select>
+	
+	
+	<!-- 缺陷信息列表 	-->
+	<select id="getDefectList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			sdd.id,
+			sdd.def_num,
+			sdd.def_grade,
+			sdd.crt_tim,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = sdd.crt_use_id) crt_use,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = sdd.mod_use_id) mod_use,
+			sdd.def_desc,
+			sdd.def_sta,
+			sdd.remark
+		FROM 
+			sys_dat_defect_typ sddt,
+			sys_dat_defect sdd
+		WHERE
+			sdd.def_typ_id = sddt.id
+			AND sdd.del_flag = 0
+			AND sddt.del_flag = 0
+			<if test="typ_id != null and typ_id != ''">
+				AND sdd.def_typ_id = #{typ_id}
+			</if>
+			<if test="sub_com_id != null and sub_com_id != ''">
+				AND sdd.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="def_grade != null and def_grade != ''">
+				AND sdd.def_grade  = #{def_grade}
+			</if>
+			<if test="def_sta != null and def_sta != ''">
+				AND sdd.def_sta  = #{def_sta}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdd.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdd.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdd.def_num,''),
+					IFNULL(sdd.def_desc,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		ORDER BY 
+			sdd.crt_tim DESC
+		LIMIT #{start}, #{everyPage}
+	</select>
+
+	<!-- 缺陷信息列表数量 	-->
+	<select id="getDefectListCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(sdd.id) cou
+		FROM 
+			sys_dat_defect_typ sddt,
+			sys_dat_defect sdd
+		WHERE
+			sdd.def_typ_id = sddt.id
+			AND sdd.del_flag = 0
+			AND sddt.del_flag = 0
+			<if test="typ_id != null and typ_id != ''">
+				AND sdd.def_typ_id = #{typ_id}
+			</if>
+			<if test="sub_com_id != null and sub_com_id != ''">
+				AND sdd.sub_com_id = #{sub_com_id}
+			</if>
+			<if test="def_grade != null and def_grade != ''">
+				AND sdd.def_grade  = #{def_grade}
+			</if>
+			<if test="cur_sta != null and cur_sta != ''">
+				AND sdd.def_sta  = #{def_sta}
+			</if>
+			
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sdd.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sdd.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL(sdd.def_num,''),
+					IFNULL(sdd.def_desc,'')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+<!-- 缺陷管理end  -->
+
+
+
+<!-- 物资采购计划start  -->
+	<!-- 添加物资计划 -->
+	<insert id="insAssetsPurPlan" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_bas_assets_plan(
+				plan_num,
+				pur_tim,
+				is_finish,
+				remark,
+				com_id,                
+				del_flag,
+				plan_use_id,
+				crt_use_id,
+				crt_tim
+
+			)
+		VALUES(
+				#{plan_num},
+				#{pur_tim},
+				#{is_finish},
+				#{remark},
+				#{com_id}, 
+				#{del_flag},
+				#{plan_use_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	
+	<!-- 更新物资计划 -->
+	<update id="updAssetsPurPlan" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_assets_plan 
+		SET 
+			plan_num = #{plan_num},
+			pur_tim = #{pur_tim},
+			is_finish = #{is_finish},
+			remark = #{remark},
+			com_id = #{com_id}, 
+			del_flag = #{del_flag},
+			plan_use_id = #{plan_use_id},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim}
+		WHERE
+			id = #{id}
+	</update>
+	<!-- 根据id 获取物资采购计划信息 -->
+	<select id="getAssetsPurPlanById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			plan_num,
+			pur_tim,
+			remark,
+			is_finish,
+			plan_use_id,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = plan_use_id) plan_use,
+			crt_use_id,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = crt_use_id) crt_use,
+			crt_tim,
+			mod_use_id,
+			mod_tim
+		FROM 
+			sys_bas_assets_plan sbap
+		WHERE
+			id = #{id}
+	</select>
+
+	<!-- 根据id逻辑删除物资计划 -->
+	<update id="delAssetsPurPlan" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_assets_plan 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!-- 根据id逻辑批量删除物资计划  -->
+	<update id="delBatchAssetsPurPlan" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_assets_plan 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE 
+			id IN
+			 <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+              	#{item}  
+       		</foreach>
+	</update>
+
+
+	<!-- 采购计划列表 	-->
+	<select id="getAssetsPurPlanList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			plan_num,
+			pur_tim,
+			remark,
+			is_finish,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = sbap.plan_use_id) plan_use,
+				(SELECT us.use_nam FROM use_use us WHERE us.id = sbap.crt_use_id) crt_use,
+			crt_tim
+		FROM 
+			sys_bas_assets_plan sbap
+		WHERE
+			sbap.del_flag = #{del_flag}
+			<if test="is_finish != null and is_finish != ''">
+				AND sbap.is_finish  = #{is_finish}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sbap.pur_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sbap.pur_tim < #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL( (SELECT us.use_nam FROM use_use us WHERE us.id = sbap.plan_use_id), ''),
+					IFNULL( (SELECT us.use_nam FROM use_use us WHERE us.id = sbap.crt_use_id), '')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+		ORDER BY 
+			sbap.crt_tim DESC
+		LIMIT #{start}, #{everyPage}
+	</select>
+	
+	<!-- 采购计划列表个数 	-->
+	<select id="getAssetsPurPlanCount" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(id) cou
+		FROM 
+			sys_bas_assets_plan sbap
+		WHERE
+			sbap.del_flag = #{del_flag}
+			<if test="is_finish != null and is_finish != ''">
+				AND sbap.is_finish  = #{is_finish}
+			</if>
+			<if test="start_tim != null and start_tim != ''">
+				<![CDATA[ AND sbap.crt_tim >= #{start_tim} ]]>
+			</if>
+			<if test="end_tim != null and end_tim != ''">
+				<![CDATA[ AND sbap.crt_tim <= #{end_tim} ]]>
+			</if>
+			<if test="words != null and words != ''">
+				AND CONCAT(
+					IFNULL( (SELECT us.use_nam FROM use_use us WHERE us.id = sbap.plan_use_id), ''),
+					IFNULL( (SELECT us.use_nam FROM use_use us WHERE us.id = sbap.crt_use_id), '')
+				) 
+				LIKE CONCAT('%',#{words},'%')
+			</if>
+	</select>
+
+
+
+
+
+
+
+
+
+
+<!-- 添加文件 -->
+	<insert id="uploadPurPlanFile" parameterType="java.util.LinkedHashMap">
+		INSERT INTO
+			sys_bas_asstes_plan_file(
+				plan_num,
+				fil_nam,
+				fil_url,
+				fil_typ,
+				remark,
+				del_flag,
+				com_id,
+				crt_use_id,
+				crt_tim
+			)
+		VALUES(
+				#{plan_num},
+				#{file_nam},
+				#{file_url},
+				#{file_typ},
+				#{remark},
+				#{del_flag},
+				#{com_id},
+				#{crt_use_id},
+				#{crt_tim}
+			)
+	</insert>
+	<!-- 根据id逻辑删除文件 -->
+	<update id="delPurPlanFile" parameterType="java.util.LinkedHashMap">
+		UPDATE 
+			sys_bas_asstes_plan_file 
+		SET 
+			del_flag = #{del_flag},
+			mod_use_id = #{mod_use_id},
+			mod_tim = #{mod_tim} 
+		WHERE
+			id=#{id}
+	</update>
+	<!-- 根据id 获取文件信息 -->
+	<select id="getPurPlanFileById" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			plan_num,
+			fil_nam,
+			fil_url,
+			fil_typ,
+			remark,
+			del_flag,
+			com_id,
+			crt_use_id,
+			crt_tim
+		FROM
+			sys_bas_asstes_plan_file
+		WHERE
+			id = #{id}
+			AND del_flag = #{del_flag}
+	</select>
+
+	<!-- 根据plan_num 获取文件列表 -->
+	<select id="getPurPlanFileListByPlanNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			id,
+			plan_num,
+			fil_nam,
+			fil_url,
+			fil_typ,
+			remark,
+			del_flag,
+			com_id,
+			crt_use_id,
+			(select uu.use_nam from use_use uu where uu.id = sbapf.crt_use_id) use_nam,
+			crt_tim
+		FROM
+			sys_bas_asstes_plan_file sbapf
+		WHERE
+			plan_num = #{plan_num}
+			AND del_flag = #{del_flag}
+	</select>
+<!-- 物资采购计划end  -->
+
+
+
+<!-- 查询所有仓库 -->
+	<select id="getAllWareHouseName" resultType="java.util.LinkedHashMap">
+		
+		SELECT 
+			sbw.id,
+			sbw.ware_nam
+		FROM
+			sys_bas_ware sbw
+		
+	</select>
+
+
+
+<!-- 通过资产编号查询物资 -->
+	<select id="getAssetsByAssNumNew" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap">
+				
+		SELECT
+			sba.id,
+			sba.ass_nam
+		FROM
+			sys_bas_assets sba
+		WHERE
+			sba.ass_num = #{ass_num}
+			AND sba.del_flag = 0
+		
+	</select>
+
+
+
+
+
+
+
+</mapper>

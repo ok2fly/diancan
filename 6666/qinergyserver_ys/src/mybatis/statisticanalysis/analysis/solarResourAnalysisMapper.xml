@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="solarResourAnalysisMapper">
+
+	
+	<!--  实测辐射量  月统计--> 
+	<select id="getRealSolarResources" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			pvs_radiation_tol radiation,
+			tol_tim
+		FROM 
+			sa_pws_mon_sta_hv
+		WHERE 
+			pws_id = #{pws_id}
+			<if test="staTim != null and staTim != ''">
+				<![CDATA[ AND tol_tim >= #{staTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+		ORDER BY 
+			tol_tim DESC 
+		LIMIT 1	
+	</select>
+	
+	<!--  理论辐射量  --> 
+	<select id="getFeaSolarResources" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			fsb_hv,
+			`month`
+		FROM 
+			sa_pv_fsb_hv
+		WHERE 
+			pws_id = #{pws_id}
+			
+		<if test="mon != null and mon != ''">
+			AND `month` = #{mon}
+		</if>
+
+		ORDER BY `month`
+	</select>
+
+
+
+	<!--  瞬时辐射量
+	<select id="getSolarData" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(sr.rel_hv) count,	
+			SUM(sr.rel_hv) sum_hv,
+			COUNT(sr.rel_hv)/(SELECT COUNT(rel_hv) FROM sa_pws_sta_rel) rate
+		FROM  
+			sa_pws_sta_rel sr
+		WHERE 
+			sr.pws_id = #{pws_id}
+			<if test="startTim != null and startTim != ''">
+				<![CDATA[ AND tol_tim >= #{startTim} ]]>
+			</if>
+			<if test="endTim != null and endTim != ''">
+				<![CDATA[ AND tol_tim < #{endTim} ]]>
+			</if>
+			<if test="begin !=null ">
+				AND sr.hv &gt;= #{begin}
+			</if>
+			<if test="begin !=null ">
+				AND sr.hv &lt; #{stop}
+			</if>
+			
+	</select> -->
+	
+	
+		 
+	<!--查询最大环境监测仪 数据  -->
+	<select id="getSolarDataEnvInfo" resultType="java.util.LinkedHashMap" parameterType="java.util.LinkedHashMap" >
+			
+			SELECT
+				env.`rad0-100W-2m`,
+				env.`rad100-200W-2m`,
+				env.`rad200-300W-2m`,
+				env.`rad300-400W-2m`,
+				env.`rad400-500W-2m`,
+				env.`rad500-600W-2m`,
+				env.`rad600-700W-2m`,
+				env.`rad700-800W-2m`,
+				env.`rad800-900W-2m`,
+				env.`rad900-1000W-2m`,
+				env.`rad1000W-2mThan`
+				
+			FROM
+				iscs_equ_env_history env,
+				sys_bas_equ sbe
+			WHERE
+				env.equ_num = sbe.equ_num
+				AND sbe.pws_id = #{pws_id}
+				<![CDATA[ AND env.stat <> 0 ]]>
+				<if test="timPoint != null and timPoint != ''">
+					<![CDATA[ AND crtTim >= #{timPoint} ]]>
+				</if>
+			ORDER BY
+				sbe.equ_num,
+				env.crtTim DESC
+			LIMIT 1 
+	</select>
+	
+	
+</mapper>

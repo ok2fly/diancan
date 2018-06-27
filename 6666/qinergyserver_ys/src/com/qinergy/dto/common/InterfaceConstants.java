@@ -1,0 +1,50 @@
+/* ========================================== */
+/*   Copyright(c) 2017 Neusoft Corporation.   */
+/*            All rights reserved.            */
+/*            Neusoft CONFIDENTIAL            */
+/* ========================================== */
+package com.qinergy.dto.common;
+
+/**
+ * 接口常用参数
+ * <p>
+ * This contains the following attributes:<br/>
+ * <li><code>SMS_KEY</code></li>
+ * <p>
+ * 
+ * 
+ * @author Neusoft
+ * @version 1.0
+ * @since 1.0
+ */
+public class InterfaceConstants {
+
+	/**
+	 * 短信接口APPKEY
+	 */
+	public static final String SMS_KEY = "060524b3564a4e64a969dfd2a725dc9e";
+	
+	/**
+	 * 用户注册短信接口template Id
+	 */
+	public static final String REGIST_SMS_TEMPLATE_ID = "80a9afeff4714e0e93552554c0ba213b";
+	/**
+	 * 银行卡绑定短信接口template Id
+	 */
+	public static final String BANKCARD_SMS_TEMPLATE_ID = "9adf7110fdd74cfa8951d32120c4840f";
+	/**
+	 * 找回密码短信接口template Id
+	 */
+	public static final String FINDPASSWORD_SMS_TEMPLATE_ID = "af28a824adc747a0b23567c11629dd18";
+	
+	/**
+	 * 阿凡达第三方接口短信接口请求地址 
+	 */
+	public static final String AVATARDATA_SMS = "http://v1.avatardata.cn/Sms/Send?key=";
+	
+	/**
+	 * 使用IP获取地区信息接口(淘宝) 
+	 */
+	public static final String CITY_IP_TAOBAO_URL = "http://ip.taobao.com/service/getIpInfo.php?ip=";
+
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ctl">
+
+
+	
+	<!-- ====获取 控制器信息列表=== --> 
+	
+	<!-- 获取某电站中某设备类型的所有设备信息-->
+	<select id="getBmsLstByPwsEquTyp" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbe.equ_num,
+			sbe.equ_nam
+		FROM
+			sys_bas_equ sbe,
+			sys_bas_app sba
+		WHERE
+			sbe.equ_mod_id = sba.id
+		AND sba.app_typ_id = #{app_typ_id} 
+		AND sbe.pws_id = #{pws_id}
+		and sbe.del_flag = 0
+
+	</select>
+	
+	<!-- 获取 控制器 设备的最新实时数据(列表页中)-->
+	<select id="getCtlInfByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			*
+		FROM
+			iscs_equ_ctl
+		WHERE
+			equ_num = #{equ_num}
+			
+		ORDER BY
+			crtTim DESC		
+		LIMIT 1
+	</select>
+	
+	
+	
+	<!-- 获取 控制器 设备的状态信息-->
+	<select id="getCtlStatByEquNum" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			sbm.stat
+		FROM
+			sys_bas_mqtt sbm
+		WHERE
+			sbm.equ_num = #{equ_num}
+	</select>
+	
+	
+</mapper>
